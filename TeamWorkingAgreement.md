@@ -5,32 +5,27 @@
 ## General
 
 - development must happen **during class time**
-  - this rule is subject to change upon team agreement
 - be respectful
 - respect the rhythm and times of work
 - collaborate with teammates
 - be open to other ideas
-- contact leads/team if you will be late or absent
+- contact team via **Slack** if you will be late or absent
 
 ## Coding standards
 
 - Use [Google coding standards](https://google.github.io/styleguide/) 
 - code must be reviewed by someone who didn't write it
-- code must be reviewed the same day the PR is created
+- code must be reviewed the same day the PR is created or at the beginning of the next day
 - **comments** are permitted - no commented out code, only comments
   - java docs for usage and IDE docs
 - nothing should be committed directly to the main branch without a pull request
+- optimize imports, code, and confirm to coding standard before commit/PR
 
 
 ## meetings
 
 - attend meetings, standups - retrospective - etc
-- no cellphones during meetings
-- if your late you must facilitate next meeting
 
-## attendance
-
-- notify your team in **slack** if you will be late or absent
 
 ## definition of done
 
