@@ -1,5 +1,6 @@
 package com.sms.invoicify.invoice;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.TimeZone;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -80,5 +82,24 @@ public class InvoiceControllerIT {
                     get("/invoices/summary")
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
+  }
+
+  @Test
+  public void createAndViewInvoice() throws Exception {
+
+    InvoiceDto invoiceDto = new InvoiceDto(121, Date.valueOf(LocalDate.now()), null, "aCompany", PaymentStatus.UNPAID, 120.00);
+    create(invoiceDto);
+
+    MvcResult mvcResult = mockMvc
+            .perform(
+                    get("/invoices/summary")
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    List<InvoiceDto> dtos = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>(){});
+
+    assertThat(dtos.get(0), is(invoiceDto));
+
   }
 }
