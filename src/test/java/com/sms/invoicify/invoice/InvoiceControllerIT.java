@@ -17,6 +17,7 @@ import java.util.TimeZone;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -70,5 +71,14 @@ public class InvoiceControllerIT {
 
     createdInvoiceCto = objectMapper.readValue(mvcResult2.getResponse().getContentAsString(), InvoiceDto.class);
     assertThat(createdInvoiceCto, is(invoiceDto2));
+  }
+
+  @Test
+  public void viewZeroInvoice() throws Exception {
+    mockMvc
+            .perform(
+                    get("/invoices/summary")
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
   }
 }
