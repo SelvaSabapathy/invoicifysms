@@ -85,7 +85,7 @@ public class InvoiceControllerIT {
   }
 
   @Test
-  public void createAndViewInvoice() throws Exception {
+  public void createAndViewInvoiceSummary() throws Exception {
 
     InvoiceDto invoiceDto = new InvoiceDto(121, Date.valueOf(LocalDate.now()), null, "aCompany", PaymentStatus.UNPAID, 120.00);
     create(invoiceDto);
@@ -99,7 +99,8 @@ public class InvoiceControllerIT {
 
     List<InvoiceDto> dtos = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>(){});
 
-    assertThat(dtos.get(0), is(invoiceDto));
+    assertThat(dtos.get(0).getNumber(), is(invoiceDto.getNumber()));
+    assertThat(dtos.get(0).getCreationDate(), is(invoiceDto.getCreationDate()));
 
   }
 }

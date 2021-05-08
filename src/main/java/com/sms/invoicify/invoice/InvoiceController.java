@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.websocket.server.PathParam;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class InvoiceController {
@@ -43,8 +45,15 @@ public class InvoiceController {
   }
 
   @GetMapping("/invoices/{type}")
-  public ResponseEntity<InvoiceDto> getInvoices(@PathParam("type") String type) {
-    return  new ResponseEntity<>(HttpStatus.OK);
+  public ResponseEntity<List<InvoiceSummaryDto>> getInvoices(@PathParam("type") String type) {
+    List<InvoiceSummaryDto> summaryDtoList =
+        invoiceService.view().stream()
+            .map(
+                e ->
+                    new InvoiceSummaryDto(
+                        e.getNumber(), e.getCreationDate(), e.getPaymentStatus(), e.getTotalCost()))
+            .collect(Collectors.toList());
+    return new ResponseEntity<List<InvoiceSummaryDto>>(summaryDtoList,HttpStatus.OK);
   }
 
 }
