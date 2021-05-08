@@ -1,24 +1,31 @@
 package com.sms.invoicify.invoice;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @SpringBootTest
 public class InvoiceServiceTest {
 
-  @InjectMocks
-  private InvoiceService invoiceService;
+  @Mock private InvoiceRepository invoiceRepository;
+
+  @InjectMocks private InvoiceService invoiceService;
+
+  @AfterEach
+  public void tearDown() {
+    verifyNoMoreInteractions(invoiceRepository);
+  }
 
   @Test
   public void create() {
     InvoiceEntity invoiceEntity = new InvoiceEntity();
     InvoiceEntity createdInvoiceEntity = invoiceService.create(invoiceEntity);
 
-    assertThat(createdInvoiceEntity, is(notNullValue()));
+    verify(invoiceRepository).save(invoiceEntity);
   }
 }
