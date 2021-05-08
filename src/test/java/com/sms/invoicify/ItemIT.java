@@ -35,7 +35,7 @@ public class ItemIT {
     }
 
     @Test
-    void postItems() throws Exception{
+    void postItem() throws Exception{
         Item item =  Item.builder().description("Test Item Description").quantity(1).totalFees(BigDecimal.TEN).build();
         mockMvc.perform(post("/items").contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(item)))
