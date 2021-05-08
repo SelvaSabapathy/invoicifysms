@@ -5,3 +5,11 @@ include::{snippets}/PostNewItem/http-request.adoc[]
 
 .response
 include::{snippets}/PostNewItem/http-response.adoc[]
+
+Get List of All Items
+
+.request
+include::{snippets}/GetAllItems/http-request.adoc[]
+
+.response
+include::{snippets}/GetAllItems/http-response.adoc[]
