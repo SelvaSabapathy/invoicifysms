@@ -1,3 +1,12 @@
+= Invoicify APIs
+Welcome to Invoicify solutions by SMS
+:toc:
+:toclevels: 4
+
+== APIs
+
+=== Item
+
 Post a New Item
 
 .request
@@ -13,3 +22,21 @@ include::{snippets}/GetAllItems/http-request.adoc[]
 
 .response
 include::{snippets}/GetAllItems/http-response.adoc[]
+
+=== Invoice
+
+Create an invoice
+
+.request
+include::{snippets}/createNewInvoice/http-request.adoc[]
+
+.response
+include::{snippets}/createNewInvoice/http-response.adoc[]
+
+Get Invoice Summary
+
+.request
+include::{snippets}/getInvoiceSummary/http-request.adoc[]
+
+.response
+include::{snippets}/getInvoiceSummary/http-response.adoc[]

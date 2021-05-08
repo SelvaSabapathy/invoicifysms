@@ -1,5 +1,6 @@
 package com.sms.invoicify.invoice;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -13,10 +14,15 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.TimeZone;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,6 +48,7 @@ public class InvoiceControllerIT {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(invoiceDto)))
             .andExpect(status().isCreated())
+            .andDo(document("createNewInvoice"))
             .andReturn();
 
     return mvcResult;
@@ -70,5 +77,45 @@ public class InvoiceControllerIT {
 
     createdInvoiceCto = objectMapper.readValue(mvcResult2.getResponse().getContentAsString(), InvoiceDto.class);
     assertThat(createdInvoiceCto, is(invoiceDto2));
+  }
+
+  @Test
+  public void viewZeroInvoice() throws Exception {
+    mockMvc
+            .perform(
+                    get("/invoices/summary")
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+  }
+
+  @Test
+  public void createAndViewInvoiceSummary() throws Exception {
+
+    InvoiceDto invoiceDto = new InvoiceDto(121, Date.valueOf(LocalDate.now()), null, "aCompany", PaymentStatus.UNPAID, 120.00);
+    create(invoiceDto);
+
+    MvcResult mvcResult = mockMvc
+            .perform(
+                    get("/invoices/summary")
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andDo(
+                    document(
+                            "getInvoiceSummary",
+                            responseFields(
+                                    fieldWithPath("[0].number").description("Invoice number"),
+                                    fieldWithPath("[0].creationDate").description("Invoice creation date"),
+                                    fieldWithPath("[0].paymentStatus").description("Invoice payment status"),
+                                    fieldWithPath("[0].totalCost").description("Invoice total cost")
+                                    )
+                    )
+            )
+            .andReturn();
+
+    List<InvoiceDto> dtos = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>(){});
+
+    assertThat(dtos.get(0).getNumber(), is(invoiceDto.getNumber()));
+    assertThat(dtos.get(0).getCreationDate(), is(invoiceDto.getCreationDate()));
+
   }
 }
