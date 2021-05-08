@@ -19,6 +19,9 @@ import java.util.TimeZone;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,6 +48,7 @@ public class InvoiceControllerIT {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(invoiceDto)))
             .andExpect(status().isCreated())
+            .andDo(document("createNewInvoice"))
             .andReturn();
 
     return mvcResult;
@@ -95,6 +99,17 @@ public class InvoiceControllerIT {
                     get("/invoices/summary")
                             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
+            .andDo(
+                    document(
+                            "getInvoiceSummary",
+                            responseFields(
+                                    fieldWithPath("[0].number").description("Invoice number"),
+                                    fieldWithPath("[0].creationDate").description("Invoice creation date"),
+                                    fieldWithPath("[0].paymentStatus").description("Invoice payment status"),
+                                    fieldWithPath("[0].totalCost").description("Invoice total cost")
+                                    )
+                    )
+            )
             .andReturn();
 
     List<InvoiceDto> dtos = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>(){});
