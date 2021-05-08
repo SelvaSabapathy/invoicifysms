@@ -1,0 +1,7 @@
+Post a New Item
+
+.request
+include::{snippets}/PostNewItem/http-request.adoc[]
+
+.response
+include::{snippets}/PostNewItem/http-response.adoc[]
