@@ -46,6 +46,13 @@ public class ItemIT {
         .andExpect(content().string("Test Item Description created Successfully"))
         .andDo(document("PostNewItem"));
 
+        mockMvc.perform(get("/items"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("length()").value(1))
+                .andExpect(jsonPath("[0].description").value("Test Item Description"))
+                .andExpect(jsonPath("[0].quantity").value(1))
+                .andExpect(jsonPath("[0].totalFees").value(10.00));
+
     }
 
 
