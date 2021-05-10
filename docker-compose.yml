@@ -7,7 +7,7 @@ services:
     volumes:
       - invoicify-data:/var/lib/postgresql/data/pgdata
     environment:
-      - POSTGRES_DB=invoicify_pg_db
+      - POSTGRES_DB=invoicify_db
       - POSTGRES_PASSWORD=rpvGg9DR32CakNu
       - PGDATA=/var/lib/postgresql/data/pgdata
   invoicify-web:
