@@ -116,16 +116,13 @@ public class InvoiceControllerIT {
             .perform(get("/invoices/summary").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andDo(
-                    document(
-                            "getInvoiceSummary",
-                            responseFields(
-                                    fieldWithPath("[0].number").description("Invoice number"),
-                                    fieldWithPath("[0].creationDate").description("Invoice creation date"),
-                                    fieldWithPath("[0].paymentStatus").description("Invoice payment status"),
-                                    fieldWithPath("[0].totalCost").description("Invoice total cost")
-                                    )
-                    )
-            )
+                document(
+                    "getInvoiceSummary",
+                    responseFields(
+                        fieldWithPath("[0].number").description("Invoice number"),
+                        fieldWithPath("[0].creationDate").description("Invoice creation date"),
+                        fieldWithPath("[0].paymentStatus").description("Invoice payment status"),
+                        fieldWithPath("[0].totalCost").description("Invoice total cost"))))
             .andReturn();
 
     List<InvoiceSummaryDto> dtos =
@@ -153,6 +150,16 @@ public class InvoiceControllerIT {
         mockMvc
             .perform(get("/invoices").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
+            .andDo(
+                document(
+                    "getInvoiceDetail",
+                    responseFields(
+                        fieldWithPath("[0].number").description("Invoice number"),
+                        fieldWithPath("[0].creationDate").description("Invoice creation date"),
+                        fieldWithPath("[0].lastModifiedDate").description("Invoice modified date"),
+                        fieldWithPath("[0].companyName").description("Company Name"),
+                        fieldWithPath("[0].paymentStatus").description("Invoice payment status"),
+                        fieldWithPath("[0].totalCost").description("Invoice total cost"))))
             .andReturn();
 
     List<InvoiceDto> dtos =

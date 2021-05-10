@@ -40,3 +40,11 @@ include::{snippets}/getInvoiceSummary/http-request.adoc[]
 
 .response
 include::{snippets}/getInvoiceSummary/http-response.adoc[]
+
+Get Invoice Details
+
+.request
+include::{snippets}/getInvoiceDetail/http-request.adoc[]
+
+.response
+include::{snippets}/getInvoiceDetail/http-response.adoc[]
