@@ -1,0 +1,27 @@
+version: "3"
+services:
+  invoicify_pg:
+    image: postgres
+    networks:
+      - invoicify-net
+    volumes:
+      - invoicify-data:/var/lib/postgresql/data/pgdata
+    environment:
+      - POSTGRES_DB=invoicify_db
+      - POSTGRES_PASSWORD=rpvGg9DR32CakNu
+      - PGDATA=/var/lib/postgresql/data/pgdata
+  invoicify-web:
+    build: ./
+    depends_on:
+      - invoicify_pg
+    networks:
+      - invoicify-net
+    environment:
+      - PORT=8080
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "9000:8080"
+volumes:
+  invoicify-data:
+networks:
+  invoicify-net:
