@@ -2,17 +2,16 @@ package com.sms.invoicify.service;
 
 import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.repository.InvoiceRepository;
-import com.sms.invoicify.service.InvoiceService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -41,14 +40,11 @@ public class InvoiceServiceTest {
   public void fetchAll() {
     InvoiceEntity invoiceEntity1 = new InvoiceEntity();
     InvoiceEntity invoiceEntity2 = new InvoiceEntity();
-    when(invoiceRepository.findAll()).thenReturn(
-            List.of(invoiceEntity1, invoiceEntity2)
-    );
+    when(invoiceRepository.findAll()).thenReturn(List.of(invoiceEntity1, invoiceEntity2));
 
     List<InvoiceEntity> entityList = invoiceService.view();
 
     verify(invoiceRepository).findAll();
     assertThat(entityList, is(List.of(invoiceEntity1, invoiceEntity2)));
-
   }
 }

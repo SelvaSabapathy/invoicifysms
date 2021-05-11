@@ -1,5 +1,7 @@
 package com.sms.invoicify.service;
 
+import com.sms.invoicify.models.InvoiceDto;
+import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.models.Item;
 import com.sms.invoicify.models.ItemEntity;
 import com.sms.invoicify.repository.ItemsRepositiory;
@@ -35,6 +37,7 @@ public class ItemServiceTest {
             .description("MyInvoiceItem")
             .quantity(42)
             .totalFees(BigDecimal.valueOf(10.99))
+                .invoice(InvoiceDto.builder().number(120).build())
             .build();
 
     ItemEntity itemEntity =
@@ -42,6 +45,7 @@ public class ItemServiceTest {
             .description("MyInvoiceItem")
             .quantity(42)
             .totalFees(BigDecimal.valueOf(10.99))
+                .invoice(InvoiceEntity.builder().number(120).build())
             .build();
 
     when(itemsRepositiory.save(any()))
@@ -51,6 +55,7 @@ public class ItemServiceTest {
                 .description("MyInvoiceItem")
                 .quantity(42)
                 .totalFees(BigDecimal.valueOf(10.99))
+                    .invoice(InvoiceEntity.builder().number(120).build())
                 .build());
 
     Long itemId = itemService.createItem(itemDto);
@@ -70,7 +75,9 @@ public class ItemServiceTest {
                     .description("MyInvoiceItem")
                     .quantity(42)
                     .totalFees(BigDecimal.valueOf(10.99))
-                    .build()));
+                        .invoice(InvoiceEntity.builder().number(120).build())
+
+                        .build()));
 
     List<Item> itemsFromService = itemService.fetchAllItems();
 
@@ -79,7 +86,8 @@ public class ItemServiceTest {
             .description("MyInvoiceItem")
             .quantity(42)
             .totalFees(BigDecimal.valueOf(10.99))
-            .build();
+                .invoice(InvoiceDto.builder().number(120).build())
+                .build();
 
     assertThat(itemsFromService).isEqualTo(List.of(itemDtoExpected));
 
