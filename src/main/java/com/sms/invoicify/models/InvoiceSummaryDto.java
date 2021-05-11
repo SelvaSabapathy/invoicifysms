@@ -1,5 +1,6 @@
-package com.sms.invoicify.invoice;
+package com.sms.invoicify.models;
 
+import com.sms.invoicify.utilities.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

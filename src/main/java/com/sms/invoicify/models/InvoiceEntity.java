@@ -1,10 +1,10 @@
-package com.sms.invoicify.invoice;
+package com.sms.invoicify.models;
 
+import com.sms.invoicify.utilities.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.bytebuddy.dynamic.loading.InjectionClassLoader;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

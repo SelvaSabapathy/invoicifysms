@@ -1,5 +1,7 @@
-package com.sms.invoicify.invoice;
+package com.sms.invoicify.service;
 
+import com.sms.invoicify.models.InvoiceEntity;
+import com.sms.invoicify.repository.InvoiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
