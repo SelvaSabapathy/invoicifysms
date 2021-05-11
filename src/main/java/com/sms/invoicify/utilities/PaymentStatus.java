@@ -1,4 +1,4 @@
-package com.sms.invoicify.invoice;
+package com.sms.invoicify.utilities;
 
 public enum PaymentStatus {
     PAID, UNPAID;
