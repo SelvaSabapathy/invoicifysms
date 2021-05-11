@@ -1,4 +1,4 @@
-package com.sms.invoicify.invoice;
+package com.sms.invoicify;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

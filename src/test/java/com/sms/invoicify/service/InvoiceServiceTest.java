@@ -1,4 +1,4 @@
-package com.sms.invoicify.invoice;
+package com.sms.invoicify.service;
 
 import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.repository.InvoiceRepository;
