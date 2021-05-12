@@ -2,6 +2,8 @@ package com.sms.invoicify.controller;
 
 import com.sms.invoicify.models.InvoiceDto;
 import com.sms.invoicify.models.InvoiceEntity;
+import com.sms.invoicify.models.Item;
+import com.sms.invoicify.models.ItemEntity;
 import com.sms.invoicify.service.InvoiceService;
 import com.sms.invoicify.models.InvoiceSummaryDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,21 +25,51 @@ public class InvoiceController {
 
   @PostMapping("/invoices")
   public ResponseEntity<InvoiceDto> create(@RequestBody InvoiceDto invoiceDto) {
+    List<Item> items = invoiceDto.getItems();
+    List<ItemEntity> itemEntities =
+        items == null
+            ? null
+            : items.stream()
+                .map(
+                    e ->
+                        ItemEntity.builder()
+                            .description(e.getDescription())
+                            .quantity(e.getQuantity())
+                            .totalFees(e.getTotalFees())
+                            .build())
+                .collect(Collectors.toList());
 
     InvoiceEntity invoiceEntity =
         InvoiceEntity.builder()
             .number(invoiceDto.getNumber())
             .creationDate(invoiceDto.getCreationDate())
+            .items(itemEntities)
             .companyName(invoiceDto.getCompanyName())
             .paymentStatus(invoiceDto.getPaymentStatus())
             .totalCost(invoiceDto.getTotalCost())
             .build();
     InvoiceEntity createdInvoiceEntity = invoiceService.create(invoiceEntity);
 
+    // Sending object
+    List<ItemEntity> retItemEnt = createdInvoiceEntity.getItems();
+    List<Item> retItems =
+        retItemEnt == null
+            ? null
+            : retItemEnt.stream()
+                .map(
+                    e ->
+                        Item.builder()
+                            .description(e.getDescription())
+                            .quantity(e.getQuantity())
+                            .totalFees(e.getTotalFees())
+                            .build())
+                .collect(Collectors.toList());
+
     InvoiceDto createdInvoiceDto =
         InvoiceDto.builder()
             .number(createdInvoiceEntity.getNumber())
             .creationDate(createdInvoiceEntity.getCreationDate())
+            .items(retItems)
             .companyName(createdInvoiceEntity.getCompanyName())
             .paymentStatus(createdInvoiceEntity.getPaymentStatus())
             .totalCost(createdInvoiceEntity.getTotalCost())
@@ -60,6 +92,7 @@ public class InvoiceController {
 
   @GetMapping("/invoices")
   public ResponseEntity<List<InvoiceDto>> getInvoices() {
+
     List<InvoiceDto> dtos =
         invoiceService.view().stream()
             .map(
@@ -68,10 +101,26 @@ public class InvoiceController {
                         e.getNumber(),
                         e.getCreationDate(),
                         e.getLastModifiedDate(),
+                        getItemDtos(e.getItems()),
                         e.getCompanyName(),
                         e.getPaymentStatus(),
                         e.getTotalCost()))
             .collect(Collectors.toList());
     return new ResponseEntity<>(dtos, HttpStatus.OK);
+  }
+
+  private List<Item> getItemDtos(List<ItemEntity> itemEntities) {
+
+    return itemEntities == null
+        ? null
+        : itemEntities.stream()
+            .map(
+                e ->
+                    Item.builder()
+                        .description(e.getDescription())
+                        .quantity(e.getQuantity())
+                        .totalFees(e.getTotalFees())
+                        .build())
+            .collect(Collectors.toList());
   }
 }

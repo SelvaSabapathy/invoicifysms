@@ -123,6 +123,7 @@ public class ItemIT {
                     fieldWithPath("[0].invoice.creationDate").description("Invoice creation date"),
                     fieldWithPath("[0].invoice.lastModifiedDate")
                         .description("Invoice modified date"),
+                    fieldWithPath("[0].invoice.items").description("Items in invoice"),
                     fieldWithPath("[0].invoice.companyName").description("Company Name"),
                     fieldWithPath("[0].invoice.paymentStatus")
                         .description("Invoice payment status"),
@@ -134,6 +135,7 @@ public class ItemIT {
                     fieldWithPath("[1].invoice.creationDate").description("Invoice creation date"),
                     fieldWithPath("[1].invoice.lastModifiedDate")
                         .description("Invoice modified date"),
+                    fieldWithPath("[0].invoice.items").description("Items in invoice"),
                     fieldWithPath("[1].invoice.companyName").description("Company Name"),
                     fieldWithPath("[1].invoice.paymentStatus")
                         .description("Invoice payment status"),
