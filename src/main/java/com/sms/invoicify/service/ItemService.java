@@ -1,5 +1,7 @@
 package com.sms.invoicify.service;
 
+import com.sms.invoicify.models.InvoiceDto;
+import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.models.Item;
 import com.sms.invoicify.models.ItemEntity;
 import com.sms.invoicify.repository.ItemsRepositiory;
@@ -16,14 +18,36 @@ public class ItemService {
   private final ItemsRepositiory itemsRepositiory;
 
   public Long createItem(Item itemDto) {
+    InvoiceDto invoiceDto = itemDto.getInvoice();
+    InvoiceEntity invoiceEntity =
+        InvoiceEntity.builder()
+            .number(invoiceDto.getNumber())
+            .creationDate(invoiceDto.getCreationDate())
+            .lastModifiedDate(invoiceDto.getLastModifiedDate())
+            .companyName(invoiceDto.getCompanyName())
+            .paymentStatus(invoiceDto.getPaymentStatus())
+            .totalCost(invoiceDto.getTotalCost())
+            .build();
     ItemEntity persisted =
         itemsRepositiory.save(
             ItemEntity.builder()
                 .description(itemDto.getDescription())
                 .quantity(itemDto.getQuantity())
                 .totalFees(itemDto.getTotalFees())
+                .invoice(invoiceEntity)
                 .build());
     return persisted.getItemId();
+  }
+
+  private InvoiceDto convertFrom(InvoiceEntity invoiceEntity) {
+    return InvoiceDto.builder()
+        .number(invoiceEntity.getNumber())
+        .creationDate(invoiceEntity.getCreationDate())
+        .lastModifiedDate(invoiceEntity.getLastModifiedDate())
+        .companyName(invoiceEntity.getCompanyName())
+        .paymentStatus(invoiceEntity.getPaymentStatus())
+        .totalCost(invoiceEntity.getTotalCost())
+        .build();
   }
 
   public List<Item> fetchAllItems() {
@@ -34,6 +58,7 @@ public class ItemService {
                   .description(itemEntity.getDescription())
                   .quantity(itemEntity.getQuantity())
                   .totalFees(itemEntity.getTotalFees())
+                  .invoice(convertFrom(itemEntity.getInvoice()))
                   .build();
             })
         .collect(Collectors.toList());

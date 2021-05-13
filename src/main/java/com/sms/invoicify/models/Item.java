@@ -15,4 +15,5 @@ public class Item {
   String description;
   int quantity;
   BigDecimal totalFees;
+  InvoiceDto invoice;
 }

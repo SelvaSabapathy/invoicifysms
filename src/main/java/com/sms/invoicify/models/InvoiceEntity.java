@@ -12,7 +12,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -31,7 +33,8 @@ public class InvoiceEntity {
 
     private Date lastModifiedDate;
 
-    //    private List<Item> items; @TODO: add after Item is added to project
+    @OneToMany(mappedBy = "invoice")
+    private List<ItemEntity> items;
 
     private String companyName;
 
