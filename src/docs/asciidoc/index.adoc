@@ -48,3 +48,11 @@ include::{snippets}/getInvoiceDetail/http-request.adoc[]
 
 .response
 include::{snippets}/getInvoiceDetail/http-response.adoc[]
+
+Post Company Details
+
+.request
+include::{snippets}/PostCompanyDetails/http-request.adoc[]
+
+.response
+include::{snippets}/PostCompanyDetails/http-response.adoc[]
