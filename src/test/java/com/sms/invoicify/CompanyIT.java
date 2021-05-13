@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -20,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CompanyIT {
 
   @Autowired
@@ -43,7 +45,17 @@ public class CompanyIT {
             .content(objectMapper.writeValueAsString(company)))
             .andExpect(status().isCreated())
             .andExpect(content().string("Test1 created Successfully"))
-            .andDo(document("PostCompanyDetails"));;
+            .andDo(document("PostCompanyDetails"));
+
+    mockMvc
+            .perform(get("/company"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("length()").value(1))
+            .andExpect(jsonPath("[0].companyName").value("Test1"))
+            .andExpect(jsonPath("[0].address").value("USA"))
+            .andExpect(jsonPath("[0].contactName").value("Name1"))
+            .andExpect(jsonPath("[0].title").value("Title1"))
+            .andExpect(jsonPath("[0].phoneNumber").value(12345));
 
   }
 }
