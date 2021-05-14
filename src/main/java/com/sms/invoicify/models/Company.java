@@ -11,10 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Company {
 
-    String companyName;
-    String address;
-    String contactName;
-    String title;
-    int phoneNumber;
-
+  String companyName;
+  String address;
+  String contactName;
+  String title;
+  int phoneNumber;
 }
