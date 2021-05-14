@@ -39,7 +39,7 @@ public class ItemServiceTest {
             .description("MyInvoiceItem")
             .quantity(42)
             .totalFees(BigDecimal.valueOf(10.99))
-            .invoice(InvoiceDto.builder().number(120).build())
+            .invoice(InvoiceDto.builder().number(120L).build())
             .build();
 
     ItemEntity itemEntity =
@@ -47,7 +47,7 @@ public class ItemServiceTest {
             .description("MyInvoiceItem")
             .quantity(42)
             .totalFees(BigDecimal.valueOf(10.99))
-            .invoice(InvoiceEntity.builder().number(120).build())
+            .invoice(InvoiceEntity.builder().number(120L).build())
             .build();
 
     when(itemsRepositiory.save(any()))
@@ -57,7 +57,7 @@ public class ItemServiceTest {
                 .description("MyInvoiceItem")
                 .quantity(42)
                 .totalFees(BigDecimal.valueOf(10.99))
-                .invoice(InvoiceEntity.builder().number(120).build())
+                .invoice(InvoiceEntity.builder().number(120L).build())
                 .build());
 
     Long itemId = itemService.createItem(itemDto);
@@ -79,7 +79,7 @@ public class ItemServiceTest {
                     .description("MyInvoiceItem")
                     .quantity(42)
                     .totalFees(BigDecimal.valueOf(10.99))
-                    .invoice(InvoiceEntity.builder().number(120).build())
+                    .invoice(InvoiceEntity.builder().number(120L).build())
                     .build()));
 
     List<Item> itemsFromService = itemService.fetchAllItems();
@@ -89,7 +89,7 @@ public class ItemServiceTest {
             .description("MyInvoiceItem")
             .quantity(42)
             .totalFees(BigDecimal.valueOf(10.99))
-            .invoice(InvoiceDto.builder().number(120).build())
+            .invoice(InvoiceDto.builder().number(120L).build())
             .build();
 
     assertThat(itemsFromService).isEqualTo(List.of(itemDtoExpected));

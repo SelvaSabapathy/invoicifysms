@@ -47,7 +47,7 @@ public class ItemIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(120).build())
+            .invoice(InvoiceDto.builder().number(120L).build())
             .build();
     mockMvc
         .perform(
@@ -75,14 +75,14 @@ public class ItemIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(120).build())
+            .invoice(InvoiceDto.builder().number(120L).build())
             .build();
     Item item1 =
         Item.builder()
             .description("Test Item Description2")
             .quantity(2)
             .totalFees(BigDecimal.valueOf(5))
-            .invoice(InvoiceDto.builder().number(121).build())
+            .invoice(InvoiceDto.builder().number(121L).build())
             .build();
     mockMvc
         .perform(

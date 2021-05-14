@@ -26,7 +26,7 @@ public class ItemEntity {
   Long itemId;
 
   String description;
-  int quantity;
+  Integer quantity;
   BigDecimal totalFees;
 
   @ManyToOne(cascade = CascadeType.ALL)

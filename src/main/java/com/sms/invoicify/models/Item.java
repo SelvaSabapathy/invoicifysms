@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class Item {
   String description;
-  int quantity;
+  Integer quantity;
   BigDecimal totalFees;
   InvoiceDto invoice;
 }

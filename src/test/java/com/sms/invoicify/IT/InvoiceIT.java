@@ -56,11 +56,31 @@ public class InvoiceIT {
     return mvcResult;
   }
 
+//  @Test
+//  public void createOneFailure() throws Exception {
+//    InvoiceDto invoiceDto =
+//            new InvoiceDto(
+//                    0,
+//                    InvoicifyUtilities.getDate(LocalDate.now()),
+//                    null,
+//                    null,
+//                    "aCompany",
+//                    PaymentStatus.UNPAID,
+//                    120.00);
+//    MvcResult mvcResult = create(invoiceDto);
+//
+//    InvoiceDto createdInvoiceCto =
+//            objectMapper.readValue(mvcResult.getResponse().getContentAsString(), InvoiceDto.class);
+//
+//    assertThat(createdInvoiceCto, is(invoiceDto));
+//  }
+//
+
   @Test
-  public void createOne() throws Exception {
+  public void createOneSuccess() throws Exception {
     InvoiceDto invoiceDto =
         new InvoiceDto(
-            121,
+            121L,
             InvoicifyUtilities.getDate(LocalDate.now()),
             null,
             null,
@@ -79,7 +99,7 @@ public class InvoiceIT {
   public void createMultiple() throws Exception {
     InvoiceDto invoiceDto1 =
         new InvoiceDto(
-            121,
+            121L,
             InvoicifyUtilities.getDate(LocalDate.now()),
             null,
             null,
@@ -93,11 +113,11 @@ public class InvoiceIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(122).build())
+            .invoice(InvoiceDto.builder().number(122L).build())
             .build();
     InvoiceDto invoiceDto2 =
         new InvoiceDto(
-            122,
+            122L,
             InvoicifyUtilities.getDate(LocalDate.now()),
             null,
             List.of(item),
@@ -140,12 +160,12 @@ public class InvoiceIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(120).build())
+            .invoice(InvoiceDto.builder().number(120L).build())
             .build();
 
     InvoiceDto invoiceDto =
         new InvoiceDto(
-            121,
+            121L,
             InvoicifyUtilities.getDate(LocalDate.now()),
             null,
             List.of(item),
@@ -184,12 +204,12 @@ public class InvoiceIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(121).build())
+            .invoice(InvoiceDto.builder().number(121L).build())
             .build();
 
     InvoiceDto invoiceDto1 =
         new InvoiceDto(
-            120,
+            120L,
             InvoicifyUtilities.getDate(LocalDate.now()),
             null,
             null,
@@ -200,7 +220,7 @@ public class InvoiceIT {
 
     InvoiceDto invoiceDto2 =
         new InvoiceDto(
-            121,
+            121L,
             InvoicifyUtilities.getDate(LocalDate.now()),
             null,
             List.of(item),

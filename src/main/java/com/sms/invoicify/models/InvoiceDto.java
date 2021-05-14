@@ -14,11 +14,11 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class InvoiceDto {
-    private long number;
+    private Long number;
     private Date creationDate;
     private Date lastModifiedDate;
     private List<Item> items;
     private String companyName;
     private PaymentStatus paymentStatus;
-    private double totalCost;
+    private Double totalCost;
 }
