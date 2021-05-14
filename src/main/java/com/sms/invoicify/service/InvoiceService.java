@@ -12,14 +12,17 @@ import java.util.List;
 @Transactional
 public class InvoiceService {
 
-    @Autowired
-    private InvoiceRepository invoiceRepository;
+  @Autowired private InvoiceRepository invoiceRepository;
 
-    public InvoiceEntity create(InvoiceEntity invoiceEntity) {
-        return invoiceRepository.save(invoiceEntity);
-    }
+  public InvoiceEntity create(InvoiceEntity invoiceEntity) {
+    return invoiceRepository.save(invoiceEntity);
+  }
 
-    public List<InvoiceEntity> view() {
-        return invoiceRepository.findAll();
-    }
+  public List<InvoiceEntity> view() {
+    return invoiceRepository.findAll();
+  }
+
+  public InvoiceEntity findByNumber(Long number) {
+    return invoiceRepository.findByNumber(number);
+  }
 }

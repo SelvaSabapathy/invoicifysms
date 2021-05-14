@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sms.invoicify.models.InvoiceDto;
 import com.sms.invoicify.models.InvoiceSummaryDto;
 import com.sms.invoicify.models.Item;
+import com.sms.invoicify.utilities.InvoicifyUtilities;
 import com.sms.invoicify.utilities.PaymentStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,19 +56,17 @@ public class InvoiceControllerIT {
     return mvcResult;
   }
 
-  private Date getDate(LocalDate localDate) throws ParseException {
-    Instant instant = localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
-    Date res = Date.from(instant);
-
-    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-    return formatter.parse(formatter.format(res));
-  }
-
   @Test
   public void createOne() throws Exception {
     InvoiceDto invoiceDto =
         new InvoiceDto(
-            121, getDate(LocalDate.now()), null, null, "aCompany", PaymentStatus.UNPAID, 120.00);
+            121,
+            InvoicifyUtilities.getDate(LocalDate.now()),
+            null,
+            null,
+            "aCompany",
+            PaymentStatus.UNPAID,
+            120.00);
     MvcResult mvcResult = create(invoiceDto);
 
     InvoiceDto createdInvoiceCto =
@@ -85,10 +79,17 @@ public class InvoiceControllerIT {
   public void createMultiple() throws Exception {
     InvoiceDto invoiceDto1 =
         new InvoiceDto(
-            121, getDate(LocalDate.now()), null, null, "aCompany", PaymentStatus.UNPAID, 120.00);
+            121,
+            InvoicifyUtilities.getDate(LocalDate.now()),
+            null,
+            null,
+            "aCompany",
+            PaymentStatus.UNPAID,
+            120.00);
     MvcResult mvcResult1 = create(invoiceDto1);
 
-    Item item = Item.builder()
+    Item item =
+        Item.builder()
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
@@ -96,19 +97,27 @@ public class InvoiceControllerIT {
             .build();
     InvoiceDto invoiceDto2 =
         new InvoiceDto(
-            122, getDate(LocalDate.now()), null, List.of(item), "bCompany", PaymentStatus.UNPAID, 130.00);
+            122,
+            InvoicifyUtilities.getDate(LocalDate.now()),
+            null,
+            List.of(item),
+            "bCompany",
+            PaymentStatus.UNPAID,
+            130.00);
     MvcResult mvcResult2 = create(invoiceDto2);
 
     InvoiceDto createdInvoiceCto =
         objectMapper.readValue(mvcResult1.getResponse().getContentAsString(), InvoiceDto.class);
     assertThat(createdInvoiceCto, is(invoiceDto1));
 
-    List<Item> items = invoiceDto2.getItems().stream().map(
-            e -> {
-              e.setInvoice(null);
-              return e;
-            }
-    ).collect(Collectors.toList());
+    List<Item> items =
+        invoiceDto2.getItems().stream()
+            .map(
+                e -> {
+                  e.setInvoice(null);
+                  return e;
+                })
+            .collect(Collectors.toList());
     invoiceDto2.setItems(items);
 
     createdInvoiceCto =
@@ -126,7 +135,8 @@ public class InvoiceControllerIT {
   @Test
   public void createAndViewInvoiceSummary() throws Exception {
 
-    Item item = Item.builder()
+    Item item =
+        Item.builder()
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
@@ -135,7 +145,13 @@ public class InvoiceControllerIT {
 
     InvoiceDto invoiceDto =
         new InvoiceDto(
-            121, getDate(LocalDate.now()), null, List.of(item), "aCompany", PaymentStatus.UNPAID, 120.00);
+            121,
+            InvoicifyUtilities.getDate(LocalDate.now()),
+            null,
+            List.of(item),
+            "aCompany",
+            PaymentStatus.UNPAID,
+            120.00);
     create(invoiceDto);
 
     MvcResult mvcResult =
@@ -163,7 +179,8 @@ public class InvoiceControllerIT {
 
   @Test
   public void createAndViewInvoiceDetail() throws Exception {
-    Item item = Item.builder()
+    Item item =
+        Item.builder()
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
@@ -172,12 +189,24 @@ public class InvoiceControllerIT {
 
     InvoiceDto invoiceDto1 =
         new InvoiceDto(
-            120, getDate(LocalDate.now()), null, null, "aCompany", PaymentStatus.UNPAID, 120.00);
+            120,
+            InvoicifyUtilities.getDate(LocalDate.now()),
+            null,
+            null,
+            "aCompany",
+            PaymentStatus.UNPAID,
+            120.00);
     create(invoiceDto1);
 
     InvoiceDto invoiceDto2 =
         new InvoiceDto(
-            121, getDate(LocalDate.now()), null, List.of(item), "bCompany", PaymentStatus.UNPAID, 121.00);
+            121,
+            InvoicifyUtilities.getDate(LocalDate.now()),
+            null,
+            List.of(item),
+            "bCompany",
+            PaymentStatus.UNPAID,
+            121.00);
     create(invoiceDto2);
 
     invoiceDto1.setItems(List.of());

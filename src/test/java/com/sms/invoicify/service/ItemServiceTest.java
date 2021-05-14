@@ -7,12 +7,12 @@ import com.sms.invoicify.models.ItemEntity;
 import com.sms.invoicify.repository.ItemsRepositiory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,22 +22,24 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class ItemServiceTest {
 
   @Mock ItemsRepositiory itemsRepositiory;
+
+  @Mock InvoiceService invoiceService;
 
   @InjectMocks ItemService itemService;
 
   @Test
   @DisplayName("Create new Item Test")
-  void createItem() {
+  void createItem() throws ParseException {
     Item itemDto =
         Item.builder()
             .description("MyInvoiceItem")
             .quantity(42)
             .totalFees(BigDecimal.valueOf(10.99))
-                .invoice(InvoiceDto.builder().number(120).build())
+            .invoice(InvoiceDto.builder().number(120).build())
             .build();
 
     ItemEntity itemEntity =
@@ -45,7 +47,7 @@ public class ItemServiceTest {
             .description("MyInvoiceItem")
             .quantity(42)
             .totalFees(BigDecimal.valueOf(10.99))
-                .invoice(InvoiceEntity.builder().number(120).build())
+            .invoice(InvoiceEntity.builder().number(120).build())
             .build();
 
     when(itemsRepositiory.save(any()))
@@ -55,11 +57,13 @@ public class ItemServiceTest {
                 .description("MyInvoiceItem")
                 .quantity(42)
                 .totalFees(BigDecimal.valueOf(10.99))
-                    .invoice(InvoiceEntity.builder().number(120).build())
+                .invoice(InvoiceEntity.builder().number(120).build())
                 .build());
 
     Long itemId = itemService.createItem(itemDto);
     verify(itemsRepositiory).save(itemEntity);
+    verify(invoiceService).findByNumber(any());
+    verifyNoMoreInteractions(invoiceService);
     verifyNoMoreInteractions(itemsRepositiory);
     assertEquals(8L, itemId);
   }
@@ -75,9 +79,8 @@ public class ItemServiceTest {
                     .description("MyInvoiceItem")
                     .quantity(42)
                     .totalFees(BigDecimal.valueOf(10.99))
-                        .invoice(InvoiceEntity.builder().number(120).build())
-
-                        .build()));
+                    .invoice(InvoiceEntity.builder().number(120).build())
+                    .build()));
 
     List<Item> itemsFromService = itemService.fetchAllItems();
 
@@ -86,8 +89,8 @@ public class ItemServiceTest {
             .description("MyInvoiceItem")
             .quantity(42)
             .totalFees(BigDecimal.valueOf(10.99))
-                .invoice(InvoiceDto.builder().number(120).build())
-                .build();
+            .invoice(InvoiceDto.builder().number(120).build())
+            .build();
 
     assertThat(itemsFromService).isEqualTo(List.of(itemDtoExpected));
 
