@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,7 +17,7 @@ public class InvoiceDto {
     private long number;
     private Date creationDate;
     private Date lastModifiedDate;
-//    private List<Item> items; @TODO: add after Item is added to project
+    private List<Item> items;
     private String companyName;
     private PaymentStatus paymentStatus;
     private double totalCost;

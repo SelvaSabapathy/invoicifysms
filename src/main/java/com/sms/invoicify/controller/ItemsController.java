@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -28,7 +29,7 @@ public class ItemsController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public String postItem(@RequestBody Item item) {
+  public String postItem(@RequestBody Item item) throws ParseException {
     itemService.createItem(item);
     return item.getDescription() + " created Successfully";
   }
