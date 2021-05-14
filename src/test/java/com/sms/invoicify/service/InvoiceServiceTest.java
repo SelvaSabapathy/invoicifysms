@@ -47,4 +47,14 @@ public class InvoiceServiceTest {
     verify(invoiceRepository).findAll();
     assertThat(entityList, is(List.of(invoiceEntity1, invoiceEntity2)));
   }
+
+  @Test
+  public void findByNumberTest() {
+    InvoiceEntity invoiceEntity = new InvoiceEntity();
+    when(invoiceRepository.findByNumber(8L)).thenReturn(invoiceEntity);
+
+    InvoiceEntity actual = invoiceService.findByNumber(8L);
+    verify(invoiceRepository).findByNumber(8L);
+    assertThat(actual, is(invoiceEntity));
+  }
 }
