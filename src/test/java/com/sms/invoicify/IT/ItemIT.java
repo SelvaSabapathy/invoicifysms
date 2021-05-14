@@ -1,4 +1,4 @@
-package com.sms.invoicify;
+package com.sms.invoicify.IT;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sms.invoicify.models.InvoiceDto;
