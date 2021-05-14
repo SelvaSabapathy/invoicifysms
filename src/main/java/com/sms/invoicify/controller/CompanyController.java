@@ -1,6 +1,5 @@
 package com.sms.invoicify.controller;
 
-
 import com.sms.invoicify.models.Company;
 import com.sms.invoicify.service.CompanyService;
 import lombok.AllArgsConstructor;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -20,22 +18,18 @@ import java.util.List;
 @AllArgsConstructor
 public class CompanyController {
 
-    CompanyService companyService;
+  CompanyService companyService;
 
+  @GetMapping
+  @ResponseStatus(HttpStatus.OK)
+  public List<Company> getCompanyDetails() {
+    return companyService.fetchAllCompany();
+  }
 
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<Company> getCompanyDetails(){
-        return companyList;
-
-    }
-
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public String postCompanyDetails(@RequestBody Company company){
-        companyList.add(company);
-        return company.getCompanyName() + " created Successfully";
-    }
-
-
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  public String postCompanyDetails(@RequestBody Company company) {
+    companyService.createCompany(company);
+    return company.getCompanyName() + " created Successfully";
+  }
 }
