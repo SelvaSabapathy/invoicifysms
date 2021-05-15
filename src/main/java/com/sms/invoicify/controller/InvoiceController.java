@@ -6,25 +6,29 @@ import com.sms.invoicify.models.Item;
 import com.sms.invoicify.models.ItemEntity;
 import com.sms.invoicify.service.InvoiceService;
 import com.sms.invoicify.models.InvoiceSummaryDto;
+import com.sun.istack.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@Validated
 public class InvoiceController {
 
   @Autowired private InvoiceService invoiceService;
 
   @PostMapping("/invoices")
-  public ResponseEntity<InvoiceDto> create(@RequestBody InvoiceDto invoiceDto) {
+  public ResponseEntity<InvoiceDto> create(@Valid @RequestBody InvoiceDto invoiceDto) {
     List<Item> items = invoiceDto.getItems();
     List<ItemEntity> itemEntities =
         items == null
@@ -50,7 +54,6 @@ public class InvoiceController {
             .build();
     InvoiceEntity createdInvoiceEntity = invoiceService.create(invoiceEntity);
 
-    // Sending object
     List<ItemEntity> retItemEnt = createdInvoiceEntity.getItems();
     List<Item> retItems =
         retItemEnt == null

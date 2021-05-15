@@ -1,4 +1,4 @@
-package com.sms.invoicify;
+package com.sms.invoicify.IT;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class InvoiceControllerIT {
+public class InvoiceIT {
 
   @Autowired private MockMvc mockMvc;
 
@@ -57,10 +57,27 @@ public class InvoiceControllerIT {
   }
 
   @Test
-  public void createOne() throws Exception {
+  public void createOneFailure() throws Exception {
+    InvoiceDto invoiceDto =
+            new InvoiceDto(
+                    null,
+                    InvoicifyUtilities.getDate(LocalDate.now()),
+                    null,
+                    null,
+                    "aCompany",
+                    PaymentStatus.UNPAID,
+                    120.00);
+    mockMvc.perform(post("/invoices")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invoiceDto)))
+            .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  public void createOneSuccess() throws Exception {
     InvoiceDto invoiceDto =
         new InvoiceDto(
-            121,
+            121L,
             InvoicifyUtilities.getDate(LocalDate.now()),
             null,
             null,
@@ -79,7 +96,7 @@ public class InvoiceControllerIT {
   public void createMultiple() throws Exception {
     InvoiceDto invoiceDto1 =
         new InvoiceDto(
-            121,
+            121L,
             InvoicifyUtilities.getDate(LocalDate.now()),
             null,
             null,
@@ -93,11 +110,11 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(122).build())
+            .invoice(InvoiceDto.builder().number(122L).build())
             .build();
     InvoiceDto invoiceDto2 =
         new InvoiceDto(
-            122,
+            122L,
             InvoicifyUtilities.getDate(LocalDate.now()),
             null,
             List.of(item),
@@ -140,12 +157,12 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(120).build())
+            .invoice(InvoiceDto.builder().number(120L).build())
             .build();
 
     InvoiceDto invoiceDto =
         new InvoiceDto(
-            121,
+            121L,
             InvoicifyUtilities.getDate(LocalDate.now()),
             null,
             List.of(item),
@@ -162,7 +179,7 @@ public class InvoiceControllerIT {
                 document(
                     "getInvoiceSummary",
                     responseFields(
-                        fieldWithPath("[0].number").description("Invoice number"),
+                        fieldWithPath("[0].number").description("Invoice number (mandatory)"),
                         fieldWithPath("[0].creationDate").description("Invoice creation date"),
                         fieldWithPath("[0].paymentStatus").description("Invoice payment status"),
                         fieldWithPath("[0].totalCost").description("Invoice total cost"))))
@@ -184,12 +201,12 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(121).build())
+            .invoice(InvoiceDto.builder().number(121L).build())
             .build();
 
     InvoiceDto invoiceDto1 =
         new InvoiceDto(
-            120,
+            120L,
             InvoicifyUtilities.getDate(LocalDate.now()),
             null,
             null,
@@ -200,7 +217,7 @@ public class InvoiceControllerIT {
 
     InvoiceDto invoiceDto2 =
         new InvoiceDto(
-            121,
+            121L,
             InvoicifyUtilities.getDate(LocalDate.now()),
             null,
             List.of(item),
@@ -220,7 +237,7 @@ public class InvoiceControllerIT {
                 document(
                     "getInvoiceDetail",
                     responseFields(
-                        fieldWithPath("[0].number").description("Invoice number"),
+                        fieldWithPath("[0].number").description("Invoice number (mandatory)"),
                         fieldWithPath("[0].creationDate").description("Invoice creation date"),
                         fieldWithPath("[0].lastModifiedDate").description("Invoice modified date"),
                         fieldWithPath("[0].items").description("items added to this invoice"),
