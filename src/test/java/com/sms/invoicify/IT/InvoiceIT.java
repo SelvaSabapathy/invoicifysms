@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -81,24 +80,24 @@ public class InvoiceIT {
   @Test
   public void createOneFailureExistingNumber() throws Exception {
     InvoiceDto invoiceDto =
-            new InvoiceDto(
-                    121L,
-                    InvoicifyUtilities.getDate(LocalDate.now()),
-                    null,
-                    null,
-                    "aCompany",
-                    PaymentStatus.UNPAID,
-                    new BigDecimal(120.00));
+        new InvoiceDto(
+            121L,
+            InvoicifyUtilities.getDate(LocalDate.now()),
+            null,
+            null,
+            "aCompany",
+            PaymentStatus.UNPAID,
+            new BigDecimal(120.00));
     MvcResult mvcResult = create(invoiceDto);
 
     mockMvc
-            .perform(
-                    post("/invoices")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(invoiceDto)))
-            .andExpect(status().isBadRequest())
-            .andDo(document("postInvoiceWithExistingInvoiceNumber"))
-            .andReturn();
+        .perform(
+            post("/invoices")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invoiceDto)))
+        .andExpect(status().isBadRequest())
+        .andDo(document("postInvoiceWithExistingInvoiceNumber"))
+        .andReturn();
   }
 
   @Test
@@ -130,7 +129,7 @@ public class InvoiceIT {
             null,
             "aCompany",
             PaymentStatus.UNPAID,
-                new BigDecimal(120.00));
+            new BigDecimal(120.00));
     MvcResult mvcResult1 = create(invoiceDto1);
 
     Item item =
@@ -148,7 +147,7 @@ public class InvoiceIT {
             List.of(item),
             "bCompany",
             PaymentStatus.UNPAID,
-                new BigDecimal(130.00));
+            new BigDecimal(130.00));
     MvcResult mvcResult2 = create(invoiceDto2);
 
     InvoiceDto createdInvoiceCto =
@@ -198,7 +197,7 @@ public class InvoiceIT {
             List.of(item),
             "aCompany",
             PaymentStatus.UNPAID,
-                new BigDecimal(120.00));
+            new BigDecimal(120.00));
     create(invoiceDto);
 
     MvcResult mvcResult =
@@ -242,7 +241,7 @@ public class InvoiceIT {
             null,
             "aCompany",
             PaymentStatus.UNPAID,
-                BigDecimal.valueOf(200.1).setScale(2));
+            BigDecimal.valueOf(200.1).setScale(2));
     create(invoiceDto1);
 
     InvoiceDto invoiceDto2 =
@@ -253,7 +252,7 @@ public class InvoiceIT {
             List.of(item),
             "bCompany",
             PaymentStatus.UNPAID,
-                BigDecimal.valueOf(121.1).setScale(2));
+            BigDecimal.valueOf(121.1).setScale(2));
     create(invoiceDto2);
 
     invoiceDto1.setItems(List.of());
