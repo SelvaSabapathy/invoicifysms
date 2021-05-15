@@ -179,7 +179,7 @@ public class InvoiceIT {
                 document(
                     "getInvoiceSummary",
                     responseFields(
-                        fieldWithPath("[0].number").description("Invoice number"),
+                        fieldWithPath("[0].number").description("Invoice number (mandatory)"),
                         fieldWithPath("[0].creationDate").description("Invoice creation date"),
                         fieldWithPath("[0].paymentStatus").description("Invoice payment status"),
                         fieldWithPath("[0].totalCost").description("Invoice total cost"))))
@@ -237,7 +237,7 @@ public class InvoiceIT {
                 document(
                     "getInvoiceDetail",
                     responseFields(
-                        fieldWithPath("[0].number").description("Invoice number"),
+                        fieldWithPath("[0].number").description("Invoice number (mandatory)"),
                         fieldWithPath("[0].creationDate").description("Invoice creation date"),
                         fieldWithPath("[0].lastModifiedDate").description("Invoice modified date"),
                         fieldWithPath("[0].items").description("items added to this invoice"),
