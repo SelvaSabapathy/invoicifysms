@@ -61,6 +61,8 @@ public class ItemServiceTest {
                 .build());
 
     Long itemId = itemService.createItem(itemDto);
+
+    itemEntity.getInvoice().setTotalCost(BigDecimal.valueOf(10.99).setScale(2));
     verify(itemsRepositiory).save(itemEntity);
     verify(invoiceService).findByNumber(any());
     verifyNoMoreInteractions(invoiceService);

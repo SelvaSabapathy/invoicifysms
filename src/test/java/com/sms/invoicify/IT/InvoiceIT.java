@@ -144,6 +144,8 @@ public class InvoiceIT {
 
     createdInvoiceCto =
         objectMapper.readValue(mvcResult2.getResponse().getContentAsString(), InvoiceDto.class);
+
+    invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(item.getTotalFees()));
     assertThat(createdInvoiceCto, is(invoiceDto2));
   }
 
@@ -256,6 +258,8 @@ public class InvoiceIT {
             mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
 
     assertThat(dtos.size(), is(2));
+
+    invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(item.getTotalFees()));
     assertThat(dtos, contains(invoiceDto1, invoiceDto2));
   }
 }

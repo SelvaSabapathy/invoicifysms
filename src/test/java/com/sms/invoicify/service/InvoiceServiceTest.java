@@ -31,7 +31,7 @@ public class InvoiceServiceTest {
   @Test
   public void create() {
     InvoiceEntity invoiceEntity = new InvoiceEntity();
-    InvoiceEntity createdInvoiceEntity = invoiceService.create(invoiceEntity);
+    invoiceService.create(invoiceEntity);
 
     verify(invoiceRepository).save(invoiceEntity);
   }

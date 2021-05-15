@@ -36,11 +36,12 @@ public class ItemService {
               .lastModifiedDate(invoiceDto.getLastModifiedDate())
               .companyName(invoiceDto.getCompanyName())
               .paymentStatus(invoiceDto.getPaymentStatus())
-              .totalCost(invoiceDto.getTotalCost())
+              .totalCost(itemDto.getTotalFees())
               .build();
     } else {
       invoiceEntity.setLastModifiedDate(InvoicifyUtilities.getDate(LocalDate.now()));
     }
+
     ItemEntity persisted =
         itemsRepository.save(
             ItemEntity.builder()

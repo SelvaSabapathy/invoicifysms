@@ -51,7 +51,7 @@ public class ItemIT {
         Item.builder()
             .description("Test Item Description")
             .quantity(1)
-            .totalFees(BigDecimal.TEN)
+            .totalFees(BigDecimal.valueOf(10).setScale(2))
             .invoice(InvoiceDto.builder().number(120L).build())
             .build();
     mockMvc
@@ -82,7 +82,7 @@ public class ItemIT {
     List<InvoiceDto> invoiceDtos = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
     assertThat(invoiceDtos.size(), is(1));
     assertThat(invoiceDtos.get(0).getNumber(), is(120L));
-    assertThat(invoiceDtos.get(0).getTotalCost(), is(BigDecimal.TEN));
+    assertThat(invoiceDtos.get(0).getTotalCost(), is(BigDecimal.valueOf(10).setScale(2)));
   }
 
   @Test
