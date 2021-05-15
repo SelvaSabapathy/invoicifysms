@@ -56,25 +56,22 @@ public class InvoiceIT {
     return mvcResult;
   }
 
-//  @Test
-//  public void createOneFailure() throws Exception {
-//    InvoiceDto invoiceDto =
-//            new InvoiceDto(
-//                    0,
-//                    InvoicifyUtilities.getDate(LocalDate.now()),
-//                    null,
-//                    null,
-//                    "aCompany",
-//                    PaymentStatus.UNPAID,
-//                    120.00);
-//    MvcResult mvcResult = create(invoiceDto);
-//
-//    InvoiceDto createdInvoiceCto =
-//            objectMapper.readValue(mvcResult.getResponse().getContentAsString(), InvoiceDto.class);
-//
-//    assertThat(createdInvoiceCto, is(invoiceDto));
-//  }
-//
+  @Test
+  public void createOneFailure() throws Exception {
+    InvoiceDto invoiceDto =
+            new InvoiceDto(
+                    null,
+                    InvoicifyUtilities.getDate(LocalDate.now()),
+                    null,
+                    null,
+                    "aCompany",
+                    PaymentStatus.UNPAID,
+                    120.00);
+    mockMvc.perform(post("/invoices")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invoiceDto)))
+            .andExpect(status().isBadRequest());
+  }
 
   @Test
   public void createOneSuccess() throws Exception {
