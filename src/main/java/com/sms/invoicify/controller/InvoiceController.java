@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -110,6 +111,26 @@ public class InvoiceController {
             .collect(Collectors.toList());
     return new ResponseEntity<>(dtos, HttpStatus.OK);
   }
+
+  @GetMapping("/invoices/search/{number}")
+  public ResponseEntity<List<InvoiceDto>> searchInvoices(@PathVariable("number") Long number) {
+
+    List<InvoiceDto> dtos =
+            List.of(invoiceService.findByNumber(number)).stream()
+                    .map(
+                            e ->
+                                    new InvoiceDto(
+                                            e.getNumber(),
+                                            e.getCreationDate(),
+                                            e.getLastModifiedDate(),
+                                            getItemDtos(e.getItems()),
+                                            e.getCompanyName(),
+                                            e.getPaymentStatus(),
+                                            e.getTotalCost()))
+                    .collect(Collectors.toList());
+    return new ResponseEntity<>(dtos, HttpStatus.OK);
+  }
+
 
   private List<Item> getItemDtos(List<ItemEntity> itemEntities) {
 
