@@ -33,6 +33,14 @@ include::{snippets}/createNewInvoice/http-request.adoc[]
 .response
 include::{snippets}/createNewInvoice/http-response.adoc[]
 
+Create an invoice without invoice number
+
+.request
+include::{snippets}/postInvoiceWithNoInvoiceNumber/http-request.adoc[]
+
+.response
+include::{snippets}/postInvoiceWithNoInvoiceNumber/http-response.adoc[]
+
 Get Invoice Summary
 
 .request

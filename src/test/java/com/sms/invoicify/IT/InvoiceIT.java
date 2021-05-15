@@ -70,7 +70,9 @@ public class InvoiceIT {
     mockMvc.perform(post("/invoices")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(invoiceDto)))
-            .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest())
+            .andDo(document("postInvoiceWithNoInvoiceNumber"))
+            .andReturn();
   }
 
   @Test
