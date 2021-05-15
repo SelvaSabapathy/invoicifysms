@@ -1,0 +1,49 @@
+package com.sms.invoicify.service;
+
+import com.sms.invoicify.models.Address;
+import com.sms.invoicify.models.Company;
+import com.sms.invoicify.models.CompanyEntity;
+import com.sms.invoicify.repository.CompanyRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@AllArgsConstructor
+public class CompanyService {
+  private final CompanyRepository companyRepository;
+
+  public void createCompany(Company companyDto) {
+    companyRepository.save(
+        CompanyEntity.builder()
+            .companyName(companyDto.getCompanyName())
+            .address(
+                Address.builder()
+                    .street(companyDto.getAddress().getStreet())
+                    .city(companyDto.getAddress().getCity())
+                    .state(companyDto.getAddress().getState())
+                    .zipCode(companyDto.getAddress().getZipCode())
+                    .build())
+            .contactName(companyDto.getContactName())
+            .title(companyDto.getTitle())
+            .phoneNumber(companyDto.getPhoneNumber())
+            .build());
+  }
+
+  public List<Company> fetchAllCompany() {
+    return companyRepository.findAll().stream()
+        .map(
+            companyEntity -> {
+              return Company.builder()
+                  .companyName(companyEntity.getCompanyName())
+                  .address(companyEntity.getAddress())
+                  .contactName(companyEntity.getContactName())
+                  .title(companyEntity.getTitle())
+                  .phoneNumber(companyEntity.getPhoneNumber())
+                  .build();
+            })
+        .collect(Collectors.toList());
+  }
+}
