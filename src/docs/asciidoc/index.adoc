@@ -48,3 +48,21 @@ include::{snippets}/getInvoiceDetail/http-request.adoc[]
 
 .response
 include::{snippets}/getInvoiceDetail/http-response.adoc[]
+
+=== Companies
+
+Create / Add a New Company
+
+.request
+include::{snippets}/PostCompanyDetails/http-request.adoc[]
+
+.response
+include::{snippets}/PostCompanyDetails/http-response.adoc[]
+
+Get List of All Companies
+
+.request
+include::{snippets}/GetAllCompanies/http-request.adoc[]
+
+.response
+include::{snippets}/GetAllCompanies/http-response.adoc[]
