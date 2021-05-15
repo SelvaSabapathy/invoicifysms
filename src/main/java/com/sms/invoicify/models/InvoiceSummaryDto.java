@@ -13,8 +13,8 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 public class InvoiceSummaryDto {
-    private long number;
+    private Long number;
     private Date creationDate;
     private PaymentStatus paymentStatus;
-    private double totalCost;
+    private Double totalCost;
 }

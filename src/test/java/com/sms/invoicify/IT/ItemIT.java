@@ -1,4 +1,4 @@
-package com.sms.invoicify;
+package com.sms.invoicify.IT;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sms.invoicify.models.InvoiceDto;
@@ -47,7 +47,7 @@ public class ItemIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(120).build())
+            .invoice(InvoiceDto.builder().number(120L).build())
             .build();
     mockMvc
         .perform(
@@ -74,15 +74,15 @@ public class ItemIT {
         Item.builder()
             .description("Test Item Description")
             .quantity(1)
-            .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(120).build())
+            .totalFees(BigDecimal.ONE)
+            .invoice(InvoiceDto.builder().number(120L).build())
             .build();
-    Item item1 =
+    Item item2 =
         Item.builder()
             .description("Test Item Description2")
-            .quantity(2)
-            .totalFees(BigDecimal.valueOf(5))
-            .invoice(InvoiceDto.builder().number(121).build())
+            .quantity(10)
+            .totalFees(BigDecimal.TEN)
+            .invoice(InvoiceDto.builder().number(120L).build())
             .build();
     mockMvc
         .perform(
@@ -96,7 +96,7 @@ public class ItemIT {
         .perform(
             post("/items")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(item1)))
+                .content(objectMapper.writeValueAsString(item2)))
         .andExpect(status().isCreated())
         .andExpect(content().string("Test Item Description2 created Successfully"));
 
@@ -106,19 +106,19 @@ public class ItemIT {
         .andExpect(jsonPath("length()").value(2))
         .andExpect(jsonPath("[0].description").value("Test Item Description"))
         .andExpect(jsonPath("[0].quantity").value(1))
-        .andExpect(jsonPath("[0].totalFees").value(10.00))
+        .andExpect(jsonPath("[0].totalFees").value(1.00))
         .andExpect(jsonPath("[0].invoice.number").value(120))
         .andExpect(jsonPath("[1].description").value("Test Item Description2"))
-        .andExpect(jsonPath("[1].quantity").value(2))
-        .andExpect(jsonPath("[1].totalFees").value(5.00))
-        .andExpect(jsonPath("[1].invoice.number").value(121))
+        .andExpect(jsonPath("[1].quantity").value(10))
+        .andExpect(jsonPath("[1].totalFees").value(10.00))
+        .andExpect(jsonPath("[1].invoice.number").value(120))
         .andDo(
             document(
                 "GetAllItems",
                 responseFields(
                     fieldWithPath("[0].description").description("Test Item Description"),
                     fieldWithPath("[0].quantity").description(1),
-                    fieldWithPath("[0].totalFees").description(10.00),
+                    fieldWithPath("[0].totalFees").description(1.00),
                     fieldWithPath("[0].invoice.number").description("Invoice number"),
                     fieldWithPath("[0].invoice.creationDate").description("Invoice creation date"),
                     fieldWithPath("[0].invoice.lastModifiedDate")
@@ -129,8 +129,8 @@ public class ItemIT {
                         .description("Invoice payment status"),
                     fieldWithPath("[0].invoice.totalCost").description("Invoice total cost"),
                     fieldWithPath("[1].description").description("Test Item Description2"),
-                    fieldWithPath("[1].quantity").description(2),
-                    fieldWithPath("[1].totalFees").description(5),
+                    fieldWithPath("[1].quantity").description(10),
+                    fieldWithPath("[1].totalFees").description(10.00),
                     fieldWithPath("[1].invoice.number").description("Invoice number"),
                     fieldWithPath("[1].invoice.creationDate").description("Invoice creation date"),
                     fieldWithPath("[1].invoice.lastModifiedDate")

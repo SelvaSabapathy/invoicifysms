@@ -25,9 +25,9 @@ public class InvoiceEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
-    private long number;
+    private Long number;
 
     private Date creationDate;
 
@@ -41,5 +41,5 @@ public class InvoiceEntity {
     @Enumerated(EnumType.ORDINAL)
     private PaymentStatus paymentStatus;
 
-    private double totalCost;
+    private Double totalCost;
 }
