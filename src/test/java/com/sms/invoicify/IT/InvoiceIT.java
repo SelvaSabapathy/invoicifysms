@@ -58,7 +58,7 @@ public class InvoiceIT {
   }
 
   @Test
-  public void createOneFailure() throws Exception {
+  public void createOneFailureNullNumber() throws Exception {
     InvoiceDto invoiceDto =
         new InvoiceDto(
             null,
@@ -76,6 +76,29 @@ public class InvoiceIT {
         .andExpect(status().isBadRequest())
         .andDo(document("postInvoiceWithNoInvoiceNumber"))
         .andReturn();
+  }
+
+  @Test
+  public void createOneFailureExistingNumber() throws Exception {
+    InvoiceDto invoiceDto =
+            new InvoiceDto(
+                    121L,
+                    InvoicifyUtilities.getDate(LocalDate.now()),
+                    null,
+                    null,
+                    "aCompany",
+                    PaymentStatus.UNPAID,
+                    new BigDecimal(120.00));
+    MvcResult mvcResult = create(invoiceDto);
+
+    mockMvc
+            .perform(
+                    post("/invoices")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(invoiceDto)))
+            .andExpect(status().isBadRequest())
+            .andDo(document("postInvoiceWithExistingInvoiceNumber"))
+            .andReturn();
   }
 
   @Test

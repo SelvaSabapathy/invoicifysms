@@ -1,5 +1,6 @@
 package com.sms.invoicify.service;
 
+import com.sms.invoicify.exception.InvoicifyInvoiceExistsException;
 import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.repository.InvoiceRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -29,10 +31,12 @@ public class InvoiceServiceTest {
   }
 
   @Test
-  public void create() {
+  public void create() throws InvoicifyInvoiceExistsException {
     InvoiceEntity invoiceEntity = new InvoiceEntity();
+    invoiceEntity.setNumber(100L);
     invoiceService.create(invoiceEntity);
 
+    verify(invoiceRepository).findByNumber(100L);
     verify(invoiceRepository).save(invoiceEntity);
   }
 

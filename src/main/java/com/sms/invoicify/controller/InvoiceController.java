@@ -1,5 +1,6 @@
 package com.sms.invoicify.controller;
 
+import com.sms.invoicify.exception.InvoicifyInvoiceExistsException;
 import com.sms.invoicify.models.InvoiceDto;
 import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.models.InvoiceSummaryDto;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,7 +52,13 @@ public class InvoiceController {
             .paymentStatus(invoiceDto.getPaymentStatus())
             .totalCost(invoiceDto.getTotalCost())
             .build();
-    InvoiceEntity createdInvoiceEntity = invoiceService.create(invoiceEntity);
+
+    InvoiceEntity createdInvoiceEntity = null;
+    try {
+      createdInvoiceEntity = invoiceService.create(invoiceEntity);
+    } catch (InvoicifyInvoiceExistsException e) {
+      return new ResponseEntity<InvoiceDto>(new InvoiceDto(), HttpStatus.BAD_REQUEST);
+    }
 
     List<ItemEntity> retItemEnt = createdInvoiceEntity.getItems();
     List<Item> retItems =
@@ -116,21 +122,20 @@ public class InvoiceController {
   public ResponseEntity<List<InvoiceDto>> searchInvoices(@PathVariable("number") Long number) {
 
     List<InvoiceDto> dtos =
-            List.of(invoiceService.findByNumber(number)).stream()
-                    .map(
-                            e ->
-                                    new InvoiceDto(
-                                            e.getNumber(),
-                                            e.getCreationDate(),
-                                            e.getLastModifiedDate(),
-                                            getItemDtos(e.getItems()),
-                                            e.getCompanyName(),
-                                            e.getPaymentStatus(),
-                                            e.getTotalCost()))
-                    .collect(Collectors.toList());
+        List.of(invoiceService.findByNumber(number)).stream()
+            .map(
+                e ->
+                    new InvoiceDto(
+                        e.getNumber(),
+                        e.getCreationDate(),
+                        e.getLastModifiedDate(),
+                        getItemDtos(e.getItems()),
+                        e.getCompanyName(),
+                        e.getPaymentStatus(),
+                        e.getTotalCost()))
+            .collect(Collectors.toList());
     return new ResponseEntity<>(dtos, HttpStatus.OK);
   }
-
 
   private List<Item> getItemDtos(List<ItemEntity> itemEntities) {
 

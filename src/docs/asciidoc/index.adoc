@@ -41,6 +41,14 @@ include::{snippets}/postInvoiceWithNoInvoiceNumber/http-request.adoc[]
 .response
 include::{snippets}/postInvoiceWithNoInvoiceNumber/http-response.adoc[]
 
+Create an invoice with an existing invoice number
+
+.request
+include::{snippets}/postInvoiceWithExistingInvoiceNumber/http-request.adoc[]
+
+.response
+include::{snippets}/postInvoiceWithExistingInvoiceNumber/http-response.adoc[]
+
 Get Invoice Summary
 
 .request
