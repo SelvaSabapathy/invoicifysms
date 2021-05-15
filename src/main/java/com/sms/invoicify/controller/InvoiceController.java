@@ -81,8 +81,8 @@ public class InvoiceController {
     return new ResponseEntity<InvoiceDto>(createdInvoiceDto, HttpStatus.CREATED);
   }
 
-  @GetMapping("/invoices/{type}")
-  public ResponseEntity<List<InvoiceSummaryDto>> getInvoices(@PathParam("type") String type) {
+  @GetMapping("/invoices/summary")
+  public ResponseEntity<List<InvoiceSummaryDto>> getInvoicesSummary() {
     List<InvoiceSummaryDto> summaryDtoList =
         invoiceService.view().stream()
             .map(
