@@ -65,6 +65,14 @@ include::{snippets}/getInvoiceDetail/http-request.adoc[]
 .response
 include::{snippets}/getInvoiceDetail/http-response.adoc[]
 
+Search Invoice by number
+
+.request
+include::{snippets}/searchInvoiceByNumber/http-request.adoc[]
+
+.response
+include::{snippets}/searchInvoiceByNumber/http-response.adoc[]
+
 === Companies
 
 Create / Add a New Company
