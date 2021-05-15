@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -41,5 +42,5 @@ public class InvoiceEntity {
     @Enumerated(EnumType.ORDINAL)
     private PaymentStatus paymentStatus;
 
-    private Double totalCost;
+    private BigDecimal totalCost;
 }
