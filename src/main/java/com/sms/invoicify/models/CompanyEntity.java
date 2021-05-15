@@ -5,9 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
@@ -18,12 +18,11 @@ import javax.persistence.Id;
 public class CompanyEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  Long companyId;
-
+  @Column(nullable = false)
   String companyName;
-  String address;
+
+  @Embedded Address address;
   String contactName;
   String title;
-  int phoneNumber;
+  String phoneNumber;
 }

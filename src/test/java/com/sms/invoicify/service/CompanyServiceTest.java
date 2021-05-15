@@ -1,8 +1,9 @@
 package com.sms.invoicify.service;
 
+import com.sms.invoicify.models.Address;
 import com.sms.invoicify.models.Company;
 import com.sms.invoicify.models.CompanyEntity;
-import com.sms.invoicify.repository.CompanyRepositiory;
+import com.sms.invoicify.repository.CompanyRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,47 +21,84 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class CompanyServiceTest {
 
-    @Mock
-    CompanyRepositiory companyRepositiory;
+  @Mock CompanyRepository companyRepository;
 
-    @InjectMocks
-    CompanyService companyService;
+  @InjectMocks CompanyService companyService;
 
-    @Test
-    @DisplayName("Create new Company Test")
-    void createCompany() {
-        Company companyDto = Company.builder()
-                .companyName("Test1").address("USA").contactName("Name1").title("Title1").phoneNumber(12345).build();
+  @Test
+  @DisplayName("Create new Company Test")
+  void createCompany() {
+    Company companyDto =
+        Company.builder()
+            .companyName("Test1")
+            .address(Address.builder()
+                    .street("100 N State Street")
+                    .city("Chicago")
+                    .state("IL")
+                    .zipCode("60601")
+                    .build())
+            .contactName("Name1")
+            .title("Title1")
+            .phoneNumber("312-777-7777")
+            .build();
 
-        companyService.createCompany(companyDto);
+    companyService.createCompany(companyDto);
 
-        verify(companyRepositiory).save(
+    verify(companyRepository)
+        .save(
+            CompanyEntity.builder()
+                .companyName("Test1")
+                .address(Address.builder()
+                        .street("100 N State Street")
+                        .city("Chicago")
+                        .state("IL")
+                        .zipCode("60601")
+                        .build())
+                .contactName("Name1")
+                .title("Title1")
+                .phoneNumber("312-777-7777")
+                .build());
+    verifyNoMoreInteractions(companyRepository);
+  }
+
+  @Test
+  @DisplayName("Get All Company")
+  void getAllCompany() {
+    when(companyRepository.findAll())
+        .thenReturn(
+            List.of(
                 CompanyEntity.builder()
-                        .companyName("Test1").address("USA").contactName("Name1").title("Title1").phoneNumber(12345).build()
-        );
-        verifyNoMoreInteractions(companyRepositiory);
-    }
+                    .companyName("Test1")
+                    .address(Address.builder()
+                            .street("100 N State Street")
+                            .city("Chicago")
+                            .state("IL")
+                            .zipCode("60601")
+                            .build())
+                    .contactName("Name1")
+                    .title("Title1")
+                    .phoneNumber("312-777-7777")
+                    .build()));
 
+    List<Company> companyFromService = companyService.fetchAllCompany();
 
-    @Test
-    @DisplayName("Get All Company")
-    void getAllCompany() {
-        when(companyRepositiory.findAll())
-                .thenReturn(
-                        List.of(
-                                CompanyEntity.builder()
-                                        .companyId(8L)
-                                        .companyName("Test1").address("USA").contactName("Name1").title("Title1").phoneNumber(12345).build()));
+    Company companyDtoExpected =
+        Company.builder()
+            .companyName("Test1")
+            .address(Address.builder()
+                    .street("100 N State Street")
+                    .city("Chicago")
+                    .state("IL")
+                    .zipCode("60601")
+                    .build())
+            .contactName("Name1")
+            .title("Title1")
+            .phoneNumber("312-777-7777")
+            .build();
 
-        List<Company> companyFromService = companyService.fetchAllCompany();
+    assertThat(companyFromService).isEqualTo(List.of(companyDtoExpected));
 
-        Company companyDtoExpected =
-                Company.builder()
-                        .companyName("Test1").address("USA").contactName("Name1").title("Title1").phoneNumber(12345).build();
-
-        assertThat(companyFromService).isEqualTo(List.of(companyDtoExpected));
-
-        verify(companyRepositiory).findAll();
-        verifyNoMoreInteractions(companyRepositiory);
-    }
+    verify(companyRepository).findAll();
+    verifyNoMoreInteractions(companyRepository);
+  }
 }

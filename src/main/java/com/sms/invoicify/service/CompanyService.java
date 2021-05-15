@@ -1,8 +1,9 @@
 package com.sms.invoicify.service;
 
+import com.sms.invoicify.models.Address;
 import com.sms.invoicify.models.Company;
 import com.sms.invoicify.models.CompanyEntity;
-import com.sms.invoicify.repository.CompanyRepositiory;
+import com.sms.invoicify.repository.CompanyRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,13 +13,19 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class CompanyService {
-  private final CompanyRepositiory companyRepositiory;
+  private final CompanyRepository companyRepository;
 
   public void createCompany(Company companyDto) {
-    companyRepositiory.save(
+    companyRepository.save(
         CompanyEntity.builder()
             .companyName(companyDto.getCompanyName())
-            .address(companyDto.getAddress())
+            .address(
+                Address.builder()
+                    .street(companyDto.getAddress().getStreet())
+                    .city(companyDto.getAddress().getCity())
+                    .state(companyDto.getAddress().getState())
+                    .zipCode(companyDto.getAddress().getZipCode())
+                    .build())
             .contactName(companyDto.getContactName())
             .title(companyDto.getTitle())
             .phoneNumber(companyDto.getPhoneNumber())
@@ -26,7 +33,7 @@ public class CompanyService {
   }
 
   public List<Company> fetchAllCompany() {
-    return companyRepositiory.findAll().stream()
+    return companyRepository.findAll().stream()
         .map(
             companyEntity -> {
               return Company.builder()

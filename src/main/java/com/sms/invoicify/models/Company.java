@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.NonNull;
 
 @Data
 @Builder
@@ -11,9 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Company {
 
-  String companyName;
-  String address;
+  @NonNull String companyName;
+  Address address;
   String contactName;
   String title;
-  int phoneNumber;
+  String phoneNumber;
 }
