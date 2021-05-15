@@ -1,5 +1,6 @@
 package com.sms.invoicify.IT;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sms.invoicify.models.InvoiceDto;
 import com.sms.invoicify.models.Item;
@@ -11,9 +12,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -46,7 +51,7 @@ public class ItemIT {
         Item.builder()
             .description("Test Item Description")
             .quantity(1)
-            .totalFees(BigDecimal.TEN)
+            .totalFees(BigDecimal.valueOf(10).setScale(2))
             .invoice(InvoiceDto.builder().number(120L).build())
             .build();
     mockMvc
@@ -66,6 +71,18 @@ public class ItemIT {
         .andExpect(jsonPath("[0].quantity").value(1))
         .andExpect(jsonPath("[0].invoice.number").value(120))
         .andExpect(jsonPath("[0].totalFees").value(10.00));
+
+    MvcResult mvcResult = mockMvc
+            .perform(
+                    get("/invoices/search/120")
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    List<InvoiceDto> invoiceDtos = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
+    assertThat(invoiceDtos.size(), is(1));
+    assertThat(invoiceDtos.get(0).getNumber(), is(120L));
+    assertThat(invoiceDtos.get(0).getTotalCost(), is(BigDecimal.valueOf(10).setScale(2)));
   }
 
   @Test

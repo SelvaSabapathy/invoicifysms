@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -16,5 +17,5 @@ public class InvoiceSummaryDto {
     private Long number;
     private Date creationDate;
     private PaymentStatus paymentStatus;
-    private Double totalCost;
+    private BigDecimal totalCost;
 }

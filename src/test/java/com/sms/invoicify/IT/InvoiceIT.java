@@ -57,20 +57,47 @@ public class InvoiceIT {
   }
 
   @Test
-  public void createOneFailure() throws Exception {
+  public void createOneFailureNullNumber() throws Exception {
     InvoiceDto invoiceDto =
-            new InvoiceDto(
-                    null,
-                    InvoicifyUtilities.getDate(LocalDate.now()),
-                    null,
-                    null,
-                    "aCompany",
-                    PaymentStatus.UNPAID,
-                    120.00);
-    mockMvc.perform(post("/invoices")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(invoiceDto)))
-            .andExpect(status().isBadRequest());
+        new InvoiceDto(
+            null,
+            InvoicifyUtilities.getDate(LocalDate.now()),
+            null,
+            null,
+            "aCompany",
+            PaymentStatus.UNPAID,
+            new BigDecimal(120.00));
+    mockMvc
+        .perform(
+            post("/invoices")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invoiceDto)))
+        .andExpect(status().isBadRequest())
+        .andDo(document("postInvoiceWithNoInvoiceNumber"))
+        .andReturn();
+  }
+
+  @Test
+  public void createOneFailureExistingNumber() throws Exception {
+    InvoiceDto invoiceDto =
+        new InvoiceDto(
+            121L,
+            InvoicifyUtilities.getDate(LocalDate.now()),
+            null,
+            null,
+            "aCompany",
+            PaymentStatus.UNPAID,
+            new BigDecimal(120.00));
+    MvcResult mvcResult = create(invoiceDto);
+
+    mockMvc
+        .perform(
+            post("/invoices")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invoiceDto)))
+        .andExpect(status().isBadRequest())
+        .andDo(document("postInvoiceWithExistingInvoiceNumber"))
+        .andReturn();
   }
 
   @Test
@@ -83,7 +110,7 @@ public class InvoiceIT {
             null,
             "aCompany",
             PaymentStatus.UNPAID,
-            120.00);
+            new BigDecimal(120.00));
     MvcResult mvcResult = create(invoiceDto);
 
     InvoiceDto createdInvoiceCto =
@@ -102,7 +129,7 @@ public class InvoiceIT {
             null,
             "aCompany",
             PaymentStatus.UNPAID,
-            120.00);
+            new BigDecimal(120.00));
     MvcResult mvcResult1 = create(invoiceDto1);
 
     Item item =
@@ -120,7 +147,7 @@ public class InvoiceIT {
             List.of(item),
             "bCompany",
             PaymentStatus.UNPAID,
-            130.00);
+            new BigDecimal(130.00));
     MvcResult mvcResult2 = create(invoiceDto2);
 
     InvoiceDto createdInvoiceCto =
@@ -139,6 +166,8 @@ public class InvoiceIT {
 
     createdInvoiceCto =
         objectMapper.readValue(mvcResult2.getResponse().getContentAsString(), InvoiceDto.class);
+
+    invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(item.getTotalFees()));
     assertThat(createdInvoiceCto, is(invoiceDto2));
   }
 
@@ -168,7 +197,7 @@ public class InvoiceIT {
             List.of(item),
             "aCompany",
             PaymentStatus.UNPAID,
-            120.00);
+            new BigDecimal(120.00));
     create(invoiceDto);
 
     MvcResult mvcResult =
@@ -212,7 +241,7 @@ public class InvoiceIT {
             null,
             "aCompany",
             PaymentStatus.UNPAID,
-            120.00);
+            BigDecimal.valueOf(200.1).setScale(2));
     create(invoiceDto1);
 
     InvoiceDto invoiceDto2 =
@@ -223,7 +252,7 @@ public class InvoiceIT {
             List.of(item),
             "bCompany",
             PaymentStatus.UNPAID,
-            121.00);
+            BigDecimal.valueOf(121.1).setScale(2));
     create(invoiceDto2);
 
     invoiceDto1.setItems(List.of());
@@ -251,6 +280,8 @@ public class InvoiceIT {
             mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
 
     assertThat(dtos.size(), is(2));
+
+    invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(item.getTotalFees()));
     assertThat(dtos, contains(invoiceDto1, invoiceDto2));
   }
 }

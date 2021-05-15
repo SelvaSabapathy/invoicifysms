@@ -1,23 +1,23 @@
 package com.sms.invoicify.controller;
 
+import com.sms.invoicify.exception.InvoicifyInvoiceExistsException;
 import com.sms.invoicify.models.InvoiceDto;
 import com.sms.invoicify.models.InvoiceEntity;
+import com.sms.invoicify.models.InvoiceSummaryDto;
 import com.sms.invoicify.models.Item;
 import com.sms.invoicify.models.ItemEntity;
 import com.sms.invoicify.service.InvoiceService;
-import com.sms.invoicify.models.InvoiceSummaryDto;
-import com.sun.istack.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,7 +52,13 @@ public class InvoiceController {
             .paymentStatus(invoiceDto.getPaymentStatus())
             .totalCost(invoiceDto.getTotalCost())
             .build();
-    InvoiceEntity createdInvoiceEntity = invoiceService.create(invoiceEntity);
+
+    InvoiceEntity createdInvoiceEntity = null;
+    try {
+      createdInvoiceEntity = invoiceService.create(invoiceEntity);
+    } catch (InvoicifyInvoiceExistsException e) {
+      return new ResponseEntity<InvoiceDto>(new InvoiceDto(), HttpStatus.BAD_REQUEST);
+    }
 
     List<ItemEntity> retItemEnt = createdInvoiceEntity.getItems();
     List<Item> retItems =
@@ -81,8 +87,8 @@ public class InvoiceController {
     return new ResponseEntity<InvoiceDto>(createdInvoiceDto, HttpStatus.CREATED);
   }
 
-  @GetMapping("/invoices/{type}")
-  public ResponseEntity<List<InvoiceSummaryDto>> getInvoices(@PathParam("type") String type) {
+  @GetMapping("/invoices/summary")
+  public ResponseEntity<List<InvoiceSummaryDto>> getInvoicesSummary() {
     List<InvoiceSummaryDto> summaryDtoList =
         invoiceService.view().stream()
             .map(
@@ -98,6 +104,25 @@ public class InvoiceController {
 
     List<InvoiceDto> dtos =
         invoiceService.view().stream()
+            .map(
+                e ->
+                    new InvoiceDto(
+                        e.getNumber(),
+                        e.getCreationDate(),
+                        e.getLastModifiedDate(),
+                        getItemDtos(e.getItems()),
+                        e.getCompanyName(),
+                        e.getPaymentStatus(),
+                        e.getTotalCost()))
+            .collect(Collectors.toList());
+    return new ResponseEntity<>(dtos, HttpStatus.OK);
+  }
+
+  @GetMapping("/invoices/search/{number}")
+  public ResponseEntity<List<InvoiceDto>> searchInvoices(@PathVariable("number") Long number) {
+
+    List<InvoiceDto> dtos =
+        List.of(invoiceService.findByNumber(number)).stream()
             .map(
                 e ->
                     new InvoiceDto(
