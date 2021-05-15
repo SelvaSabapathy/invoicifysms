@@ -1,6 +1,7 @@
 package com.sms.invoicify.controller;
 
 import com.sms.invoicify.exception.InvoicifyInvoiceExistsException;
+import com.sms.invoicify.exception.InvoicifyInvoiceNotExistsException;
 import com.sms.invoicify.models.InvoiceDto;
 import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.models.InvoiceSummaryDto;
@@ -14,10 +15,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.text.ParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -150,5 +153,41 @@ public class InvoiceController {
                         .totalFees(e.getTotalFees())
                         .build())
             .collect(Collectors.toList());
+  }
+
+  @PutMapping("/invoices")
+  public ResponseEntity<InvoiceDto> update(@Valid @RequestBody InvoiceDto invoiceDto) {
+    List<Item> items = invoiceDto.getItems();
+    List<ItemEntity> itemEntities =
+        items == null
+            ? null
+            : items.stream()
+                .map(
+                    e ->
+                        ItemEntity.builder()
+                            .description(e.getDescription())
+                            .quantity(e.getQuantity())
+                            .totalFees(e.getTotalFees())
+                            .build())
+                .collect(Collectors.toList());
+
+    InvoiceEntity invoiceEntity =
+        InvoiceEntity.builder()
+            .number(invoiceDto.getNumber())
+            .creationDate(invoiceDto.getCreationDate())
+            .items(itemEntities)
+            .companyName(invoiceDto.getCompanyName())
+            .paymentStatus(invoiceDto.getPaymentStatus())
+            .totalCost(invoiceDto.getTotalCost())
+            .build();
+    try {
+      invoiceService.update(invoiceEntity);
+    } catch (InvoicifyInvoiceNotExistsException e) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    } catch (ParseException e) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 }
