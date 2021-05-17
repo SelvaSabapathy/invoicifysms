@@ -88,6 +88,22 @@ include::{snippets}/createNewInvoice/
 .response
 include::{snippets}/createNewInvoice/
 
+Create an invoice without invoice number
+
+.request
+include::{snippets}/postInvoiceWithNoInvoiceNumber/http-request.adoc[]
+
+.response
+include::{snippets}/postInvoiceWithNoInvoiceNumber/http-response.adoc[]
+
+Create an invoice with an existing invoice number
+
+.request
+include::{snippets}/postInvoiceWithExistingInvoiceNumber/http-request.adoc[]
+
+.response
+include::{snippets}/postInvoiceWithExistingInvoiceNumber/http-response.adoc[]
+
 Get Invoice Summary
 
 .request
@@ -103,6 +119,22 @@ include::{snippets}/getInvoiceDetail/
 
 .response
 include::{snippets}/getInvoiceDetail/
+
+Search Invoice by number
+
+.request
+include::{snippets}/searchInvoiceByNumber/http-request.adoc[]
+
+.response
+include::{snippets}/searchInvoiceByNumber/http-response.adoc[]
+
+Update invoice  (company name, payment status)
+
+.request
+include::{snippets}/updateInvoice/http-request.adoc[]
+
+.response
+include::{snippets}/updateInvoice/http-response.adoc[]
 
 === Companies
 

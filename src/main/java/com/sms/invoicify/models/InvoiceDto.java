@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,5 +22,5 @@ public class InvoiceDto {
   private List<Item> items;
   private String companyName;
   private PaymentStatus paymentStatus;
-  private Double totalCost;
+  private BigDecimal totalCost;
 }
