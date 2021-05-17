@@ -63,7 +63,7 @@ include::{snippets}/items-controller-it/post-item/1/request-fields.adoc[]
 .response
 include::{snippets}/items-controller-it/post-item/1/http-response.adoc[]
 
-include::{snippets}/items-controller-it/post-item/1/request-body.adoc[]
+include::{snippets}/items-controller-it/post-item/1/response-body.adoc[]
 
 [[specification-API-item-getall]]
 ==== GET
@@ -83,10 +83,15 @@ include::{snippets}/items-controller-it/post-multiple-item/3/http-response.adoc[
 Create an invoice
 
 .request
-include::{snippets}/createNewInvoice/
+include::{snippets}/invoice-controller-it/create-one-success/1/http-request.adoc[]
+
+include::{snippets}/invoice-controller-it/create-one-success/1/request-fields.adoc[]
 
 .response
-include::{snippets}/createNewInvoice/
+include::{snippets}/invoice-controller-it/create-one-success/1/http-response.adoc[]
+
+include::{snippets}/invoice-controller-it/create-one-success/1/response-body.adoc[]
+
 
 Create an invoice without invoice number
 
@@ -104,21 +109,27 @@ include::{snippets}/postInvoiceWithExistingInvoiceNumber/http-request.adoc[]
 .response
 include::{snippets}/postInvoiceWithExistingInvoiceNumber/http-response.adoc[]
 
-Get Invoice Summary
+==== GET
+
+===== Summary View, ALL
+
+Get Summary View of ALL Invoices
 
 .request
-include::{snippets}/getInvoiceSummary/
+include::{snippets}/invoice-controller-it/create-and-view-invoice-summary/2/http-request.adoc[]
 
 .response
-include::{snippets}/getInvoiceSummary/
+include::{snippets}/invoice-controller-it/create-and-view-invoice-summary/2/http-response.adoc[]
 
-Get Invoice Details
+===== Detailed View, ALL
+
+Get Details of ALL Invoices
 
 .request
-include::{snippets}/getInvoiceDetail/
+include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/3/http-request.adoc[]
 
 .response
-include::{snippets}/getInvoiceDetail/
+include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/3/http-response.adoc[]
 
 Search Invoice by number
 
@@ -128,15 +139,19 @@ include::{snippets}/searchInvoiceByNumber/http-request.adoc[]
 .response
 include::{snippets}/searchInvoiceByNumber/http-response.adoc[]
 
+==== PUT
+
 Update invoice  (company name, payment status)
 
 .request
-include::{snippets}/updateInvoice/http-request.adoc[]
+include::{snippets}/invoice-controller-it/upate-and-view-invoice-details/2/http-request.adoc[]
 
 .response
-include::{snippets}/updateInvoice/http-response.adoc[]
+include::{snippets}/invoice-controller-it/upate-and-view-invoice-details/2/http-response.adoc[]
 
 === Companies
+
+==== POST
 
 Create / Add a New Company
 

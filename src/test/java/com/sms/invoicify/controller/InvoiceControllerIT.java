@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,6 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +39,12 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedRequestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseBody;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.snippet.Attributes.attributes;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -69,12 +76,46 @@ public class InvoiceControllerIT {
             .build();
   }
 
-  @Test
   private MvcResult create(InvoiceDto invoiceDto, HttpStatus status) throws Exception {
     MvcResult mvcResult =
-        this.createInner(invoiceDto, status).andDo(document("createNewInvoice")).andReturn();
-
+        this.createInner(invoiceDto, status)
+                .andDo(
+            document("{class-name}/{method-name}/{step}",
+                    relaxedRequestFields(
+                            attributes(key("title").value("Fields for Item Creation")),
+                            fieldWithPath("number")
+                                    .description("Invoice ID Number")
+                                    .attributes(key("constraints").value("Not Null")),
+//                            fieldWithPath("creationDate")
+//                                    .description("Date timestamp when Invoice Created")
+//                                    .attributes(key("constraints").value("")).ignored(),
+//                            fieldWithPath("lastModifiedDate")
+//                                    .description("Date timestamp of Last Modification")
+//                                    .attributes(key("constraints").value("")).ignored(),
+//                            fieldWithPath("items")
+//                                    .description("List of Items Associated with the invoice")
+//                                    .attributes(key("constraints").value("")).ignored(),
+                            fieldWithPath("companyName")
+                                    .description("Company Billable for the Invoice")
+                                    .attributes(key("constraints").value("Not Null")),
+                            paymentStatusField(),
+                            fieldWithPath("totalCost")
+                                    .description("Sum of All Line Item Charges on the Ivoice")
+                                    .attributes(key("constraints").value("Not Null"))),
+                            responseBody()
+                    ))
+                .andReturn();
     return mvcResult;
+  }
+
+  private FieldDescriptor paymentStatusField() {
+    String formattedValues =
+            Arrays.stream(PaymentStatus.values())
+                    .map(type -> String.format("`%s`", type))
+                    .collect(Collectors.joining(", "));
+    return fieldWithPath("paymentStatus")
+            .description("The Current ENUM Payment status of the invoice.")
+            .attributes(key("constraints").value("Enumerated, One of: " + formattedValues));
   }
 
   private ResultActions createInner(InvoiceDto invoiceDto, HttpStatus status) throws Exception {
@@ -112,7 +153,7 @@ public class InvoiceControllerIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invoiceDto)))
         .andExpect(status().isBadRequest())
-        .andDo(document("postInvoiceWithNoInvoiceNumber"))
+        .andDo(document("{class-name}/{method-name}/{step}"))
         .andReturn();
   }
 
@@ -135,7 +176,7 @@ public class InvoiceControllerIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invoiceDto)))
         .andExpect(status().isBadRequest())
-        .andDo(document("postInvoiceWithExistingInvoiceNumber"))
+        .andDo(document("{class-name}/{method-name}/{step}"))
         .andReturn();
   }
 
@@ -304,7 +345,7 @@ public class InvoiceControllerIT {
             .andDo(
                 document(
                     "{class-name}/{method-name}/{step}",
-                    responseFields(
+                    relaxedResponseFields(
                         fieldWithPath("[0].number").description("Invoice number (mandatory)"),
                         fieldWithPath("[0].creationDate").description("Invoice creation date"),
                         fieldWithPath("[0].lastModifiedDate").description("Invoice modified date"),
@@ -365,7 +406,7 @@ public class InvoiceControllerIT {
             .andExpect(status().isOk())
             .andDo(
                 document(
-                    "searchInvoiceByNumber",
+                    "{class-name}/{method-name}/{step}",
                     responseFields(
                         fieldWithPath("[0].number").description("Invoice number (mandatory)"),
                         fieldWithPath("[0].creationDate").description("Invoice creation date"),
@@ -419,7 +460,7 @@ public class InvoiceControllerIT {
             .andExpect(status().isOk())
             .andDo(
                 document(
-                    "searchInvoiceByNumber",
+                    "{class-name}/{method-name}/{step}",
                     responseFields(
                         fieldWithPath("[0].number").description("Invoice number (mandatory)"),
                         fieldWithPath("[0].creationDate").description("Invoice creation date"),
