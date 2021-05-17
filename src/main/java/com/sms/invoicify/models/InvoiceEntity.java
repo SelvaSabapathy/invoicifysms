@@ -13,7 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -29,9 +29,9 @@ public class InvoiceEntity {
 
     private Long number;
 
-    private Date creationDate;
+    private LocalDate creationDate;
 
-    private Date lastModifiedDate;
+    private LocalDate lastModifiedDate;
 
     @OneToMany(mappedBy = "invoice")
     private List<ItemEntity> items;

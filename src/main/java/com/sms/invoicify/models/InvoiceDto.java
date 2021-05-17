@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -15,10 +15,9 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class InvoiceDto {
-  @NotNull
-  private Long number;
-  private Date creationDate;
-  private Date lastModifiedDate;
+  @NotNull private Long number;
+  private LocalDate creationDate;
+  private LocalDate lastModifiedDate;
   private List<Item> items;
   private String companyName;
   private PaymentStatus paymentStatus;

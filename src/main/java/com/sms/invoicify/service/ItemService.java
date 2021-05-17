@@ -39,7 +39,7 @@ public class ItemService {
               .totalCost(invoiceDto.getTotalCost())
               .build();
     } else {
-      invoiceEntity.setLastModifiedDate(InvoicifyUtilities.getDate(LocalDate.now()));
+      invoiceEntity.setLastModifiedDate(LocalDate.now());
     }
     ItemEntity persisted =
         itemsRepository.save(

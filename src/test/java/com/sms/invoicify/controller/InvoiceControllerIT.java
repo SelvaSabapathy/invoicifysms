@@ -1,11 +1,10 @@
-package com.sms.invoicify.IT;
+package com.sms.invoicify.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sms.invoicify.models.InvoiceDto;
 import com.sms.invoicify.models.InvoiceSummaryDto;
 import com.sms.invoicify.models.Item;
-import com.sms.invoicify.utilities.InvoicifyUtilities;
 import com.sms.invoicify.utilities.PaymentStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class InvoiceIT {
+public class InvoiceControllerIT {
 
   @Autowired private MockMvc mockMvc;
 
@@ -61,7 +60,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto =
             new InvoiceDto(
                     null,
-                    InvoicifyUtilities.getDate(LocalDate.now()),
+                    LocalDate.now(),
                     null,
                     null,
                     "aCompany",
@@ -78,7 +77,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto =
         new InvoiceDto(
             121L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             null,
             "aCompany",
@@ -97,7 +96,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto1 =
         new InvoiceDto(
             121L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             null,
             "aCompany",
@@ -115,7 +114,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto2 =
         new InvoiceDto(
             122L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             List.of(item),
             "bCompany",
@@ -163,7 +162,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto =
         new InvoiceDto(
             121L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             List.of(item),
             "aCompany",
@@ -207,7 +206,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto1 =
         new InvoiceDto(
             120L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             null,
             "aCompany",
@@ -218,7 +217,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto2 =
         new InvoiceDto(
             121L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             List.of(item),
             "bCompany",

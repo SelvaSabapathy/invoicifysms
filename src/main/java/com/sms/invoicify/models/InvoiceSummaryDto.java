@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -14,7 +14,7 @@ import java.util.Date;
 @Builder
 public class InvoiceSummaryDto {
     private Long number;
-    private Date creationDate;
+    private LocalDate creationDate;
     private PaymentStatus paymentStatus;
     private Double totalCost;
 }
