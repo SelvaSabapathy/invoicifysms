@@ -14,7 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -24,23 +24,23 @@ import java.util.List;
 @Builder
 public class InvoiceEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Long id;
 
-    private Long number;
+  private Long number;
 
-    private Date creationDate;
+  private LocalDate creationDate;
 
-    private Date lastModifiedDate;
+  private LocalDate lastModifiedDate;
 
-    @OneToMany(mappedBy = "invoice")
-    private List<ItemEntity> items;
+  @OneToMany(mappedBy = "invoice")
+  private List<ItemEntity> items;
 
-    private String companyName;
+  private String companyName;
 
-    @Enumerated(EnumType.ORDINAL)
-    private PaymentStatus paymentStatus;
+  @Enumerated(EnumType.ORDINAL)
+  private PaymentStatus paymentStatus;
 
-    private BigDecimal totalCost;
+  private BigDecimal totalCost;
 }

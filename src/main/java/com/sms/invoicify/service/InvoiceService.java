@@ -52,7 +52,7 @@ public class InvoiceService {
     if (null == retrievedEntity) {
       throw new InvoicifyInvoiceNotExistsException("Invoice does not exist, cannot be updated");
     }
-    retrievedEntity.setLastModifiedDate(InvoicifyUtilities.getDate(LocalDate.now()));
+    retrievedEntity.setLastModifiedDate(LocalDate.now());
     if (invoiceEntity.getCompanyName() != null) {
       retrievedEntity.setCompanyName(invoiceEntity.getCompanyName());
     }
