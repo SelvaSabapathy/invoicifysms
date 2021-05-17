@@ -78,6 +78,8 @@ include::{snippets}/items-controller-it/post-multiple-item/3/http-response.adoc[
 
 === Invoice
 
+==== POST
+
 Create an invoice
 
 .request

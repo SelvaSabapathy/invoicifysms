@@ -6,15 +6,22 @@ import com.sms.invoicify.models.InvoiceDto;
 import com.sms.invoicify.models.InvoiceSummaryDto;
 import com.sms.invoicify.models.Item;
 import com.sms.invoicify.utilities.PaymentStatus;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -25,6 +32,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -34,13 +43,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
+@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class InvoiceControllerIT {
 
-  @Autowired private MockMvc mockMvc;
+  private MockMvc mockMvc;
 
   @Autowired private ObjectMapper objectMapper;
 
+  @BeforeEach
+  public void setUp(
+          WebApplicationContext webApplicationContext,
+          RestDocumentationContextProvider restDocumentation) {
+    this.mockMvc =
+            MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                    .apply(
+                            documentationConfiguration(restDocumentation)
+                                    .operationPreprocessors()
+                                    .withRequestDefaults(prettyPrint())
+                                    .withResponseDefaults(prettyPrint()))
+                    .alwaysDo(document("{class-name}/{method-name}/{step}"))
+                    .build();
+  }
+
+  @Test
   private MvcResult create(InvoiceDto invoiceDto) throws Exception {
     MvcResult mvcResult =
         mockMvc
@@ -49,7 +75,7 @@ public class InvoiceControllerIT {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(invoiceDto)))
             .andExpect(status().isCreated())
-            .andDo(document("createNewInvoice"))
+            .andDo(document("{class-name}/{method-name}/{step}"))
             .andReturn();
 
     return mvcResult;
@@ -176,7 +202,7 @@ public class InvoiceControllerIT {
             .andExpect(status().isOk())
             .andDo(
                 document(
-                    "getInvoiceSummary",
+                        "{class-name}/{method-name}/{step}",
                     responseFields(
                         fieldWithPath("[0].number").description("Invoice number (mandatory)"),
                         fieldWithPath("[0].creationDate").description("Invoice creation date"),
@@ -234,7 +260,7 @@ public class InvoiceControllerIT {
             .andExpect(status().isOk())
             .andDo(
                 document(
-                    "getInvoiceDetail",
+                        "{class-name}/{method-name}/{step}",
                     responseFields(
                         fieldWithPath("[0].number").description("Invoice number (mandatory)"),
                         fieldWithPath("[0].creationDate").description("Invoice creation date"),
