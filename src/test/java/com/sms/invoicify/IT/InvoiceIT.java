@@ -30,6 +30,7 @@ import static org.hamcrest.Matchers.is;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -413,5 +414,62 @@ public class InvoiceIT {
     invoiceDto1.setLastModifiedDate(InvoicifyUtilities.getDate(LocalDate.now()));
     assertThat(dtos.size(), is(1));
     assertThat(dtos, contains(invoiceDto1));
+  }
+
+  @Test
+  public void deleteInvoices() throws Exception {
+    InvoiceDto undeleteInvoiceDto =
+        new InvoiceDto(
+            120L,
+            InvoicifyUtilities.getDate(LocalDate.now()),
+            null,
+            null,
+            "aCompany",
+            PaymentStatus.UNPAID,
+            new BigDecimal(120.00));
+    create(undeleteInvoiceDto, HttpStatus.CREATED);
+
+    InvoiceDto undeleteInvoiceDto2 =
+        new InvoiceDto(
+            121L,
+            InvoicifyUtilities.getDate(LocalDate.now()),
+            null,
+            null,
+            "aCompany",
+            PaymentStatus.PAID,
+            new BigDecimal(120.00));
+    create(undeleteInvoiceDto2, HttpStatus.CREATED);
+
+    InvoiceDto undeleteInvoiceDto3 =
+        new InvoiceDto(
+            122L,
+            InvoicifyUtilities.getDate(LocalDate.now().minusYears(1L).minusDays(1L)),
+            null,
+            null,
+            "aCompany",
+            PaymentStatus.UNPAID,
+            new BigDecimal(120.00));
+    create(undeleteInvoiceDto3, HttpStatus.CREATED);
+
+    InvoiceDto deleteInvoiceDto4 =
+        new InvoiceDto(
+            123L,
+            InvoicifyUtilities.getDate(LocalDate.now().minusYears(1L).minusDays(1L)),
+            null,
+            List.of(
+                new Item(
+                    "aItem",
+                    1,
+                    BigDecimal.valueOf(10).setScale(2),
+                    InvoiceDto.builder().number(123L).build())),
+            "aCompany",
+            PaymentStatus.PAID,
+            new BigDecimal(120.00));
+    create(deleteInvoiceDto4, HttpStatus.CREATED);
+
+    mockMvc
+        .perform(delete("/invoices").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNoContent())
+        .andReturn();
   }
 }

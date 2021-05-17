@@ -5,6 +5,7 @@ import com.sms.invoicify.exception.InvoicifyInvoiceNotExistsException;
 import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.repository.InvoiceRepository;
 import com.sms.invoicify.utilities.InvoicifyUtilities;
+import com.sms.invoicify.utilities.PaymentStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -60,5 +62,17 @@ public class InvoiceService {
       retrievedEntity.setPaymentStatus(invoiceEntity.getPaymentStatus());
     }
     invoiceRepository.save(retrievedEntity);
+  }
+
+  public void delete()  {
+    Date oneYearAgo = null;
+    try {
+      oneYearAgo = InvoicifyUtilities.getDate(LocalDate.now().minusYears(1L));
+    } catch (ParseException e) {
+      e.printStackTrace(); // TODO: see story "Refactor3"
+    }
+    PaymentStatus paymentStatus = PaymentStatus.PAID;
+
+    invoiceRepository.deleteYearOldAndPaid(oneYearAgo, PaymentStatus.PAID);
   }
 }
