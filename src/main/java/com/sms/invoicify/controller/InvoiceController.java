@@ -197,5 +197,4 @@ public class InvoiceController {
     invoiceService.delete();
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
-
-  }
+}

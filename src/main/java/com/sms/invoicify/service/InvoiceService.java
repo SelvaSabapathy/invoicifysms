@@ -69,10 +69,8 @@ public class InvoiceService {
     try {
       oneYearAgo = InvoicifyUtilities.getDate(LocalDate.now().minusYears(1L));
     } catch (ParseException e) {
-      e.printStackTrace(); // TODO: see story "Refactor3"
+      e.printStackTrace(); // TODO: add logger... see story "Refactor3"
     }
-    PaymentStatus paymentStatus = PaymentStatus.PAID;
-
     invoiceRepository.deleteYearOldAndPaid(oneYearAgo, PaymentStatus.PAID);
   }
 }

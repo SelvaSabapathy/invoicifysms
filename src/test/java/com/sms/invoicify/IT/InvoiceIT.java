@@ -34,6 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -456,20 +457,48 @@ public class InvoiceIT {
             123L,
             InvoicifyUtilities.getDate(LocalDate.now().minusYears(1L).minusDays(1L)),
             null,
-            List.of(
-                new Item(
-                    "aItem",
-                    1,
-                    BigDecimal.valueOf(10).setScale(2),
-                    InvoiceDto.builder().number(123L).build())),
+            null,
             "aCompany",
             PaymentStatus.PAID,
             new BigDecimal(120.00));
     create(deleteInvoiceDto4, HttpStatus.CREATED);
 
+    // Create an item and attach it to an invoice
+    mockMvc
+        .perform(
+            post("/items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    objectMapper.writeValueAsString(
+                        Item.builder()
+                            .description("Test Item Description")
+                            .quantity(1)
+                            .totalFees(BigDecimal.valueOf(10).setScale(2))
+                            .invoice(InvoiceDto.builder().number(123L).build())
+                            .build())))
+        .andExpect(status().isCreated());
+
+    // verify our setup before deleting -- item & invoice
+    mockMvc
+        .perform(get("/invoices").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("length()").value(4));
+
+    mockMvc
+        .perform(get("/items").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("length()").value(1));
+
+    // delete
     mockMvc
         .perform(delete("/invoices").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNoContent())
         .andReturn();
+
+    // verify after delete -- item & invoice
+    mockMvc
+        .perform(get("/invoices").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("length()").value(3));
   }
 }
