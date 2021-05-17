@@ -73,6 +73,14 @@ include::{snippets}/searchInvoiceByNumber/http-request.adoc[]
 .response
 include::{snippets}/searchInvoiceByNumber/http-response.adoc[]
 
+Update invoice  (company name, payment status)
+
+.request
+include::{snippets}/updateInvoice/http-request.adoc[]
+
+.response
+include::{snippets}/updateInvoice/http-response.adoc[]
+
 === Companies
 
 Create / Add a New Company
