@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.NonNull;
+
+import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder
@@ -12,7 +13,9 @@ import org.springframework.lang.NonNull;
 @AllArgsConstructor
 public class Company {
 
-  @NonNull String companyName;
+  @NotBlank(message = "Company Name is Required")
+  String companyName;
+
   Address address;
   String contactName;
   String title;

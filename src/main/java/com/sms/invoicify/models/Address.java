@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
+import javax.validation.constraints.NotNull;
 
 @Embeddable
 @Builder
@@ -14,8 +15,8 @@ import javax.persistence.Embeddable;
 @NoArgsConstructor
 public class Address {
 
-  String street;
-  String city;
-  String state;
-  String zipCode;
+  @NotNull String street;
+  @NotNull String city;
+  @NotNull String state;
+  @NotNull String zipCode;
 }

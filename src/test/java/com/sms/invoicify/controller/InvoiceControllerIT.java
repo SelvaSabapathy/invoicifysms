@@ -436,7 +436,7 @@ public class InvoiceControllerIT {
   }
 
   @Test
-  public void upateAndViewInvoiceDetails() throws Exception {
+  public void updateAndViewInvoiceDetails() throws Exception {
     Item item =
         Item.builder()
             .description("Test Item Description")
