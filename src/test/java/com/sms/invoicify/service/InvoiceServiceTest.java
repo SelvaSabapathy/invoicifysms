@@ -4,7 +4,6 @@ import com.sms.invoicify.exception.InvoicifyInvoiceExistsException;
 import com.sms.invoicify.exception.InvoicifyInvoiceNotExistsException;
 import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.repository.InvoiceRepository;
-import com.sms.invoicify.utilities.InvoicifyUtilities;
 import com.sms.invoicify.utilities.PaymentStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -14,12 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -84,7 +81,7 @@ public class InvoiceServiceTest {
 
   @Test
   public void deleteInvoices() throws ParseException {
-    Date oneYearAgo = InvoicifyUtilities.getDate(LocalDate.now().minusYears(1L));
+    LocalDate oneYearAgo = LocalDate.now().minusYears(1L);
     PaymentStatus paymentStatus = PaymentStatus.PAID;
 
     invoiceService.delete();

@@ -4,7 +4,6 @@ import com.sms.invoicify.exception.InvoicifyInvoiceExistsException;
 import com.sms.invoicify.exception.InvoicifyInvoiceNotExistsException;
 import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.repository.InvoiceRepository;
-import com.sms.invoicify.utilities.InvoicifyUtilities;
 import com.sms.invoicify.utilities.PaymentStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,6 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -54,7 +52,7 @@ public class InvoiceService {
     if (null == retrievedEntity) {
       throw new InvoicifyInvoiceNotExistsException("Invoice does not exist, cannot be updated");
     }
-    retrievedEntity.setLastModifiedDate(InvoicifyUtilities.getDate(LocalDate.now()));
+    retrievedEntity.setLastModifiedDate(LocalDate.now());
     if (invoiceEntity.getCompanyName() != null) {
       retrievedEntity.setCompanyName(invoiceEntity.getCompanyName());
     }
@@ -64,13 +62,8 @@ public class InvoiceService {
     invoiceRepository.save(retrievedEntity);
   }
 
-  public void delete()  {
-    Date oneYearAgo = null;
-    try {
-      oneYearAgo = InvoicifyUtilities.getDate(LocalDate.now().minusYears(1L));
-    } catch (ParseException e) {
-      e.printStackTrace(); // TODO: add logger... see story "Refactor3"
-    }
+  public void delete() {
+    LocalDate oneYearAgo = LocalDate.now().minusYears(1L);
     invoiceRepository.deleteYearOldAndPaid(oneYearAgo, PaymentStatus.PAID);
   }
 }

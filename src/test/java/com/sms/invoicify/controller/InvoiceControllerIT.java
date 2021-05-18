@@ -1,26 +1,34 @@
-package com.sms.invoicify.IT;
+package com.sms.invoicify.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sms.invoicify.models.InvoiceDto;
 import com.sms.invoicify.models.InvoiceSummaryDto;
 import com.sms.invoicify.models.Item;
-import com.sms.invoicify.utilities.InvoicifyUtilities;
 import com.sms.invoicify.utilities.PaymentStatus;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,8 +36,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedRequestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseBody;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.snippet.Attributes.attributes;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -40,18 +55,75 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
+@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class InvoiceIT {
+public class InvoiceControllerIT {
 
   @Autowired private MockMvc mockMvc;
 
   @Autowired private ObjectMapper objectMapper;
 
+  @BeforeEach
+  public void setUp(
+      WebApplicationContext webApplicationContext,
+      RestDocumentationContextProvider restDocumentation) {
+    this.mockMvc =
+        MockMvcBuilders.webAppContextSetup(webApplicationContext)
+            .apply(
+                documentationConfiguration(restDocumentation)
+                    .operationPreprocessors()
+                    .withRequestDefaults(prettyPrint())
+                    .withResponseDefaults(prettyPrint()))
+            .alwaysDo(document("{class-name}/{method-name}/{step}"))
+            .build();
+  }
+
   private MvcResult create(InvoiceDto invoiceDto, HttpStatus status) throws Exception {
     MvcResult mvcResult =
-        this.createInner(invoiceDto, status).andDo(document("createNewInvoice")).andReturn();
-
+        this.createInner(invoiceDto, status)
+            .andDo(
+                document(
+                    "{class-name}/{method-name}/{step}",
+                    relaxedRequestFields(
+                        attributes(key("title").value("Fields for Item Creation")),
+                        fieldWithPath("number")
+                            .description("Invoice ID Number")
+                            .attributes(key("constraints").value("Not Null")),
+                        //                            fieldWithPath("creationDate")
+                        //                                    .description("Date timestamp when
+                        // Invoice Created")
+                        //
+                        // .attributes(key("constraints").value("")).ignored(),
+                        //                            fieldWithPath("lastModifiedDate")
+                        //                                    .description("Date timestamp of Last
+                        // Modification")
+                        //
+                        // .attributes(key("constraints").value("")).ignored(),
+                        //                            fieldWithPath("items")
+                        //                                    .description("List of Items Associated
+                        // with the invoice")
+                        //
+                        // .attributes(key("constraints").value("")).ignored(),
+                        fieldWithPath("companyName")
+                            .description("Company Billable for the Invoice")
+                            .attributes(key("constraints").value("Not Null")),
+                        paymentStatusField(),
+                        fieldWithPath("totalCost")
+                            .description("Sum of All Line Item Charges on the Ivoice")
+                            .attributes(key("constraints").value("Not Null"))),
+                    responseBody()))
+            .andReturn();
     return mvcResult;
+  }
+
+  private FieldDescriptor paymentStatusField() {
+    String formattedValues =
+        Arrays.stream(PaymentStatus.values())
+            .map(type -> String.format("`%s`", type))
+            .collect(Collectors.joining(", "));
+    return fieldWithPath("paymentStatus")
+        .description("The Current ENUM Payment status of the invoice.")
+        .attributes(key("constraints").value("Enumerated, One of: " + formattedValues));
   }
 
   private ResultActions createInner(InvoiceDto invoiceDto, HttpStatus status) throws Exception {
@@ -77,7 +149,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto =
         new InvoiceDto(
             null,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             null,
             "aCompany",
@@ -89,7 +161,7 @@ public class InvoiceIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invoiceDto)))
         .andExpect(status().isBadRequest())
-        .andDo(document("postInvoiceWithNoInvoiceNumber"))
+        .andDo(document("{class-name}/{method-name}/{step}"))
         .andReturn();
   }
 
@@ -98,7 +170,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto =
         new InvoiceDto(
             121L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             null,
             "aCompany",
@@ -112,7 +184,7 @@ public class InvoiceIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invoiceDto)))
         .andExpect(status().isBadRequest())
-        .andDo(document("postInvoiceWithExistingInvoiceNumber"))
+        .andDo(document("{class-name}/{method-name}/{step}"))
         .andReturn();
   }
 
@@ -121,7 +193,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto =
         new InvoiceDto(
             121L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             null,
             "aCompany",
@@ -140,7 +212,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto1 =
         new InvoiceDto(
             121L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             null,
             "aCompany",
@@ -158,7 +230,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto2 =
         new InvoiceDto(
             122L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             List.of(item),
             "bCompany",
@@ -208,7 +280,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto =
         new InvoiceDto(
             121L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             List.of(item),
             "aCompany",
@@ -222,7 +294,7 @@ public class InvoiceIT {
             .andExpect(status().isOk())
             .andDo(
                 document(
-                    "getInvoiceSummary",
+                    "{class-name}/{method-name}/{step}",
                     responseFields(
                         fieldWithPath("[0].number").description("Invoice number (mandatory)"),
                         fieldWithPath("[0].creationDate").description("Invoice creation date"),
@@ -252,7 +324,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto1 =
         new InvoiceDto(
             120L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             null,
             "aCompany",
@@ -263,7 +335,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto2 =
         new InvoiceDto(
             121L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             List.of(item),
             "bCompany",
@@ -280,8 +352,8 @@ public class InvoiceIT {
             .andExpect(status().isOk())
             .andDo(
                 document(
-                    "getInvoiceDetail",
-                    responseFields(
+                    "{class-name}/{method-name}/{step}",
+                    relaxedResponseFields(
                         fieldWithPath("[0].number").description("Invoice number (mandatory)"),
                         fieldWithPath("[0].creationDate").description("Invoice creation date"),
                         fieldWithPath("[0].lastModifiedDate").description("Invoice modified date"),
@@ -314,7 +386,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto1 =
         new InvoiceDto(
             120L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             null,
             "aCompany",
@@ -325,7 +397,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto2 =
         new InvoiceDto(
             121L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             List.of(item),
             "bCompany",
@@ -342,7 +414,7 @@ public class InvoiceIT {
             .andExpect(status().isOk())
             .andDo(
                 document(
-                    "searchInvoiceByNumber",
+                    "{class-name}/{method-name}/{step}",
                     responseFields(
                         fieldWithPath("[0].number").description("Invoice number (mandatory)"),
                         fieldWithPath("[0].creationDate").description("Invoice creation date"),
@@ -376,7 +448,7 @@ public class InvoiceIT {
     InvoiceDto invoiceDto1 =
         new InvoiceDto(
             120L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             null,
             "aCompany",
@@ -396,7 +468,7 @@ public class InvoiceIT {
             .andExpect(status().isOk())
             .andDo(
                 document(
-                    "searchInvoiceByNumber",
+                    "{class-name}/{method-name}/{step}",
                     responseFields(
                         fieldWithPath("[0].number").description("Invoice number (mandatory)"),
                         fieldWithPath("[0].creationDate").description("Invoice creation date"),
@@ -412,7 +484,7 @@ public class InvoiceIT {
             mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
 
     // modifed date will be changed due to update
-    invoiceDto1.setLastModifiedDate(InvoicifyUtilities.getDate(LocalDate.now()));
+    invoiceDto1.setLastModifiedDate(LocalDate.now());
     assertThat(dtos.size(), is(1));
     assertThat(dtos, contains(invoiceDto1));
   }
@@ -422,7 +494,7 @@ public class InvoiceIT {
     InvoiceDto undeleteInvoiceDto =
         new InvoiceDto(
             120L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             null,
             "aCompany",
@@ -433,7 +505,7 @@ public class InvoiceIT {
     InvoiceDto undeleteInvoiceDto2 =
         new InvoiceDto(
             121L,
-            InvoicifyUtilities.getDate(LocalDate.now()),
+            LocalDate.now(),
             null,
             null,
             "aCompany",
@@ -444,7 +516,7 @@ public class InvoiceIT {
     InvoiceDto undeleteInvoiceDto3 =
         new InvoiceDto(
             122L,
-            InvoicifyUtilities.getDate(LocalDate.now().minusYears(1L).minusDays(1L)),
+            LocalDate.now().minusYears(1L).minusDays(1L),
             null,
             null,
             "aCompany",
@@ -455,7 +527,7 @@ public class InvoiceIT {
     InvoiceDto deleteInvoiceDto4 =
         new InvoiceDto(
             123L,
-            InvoicifyUtilities.getDate(LocalDate.now().minusYears(1L).minusDays(1L)),
+            LocalDate.now().minusYears(1L).minusDays(1L),
             null,
             null,
             "aCompany",

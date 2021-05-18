@@ -1,4 +1,4 @@
-package com.sms.invoicify;
+package com.sms.invoicify.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sms.invoicify.models.Address;
@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class CompanyIT {
+public class CompanyControllerIT {
 
   @Autowired MockMvc mockMvc;
 

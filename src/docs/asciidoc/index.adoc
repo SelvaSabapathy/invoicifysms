@@ -1,37 +1,97 @@
-= Invoicify APIs
-Welcome to Invoicify solutions by SMS
-:toc:
-:toclevels: 4
+= Invoicify API v1.0.0
+API Documentation for Invoicify solutions by Team SMS
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toc-title: Invoicify
+:toclevels: 5
+:sectlinks:
+:sectnums:
 
-== APIs
+[[overview]]
+= Overview
 
+[[overview-contributors]]
+== Contributors
+John Tansor
+Selva
+Sebin
+Maanick
+Ravi
+
+[[overview-description]]
+== Summary
+
+Placeholder for brief summary of application
+
+[[overview-http-verbs]]
+== HTTP verbs
+
+RESTful notes tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP verbs.
+
+|===
+| Verb | Usage
+
+| `GET`
+| Used to retrieve a resource
+
+| `POST`
+| Used to create a new resource
+|===
+
+[[specification]]
+= Specifications
+
+[[specification-API]]
+== Invoicify API
+
+[[specification-API-item]]
 === Item
+
+[[specification-API-item-post]]
+==== POST
 
 Post a New Item
 
 .request
-include::{snippets}/PostNewItem/http-request.adoc[]
+include::{snippets}/items-controller-it/post-item/1/http-request.adoc[]
+
+include::{snippets}/items-controller-it/post-item/1/request-fields.adoc[]
 
 .response
-include::{snippets}/PostNewItem/http-response.adoc[]
+include::{snippets}/items-controller-it/post-item/1/http-response.adoc[]
+
+include::{snippets}/items-controller-it/post-item/1/response-body.adoc[]
+
+[[specification-API-item-getall]]
+==== GET
 
 Get List of All Items
 
 .request
-include::{snippets}/GetAllItems/http-request.adoc[]
+include::{snippets}/items-controller-it/post-multiple-item/3/http-request.adoc[]
 
 .response
-include::{snippets}/GetAllItems/http-response.adoc[]
+include::{snippets}/items-controller-it/post-multiple-item/3/http-response.adoc[]
 
 === Invoice
+
+==== POST
 
 Create an invoice
 
 .request
-include::{snippets}/createNewInvoice/http-request.adoc[]
+include::{snippets}/invoice-controller-it/create-one-success/1/http-request.adoc[]
+
+include::{snippets}/invoice-controller-it/create-one-success/1/request-fields.adoc[]
 
 .response
-include::{snippets}/createNewInvoice/http-response.adoc[]
+include::{snippets}/invoice-controller-it/create-one-success/1/http-response.adoc[]
+
+include::{snippets}/invoice-controller-it/create-one-success/1/response-body.adoc[]
+
 
 Create an invoice without invoice number
 
@@ -49,21 +109,27 @@ include::{snippets}/postInvoiceWithExistingInvoiceNumber/http-request.adoc[]
 .response
 include::{snippets}/postInvoiceWithExistingInvoiceNumber/http-response.adoc[]
 
-Get Invoice Summary
+==== GET
+
+===== Summary View, ALL
+
+Get Summary View of ALL Invoices
 
 .request
-include::{snippets}/getInvoiceSummary/http-request.adoc[]
+include::{snippets}/invoice-controller-it/create-and-view-invoice-summary/2/http-request.adoc[]
 
 .response
-include::{snippets}/getInvoiceSummary/http-response.adoc[]
+include::{snippets}/invoice-controller-it/create-and-view-invoice-summary/2/http-response.adoc[]
 
-Get Invoice Details
+===== Detailed View, ALL
+
+Get Details of ALL Invoices
 
 .request
-include::{snippets}/getInvoiceDetail/http-request.adoc[]
+include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/3/http-request.adoc[]
 
 .response
-include::{snippets}/getInvoiceDetail/http-response.adoc[]
+include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/3/http-response.adoc[]
 
 Search Invoice by number
 
@@ -73,28 +139,32 @@ include::{snippets}/searchInvoiceByNumber/http-request.adoc[]
 .response
 include::{snippets}/searchInvoiceByNumber/http-response.adoc[]
 
+==== PUT
+
 Update invoice  (company name, payment status)
 
 .request
-include::{snippets}/updateInvoice/http-request.adoc[]
+include::{snippets}/invoice-controller-it/upate-and-view-invoice-details/2/http-request.adoc[]
 
 .response
-include::{snippets}/updateInvoice/http-response.adoc[]
+include::{snippets}/invoice-controller-it/upate-and-view-invoice-details/2/http-response.adoc[]
 
 === Companies
+
+==== POST
 
 Create / Add a New Company
 
 .request
-include::{snippets}/PostCompanyDetails/http-request.adoc[]
+include::{snippets}/PostCompanyDetails/
 
 .response
-include::{snippets}/PostCompanyDetails/http-response.adoc[]
+include::{snippets}/PostCompanyDetails/
 
 Get List of All Companies
 
 .request
-include::{snippets}/GetAllCompanies/http-request.adoc[]
+include::{snippets}/GetAllCompanies/
 
 .response
-include::{snippets}/GetAllCompanies/http-response.adoc[]
+include::{snippets}/GetAllCompanies/

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Repository
@@ -19,5 +20,5 @@ public interface InvoiceRepository extends JpaRepository<InvoiceEntity, Long> {
       value =
           "DELETE FROM InvoiceEntity i WHERE i.creationDate > :oneYearAgo AND i.paymentStatus = :paymentStatus")
   Object deleteYearOldAndPaid(
-      @Param("oneYearAgo") Date oneYearAgo, @Param("paymentStatus") PaymentStatus paymentStatus);
+          @Param("oneYearAgo") LocalDate oneYearAgo, @Param("paymentStatus") PaymentStatus paymentStatus);
 }
