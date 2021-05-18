@@ -59,7 +59,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class InvoiceControllerIT {
 
-  @Autowired private MockMvc mockMvc;
+  private MockMvc mockMvc;
 
   @Autowired private ObjectMapper objectMapper;
 
