@@ -573,4 +573,66 @@ public class InvoiceControllerIT {
         .andExpect(status().isOk())
         .andExpect(jsonPath("length()").value(3));
   }
+
+  @Test
+  public void createAndViewUnPaidInvoiceDetail() throws Exception {
+    Item item =
+            Item.builder()
+                    .description("Test Item Description")
+                    .quantity(1)
+                    .totalFees(BigDecimal.TEN)
+                    .invoice(InvoiceDto.builder().number(121L).build())
+                    .build();
+
+    InvoiceDto invoiceDto1 =
+            new InvoiceDto(
+                    120L,
+                    LocalDate.now(),
+                    null,
+                    null,
+                    "aCompany",
+                    PaymentStatus.PAID,
+                    BigDecimal.valueOf(200.1).setScale(2));
+    create(invoiceDto1, HttpStatus.CREATED);
+
+    InvoiceDto invoiceDto2 =
+            new InvoiceDto(
+                    121L,
+                    LocalDate.now(),
+                    null,
+                    List.of(item),
+                    "bCompany",
+                    PaymentStatus.UNPAID,
+                    BigDecimal.valueOf(121.1).setScale(2));
+    create(invoiceDto2, HttpStatus.CREATED);
+
+    invoiceDto1.setItems(List.of());
+    invoiceDto2.setItems(List.of());
+
+    MvcResult mvcResult =
+            mockMvc
+                    .perform(get("/invoices/unpaid").contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andDo(
+                            document(
+                                    "{class-name}/{method-name}/{step}",
+                                    relaxedResponseFields(
+                                            fieldWithPath("[0].number").description("Invoice number (mandatory)"),
+                                            fieldWithPath("[0].creationDate").description("Invoice creation date"),
+                                            fieldWithPath("[0].lastModifiedDate").description("Invoice modified date"),
+                                            fieldWithPath("[0].items").description("items added to this invoice"),
+                                            fieldWithPath("[0].companyName").description("Company Name"),
+                                            fieldWithPath("[0].paymentStatus").description("Invoice payment status"),
+                                            fieldWithPath("[0].totalCost").description("Invoice total cost"))))
+                    .andReturn();
+
+    List<InvoiceDto> dtos =
+            objectMapper.readValue(
+                    mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
+
+    assertThat(dtos.size(), is(1));
+
+    invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(item.getTotalFees()));
+    assertThat(dtos, contains(invoiceDto2));
+  }
 }

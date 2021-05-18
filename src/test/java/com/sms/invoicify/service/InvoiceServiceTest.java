@@ -87,4 +87,14 @@ public class InvoiceServiceTest {
     invoiceService.delete();
     verify(invoiceRepository).deleteYearOldAndPaid(oneYearAgo, paymentStatus);
   }
+
+  @Test
+  public void findUnpaidInvoiceTest() {
+    InvoiceEntity invoiceEntity = new InvoiceEntity();
+    when(invoiceRepository.findByPaymentStatus(PaymentStatus.UNPAID)).thenReturn(List.of(invoiceEntity));
+
+    List<InvoiceEntity> actual = invoiceService.findByPaymentStatus(PaymentStatus.UNPAID);
+    verify(invoiceRepository).findByPaymentStatus(PaymentStatus.UNPAID);
+    assertThat(actual, is(List.of(invoiceEntity)));
+  }
 }
