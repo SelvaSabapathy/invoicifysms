@@ -45,9 +45,11 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.snippet.Attributes.attributes;
 import static org.springframework.restdocs.snippet.Attributes.key;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -79,43 +81,49 @@ public class InvoiceControllerIT {
   private MvcResult create(InvoiceDto invoiceDto, HttpStatus status) throws Exception {
     MvcResult mvcResult =
         this.createInner(invoiceDto, status)
-                .andDo(
-            document("{class-name}/{method-name}/{step}",
+            .andDo(
+                document(
+                    "{class-name}/{method-name}/{step}",
                     relaxedRequestFields(
-                            attributes(key("title").value("Fields for Item Creation")),
-                            fieldWithPath("number")
-                                    .description("Invoice ID Number")
-                                    .attributes(key("constraints").value("Not Null")),
-//                            fieldWithPath("creationDate")
-//                                    .description("Date timestamp when Invoice Created")
-//                                    .attributes(key("constraints").value("")).ignored(),
-//                            fieldWithPath("lastModifiedDate")
-//                                    .description("Date timestamp of Last Modification")
-//                                    .attributes(key("constraints").value("")).ignored(),
-//                            fieldWithPath("items")
-//                                    .description("List of Items Associated with the invoice")
-//                                    .attributes(key("constraints").value("")).ignored(),
-                            fieldWithPath("companyName")
-                                    .description("Company Billable for the Invoice")
-                                    .attributes(key("constraints").value("Not Null")),
-                            paymentStatusField(),
-                            fieldWithPath("totalCost")
-                                    .description("Sum of All Line Item Charges on the Ivoice")
-                                    .attributes(key("constraints").value("Not Null"))),
-                            responseBody()
-                    ))
-                .andReturn();
+                        attributes(key("title").value("Fields for Item Creation")),
+                        fieldWithPath("number")
+                            .description("Invoice ID Number")
+                            .attributes(key("constraints").value("Not Null")),
+                        //                            fieldWithPath("creationDate")
+                        //                                    .description("Date timestamp when
+                        // Invoice Created")
+                        //
+                        // .attributes(key("constraints").value("")).ignored(),
+                        //                            fieldWithPath("lastModifiedDate")
+                        //                                    .description("Date timestamp of Last
+                        // Modification")
+                        //
+                        // .attributes(key("constraints").value("")).ignored(),
+                        //                            fieldWithPath("items")
+                        //                                    .description("List of Items Associated
+                        // with the invoice")
+                        //
+                        // .attributes(key("constraints").value("")).ignored(),
+                        fieldWithPath("companyName")
+                            .description("Company Billable for the Invoice")
+                            .attributes(key("constraints").value("Not Null")),
+                        paymentStatusField(),
+                        fieldWithPath("totalCost")
+                            .description("Sum of All Line Item Charges on the Ivoice")
+                            .attributes(key("constraints").value("Not Null"))),
+                    responseBody()))
+            .andReturn();
     return mvcResult;
   }
 
   private FieldDescriptor paymentStatusField() {
     String formattedValues =
-            Arrays.stream(PaymentStatus.values())
-                    .map(type -> String.format("`%s`", type))
-                    .collect(Collectors.joining(", "));
+        Arrays.stream(PaymentStatus.values())
+            .map(type -> String.format("`%s`", type))
+            .collect(Collectors.joining(", "));
     return fieldWithPath("paymentStatus")
-            .description("The Current ENUM Payment status of the invoice.")
-            .attributes(key("constraints").value("Enumerated, One of: " + formattedValues));
+        .description("The Current ENUM Payment status of the invoice.")
+        .attributes(key("constraints").value("Enumerated, One of: " + formattedValues));
   }
 
   private ResultActions createInner(InvoiceDto invoiceDto, HttpStatus status) throws Exception {
@@ -479,5 +487,90 @@ public class InvoiceControllerIT {
     invoiceDto1.setLastModifiedDate(LocalDate.now());
     assertThat(dtos.size(), is(1));
     assertThat(dtos, contains(invoiceDto1));
+  }
+
+  @Test
+  public void deleteInvoices() throws Exception {
+    InvoiceDto undeleteInvoiceDto =
+        new InvoiceDto(
+            120L,
+            LocalDate.now(),
+            null,
+            null,
+            "aCompany",
+            PaymentStatus.UNPAID,
+            new BigDecimal(120.00));
+    create(undeleteInvoiceDto, HttpStatus.CREATED);
+
+    InvoiceDto undeleteInvoiceDto2 =
+        new InvoiceDto(
+            121L,
+            LocalDate.now(),
+            null,
+            null,
+            "aCompany",
+            PaymentStatus.PAID,
+            new BigDecimal(120.00));
+    create(undeleteInvoiceDto2, HttpStatus.CREATED);
+
+    InvoiceDto undeleteInvoiceDto3 =
+        new InvoiceDto(
+            122L,
+            LocalDate.now().minusYears(1L).minusDays(1L),
+            null,
+            null,
+            "aCompany",
+            PaymentStatus.UNPAID,
+            new BigDecimal(120.00));
+    create(undeleteInvoiceDto3, HttpStatus.CREATED);
+
+    InvoiceDto deleteInvoiceDto4 =
+        new InvoiceDto(
+            123L,
+            LocalDate.now().minusYears(1L).minusDays(1L),
+            null,
+            null,
+            "aCompany",
+            PaymentStatus.PAID,
+            new BigDecimal(120.00));
+    create(deleteInvoiceDto4, HttpStatus.CREATED);
+
+    // Create an item and attach it to an invoice
+    mockMvc
+        .perform(
+            post("/items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    objectMapper.writeValueAsString(
+                        Item.builder()
+                            .description("Test Item Description")
+                            .quantity(1)
+                            .totalFees(BigDecimal.valueOf(10).setScale(2))
+                            .invoice(InvoiceDto.builder().number(123L).build())
+                            .build())))
+        .andExpect(status().isCreated());
+
+    // verify our setup before deleting -- item & invoice
+    mockMvc
+        .perform(get("/invoices").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("length()").value(4));
+
+    mockMvc
+        .perform(get("/items").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("length()").value(1));
+
+    // delete
+    mockMvc
+        .perform(delete("/invoices").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNoContent())
+        .andReturn();
+
+    // verify after delete -- item & invoice
+    mockMvc
+        .perform(get("/invoices").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("length()").value(3));
   }
 }

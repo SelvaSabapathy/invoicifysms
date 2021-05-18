@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -76,5 +77,14 @@ public class InvoiceServiceTest {
     invoiceService.update(invoiceEntity);
     verify(invoiceRepository).findByNumber(100L);
     verify(invoiceRepository).save(invoiceEntity);
+  }
+
+  @Test
+  public void deleteInvoices() throws ParseException {
+    LocalDate oneYearAgo = LocalDate.now().minusYears(1L);
+    PaymentStatus paymentStatus = PaymentStatus.PAID;
+
+    invoiceService.delete();
+    verify(invoiceRepository).deleteYearOldAndPaid(oneYearAgo, paymentStatus);
   }
 }

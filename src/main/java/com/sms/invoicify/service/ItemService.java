@@ -5,7 +5,6 @@ import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.models.Item;
 import com.sms.invoicify.models.ItemEntity;
 import com.sms.invoicify.repository.ItemsRepositiory;
-import com.sms.invoicify.utilities.InvoicifyUtilities;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
