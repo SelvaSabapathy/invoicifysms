@@ -14,11 +14,12 @@ API Documentation for Invoicify solutions by Team SMS
 
 [[overview-contributors]]
 == Contributors
+Sebin Francis
+Selva Sabapathy
 John Tansor
-Selva
-Sebin
-Maanick
-Ravi
+
+(Maanickavasagam Arivarasu
+Raviindran Chellappa)
 
 [[overview-description]]
 == Summary
@@ -63,8 +64,6 @@ include::{snippets}/items-controller-it/post-item/1/request-fields.adoc[]
 .response
 include::{snippets}/items-controller-it/post-item/1/http-response.adoc[]
 
-include::{snippets}/items-controller-it/post-item/1/response-body.adoc[]
-
 [[specification-API-item-getall]]
 ==== GET
 
@@ -91,23 +90,6 @@ include::{snippets}/invoice-controller-it/create-one-success/1/request-fields.ad
 include::{snippets}/invoice-controller-it/create-one-success/1/http-response.adoc[]
 
 include::{snippets}/invoice-controller-it/create-one-success/1/response-body.adoc[]
-
-
-Create an invoice without invoice number
-
-.request
-include::{snippets}/postInvoiceWithNoInvoiceNumber/http-request.adoc[]
-
-.response
-include::{snippets}/postInvoiceWithNoInvoiceNumber/http-response.adoc[]
-
-Create an invoice with an existing invoice number
-
-.request
-include::{snippets}/postInvoiceWithExistingInvoiceNumber/http-request.adoc[]
-
-.response
-include::{snippets}/postInvoiceWithExistingInvoiceNumber/http-response.adoc[]
 
 ==== GET
 
@@ -144,10 +126,10 @@ include::{snippets}/searchInvoiceByNumber/http-response.adoc[]
 Update invoice  (company name, payment status)
 
 .request
-include::{snippets}/invoice-controller-it/upate-and-view-invoice-details/2/http-request.adoc[]
+include::{snippets}/invoice-controller-it/update-and-view-invoice-details/2/http-request.adoc[]
 
 .response
-include::{snippets}/invoice-controller-it/upate-and-view-invoice-details/2/http-response.adoc[]
+include::{snippets}/invoice-controller-it/update-and-view-invoice-details/2/http-response.adoc[]
 
 === Companies
 
@@ -156,15 +138,43 @@ include::{snippets}/invoice-controller-it/upate-and-view-invoice-details/2/http-
 Create / Add a New Company
 
 .request
-include::{snippets}/PostCompanyDetails/
+include::{snippets}/company-controller-it/post-company-details/1/http-request.adoc[]
+
+include::{snippets}/company-controller-it/post-company-details/1/request-fields.adoc[]
 
 .response
-include::{snippets}/PostCompanyDetails/
+include::{snippets}/company-controller-it/post-company-details/1/http-response.adoc[]
+
+==== GET
 
 Get List of All Companies
 
 .request
-include::{snippets}/GetAllCompanies/
+include::{snippets}/company-controller-it/post-company-details/2/http-request.adoc[]
 
 .response
-include::{snippets}/GetAllCompanies/
+include::{snippets}/company-controller-it/post-company-details/2/http-response.adoc[]
+
+
+
+
+
+
+
+
+WIP?
+Create an invoice without invoice number
+
+.request
+include::{snippets}/postInvoiceWithNoInvoiceNumber/http-request.adoc[]
+
+.response
+include::{snippets}/postInvoiceWithNoInvoiceNumber/http-response.adoc[]
+
+Create an invoice with an existing invoice number
+
+.request
+include::{snippets}/postInvoiceWithExistingInvoiceNumber/http-request.adoc[]
+
+.response
+include::{snippets}/postInvoiceWithExistingInvoiceNumber/http-response.adoc[]

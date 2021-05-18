@@ -79,43 +79,49 @@ public class InvoiceControllerIT {
   private MvcResult create(InvoiceDto invoiceDto, HttpStatus status) throws Exception {
     MvcResult mvcResult =
         this.createInner(invoiceDto, status)
-                .andDo(
-            document("{class-name}/{method-name}/{step}",
+            .andDo(
+                document(
+                    "{class-name}/{method-name}/{step}",
                     relaxedRequestFields(
-                            attributes(key("title").value("Fields for Item Creation")),
-                            fieldWithPath("number")
-                                    .description("Invoice ID Number")
-                                    .attributes(key("constraints").value("Not Null")),
-//                            fieldWithPath("creationDate")
-//                                    .description("Date timestamp when Invoice Created")
-//                                    .attributes(key("constraints").value("")).ignored(),
-//                            fieldWithPath("lastModifiedDate")
-//                                    .description("Date timestamp of Last Modification")
-//                                    .attributes(key("constraints").value("")).ignored(),
-//                            fieldWithPath("items")
-//                                    .description("List of Items Associated with the invoice")
-//                                    .attributes(key("constraints").value("")).ignored(),
-                            fieldWithPath("companyName")
-                                    .description("Company Billable for the Invoice")
-                                    .attributes(key("constraints").value("Not Null")),
-                            paymentStatusField(),
-                            fieldWithPath("totalCost")
-                                    .description("Sum of All Line Item Charges on the Ivoice")
-                                    .attributes(key("constraints").value("Not Null"))),
-                            responseBody()
-                    ))
-                .andReturn();
+                        attributes(key("title").value("Fields for Item Creation")),
+                        fieldWithPath("number")
+                            .description("Invoice ID Number")
+                            .attributes(key("constraints").value("Not Null")),
+                        //                            fieldWithPath("creationDate")
+                        //                                    .description("Date timestamp when
+                        // Invoice Created")
+                        //
+                        // .attributes(key("constraints").value("")).ignored(),
+                        //                            fieldWithPath("lastModifiedDate")
+                        //                                    .description("Date timestamp of Last
+                        // Modification")
+                        //
+                        // .attributes(key("constraints").value("")).ignored(),
+                        //                            fieldWithPath("items")
+                        //                                    .description("List of Items Associated
+                        // with the invoice")
+                        //
+                        // .attributes(key("constraints").value("")).ignored(),
+                        fieldWithPath("companyName")
+                            .description("Company Billable for the Invoice")
+                            .attributes(key("constraints").value("Not Null")),
+                        paymentStatusField(),
+                        fieldWithPath("totalCost")
+                            .description("Sum of All Line Item Charges on the Ivoice")
+                            .attributes(key("constraints").value("Not Null"))),
+                    responseBody()))
+            .andReturn();
     return mvcResult;
   }
 
   private FieldDescriptor paymentStatusField() {
     String formattedValues =
-            Arrays.stream(PaymentStatus.values())
-                    .map(type -> String.format("`%s`", type))
-                    .collect(Collectors.joining(", "));
+        Arrays.stream(PaymentStatus.values())
+            .map(type -> String.format("`%s`", type))
+            .collect(Collectors.joining(", "));
     return fieldWithPath("paymentStatus")
-            .description("The Current ENUM Payment status of the invoice.")
-            .attributes(key("constraints").value("Enumerated, One of: " + formattedValues));
+        .description("The Current ENUM Payment status of the invoice.")
+        .attributes(key("constraints").value("Enumerated, One of: " + formattedValues));
   }
 
   private ResultActions createInner(InvoiceDto invoiceDto, HttpStatus status) throws Exception {
@@ -428,7 +434,7 @@ public class InvoiceControllerIT {
   }
 
   @Test
-  public void upateAndViewInvoiceDetails() throws Exception {
+  public void updateAndViewInvoiceDetails() throws Exception {
     Item item =
         Item.builder()
             .description("Test Item Description")

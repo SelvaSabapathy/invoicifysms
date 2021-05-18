@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.NumberFormat;
 
 import java.math.BigDecimal;
 
@@ -14,6 +15,9 @@ import java.math.BigDecimal;
 public class Item {
   String description;
   Integer quantity;
+
+  @NumberFormat(style = NumberFormat.Style.CURRENCY)
   BigDecimal totalFees;
+
   InvoiceDto invoice;
 }

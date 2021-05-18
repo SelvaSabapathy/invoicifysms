@@ -3,18 +3,31 @@ package com.sms.invoicify.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sms.invoicify.models.Address;
 import com.sms.invoicify.models.Company;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedRequestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseBody;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.snippet.Attributes.attributes;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -24,12 +37,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
+@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CompanyControllerIT {
 
-  @Autowired MockMvc mockMvc;
+  private MockMvc mockMvc;
 
   @Autowired ObjectMapper objectMapper;
+
+  @BeforeEach
+  public void setUp(
+      WebApplicationContext webApplicationContext,
+      RestDocumentationContextProvider restDocumentation) {
+    this.mockMvc =
+        MockMvcBuilders.webAppContextSetup(webApplicationContext)
+            .apply(
+                documentationConfiguration(restDocumentation)
+                    .operationPreprocessors()
+                    .withRequestDefaults(prettyPrint())
+                    .withResponseDefaults(prettyPrint()))
+            .alwaysDo(document("{class-name}/{method-name}/{step}"))
+            .build();
+  }
 
   @Test
   void getCompanyWhenEmpty() throws Exception {
@@ -62,7 +91,36 @@ public class CompanyControllerIT {
                 .content(objectMapper.writeValueAsString(company)))
         .andExpect(status().isCreated())
         .andExpect(content().string("Hampton DeVille Corp. created Successfully"))
-        .andDo(document("PostCompanyDetails"));
+        .andDo(
+            document(
+                "{class-name}/{method-name}/{step}",
+                relaxedRequestFields(
+                    attributes(key("title").value("Fields for adding new Company")),
+                    fieldWithPath("companyName")
+                        .description("Name of the Company")
+                        .attributes(key("constraints").value("Not Blank, Primary Key")),
+                    fieldWithPath("address.street")
+                        .description("Street Address of Company")
+                        .attributes(key("constraints").value("Not Null")),
+                    fieldWithPath("address.city")
+                        .description("Location City")
+                        .attributes(key("constraints").value("Not Null")),
+                    fieldWithPath("address.state")
+                        .description("Location State")
+                        .attributes(key("constraints").value("Not Null")),
+                    fieldWithPath("address.zipCode")
+                        .description("US Postal ZipCode")
+                        .attributes(key("constraints").value("Not Null, 5 Digits")),
+                    fieldWithPath("contactName")
+                        .description("Name of Primary Contact")
+                        .attributes(key("constraints").value("")),
+                    fieldWithPath("title")
+                        .description("Title of Primary Contact")
+                        .attributes(key("constraints").value("")),
+                    fieldWithPath("phoneNumber")
+                        .description("Phone Number of Primary Contact")
+                        .attributes(key("constraints").value(""))),
+                responseBody()));
 
     mockMvc
         .perform(get("/company"))
@@ -78,7 +136,7 @@ public class CompanyControllerIT {
         .andExpect(jsonPath("[0].phoneNumber").value("312-777-7777"))
         .andDo(
             document(
-                "GetAllCompanies",
+                "{class-name}/{method-name}/{step}",
                 responseFields(
                     fieldWithPath("[0].companyName").description("Company Name"),
                     fieldWithPath("[0].address.street").description("Street Address"),
