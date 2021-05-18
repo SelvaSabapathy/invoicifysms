@@ -45,9 +45,11 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.snippet.Attributes.attributes;
 import static org.springframework.restdocs.snippet.Attributes.key;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -485,5 +487,90 @@ public class InvoiceControllerIT {
     invoiceDto1.setLastModifiedDate(LocalDate.now());
     assertThat(dtos.size(), is(1));
     assertThat(dtos, contains(invoiceDto1));
+  }
+
+  @Test
+  public void deleteInvoices() throws Exception {
+    InvoiceDto undeleteInvoiceDto =
+        new InvoiceDto(
+            120L,
+            LocalDate.now(),
+            null,
+            null,
+            "aCompany",
+            PaymentStatus.UNPAID,
+            new BigDecimal(120.00));
+    create(undeleteInvoiceDto, HttpStatus.CREATED);
+
+    InvoiceDto undeleteInvoiceDto2 =
+        new InvoiceDto(
+            121L,
+            LocalDate.now(),
+            null,
+            null,
+            "aCompany",
+            PaymentStatus.PAID,
+            new BigDecimal(120.00));
+    create(undeleteInvoiceDto2, HttpStatus.CREATED);
+
+    InvoiceDto undeleteInvoiceDto3 =
+        new InvoiceDto(
+            122L,
+            LocalDate.now().minusYears(1L).minusDays(1L),
+            null,
+            null,
+            "aCompany",
+            PaymentStatus.UNPAID,
+            new BigDecimal(120.00));
+    create(undeleteInvoiceDto3, HttpStatus.CREATED);
+
+    InvoiceDto deleteInvoiceDto4 =
+        new InvoiceDto(
+            123L,
+            LocalDate.now().minusYears(1L).minusDays(1L),
+            null,
+            null,
+            "aCompany",
+            PaymentStatus.PAID,
+            new BigDecimal(120.00));
+    create(deleteInvoiceDto4, HttpStatus.CREATED);
+
+    // Create an item and attach it to an invoice
+    mockMvc
+        .perform(
+            post("/items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    objectMapper.writeValueAsString(
+                        Item.builder()
+                            .description("Test Item Description")
+                            .quantity(1)
+                            .totalFees(BigDecimal.valueOf(10).setScale(2))
+                            .invoice(InvoiceDto.builder().number(123L).build())
+                            .build())))
+        .andExpect(status().isCreated());
+
+    // verify our setup before deleting -- item & invoice
+    mockMvc
+        .perform(get("/invoices").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("length()").value(4));
+
+    mockMvc
+        .perform(get("/items").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("length()").value(1));
+
+    // delete
+    mockMvc
+        .perform(delete("/invoices").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNoContent())
+        .andReturn();
+
+    // verify after delete -- item & invoice
+    mockMvc
+        .perform(get("/invoices").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("length()").value(3));
   }
 }
