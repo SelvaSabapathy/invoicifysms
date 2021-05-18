@@ -203,18 +203,31 @@ public class InvoiceController {
   public ResponseEntity<List<InvoiceDto>> getUnpaidInvoices() {
 
     List<InvoiceDto> dtos =
-            invoiceService.findByPaymentStatus(PaymentStatus.UNPAID).stream()
-                    .map(
-                            e ->
-                                    new InvoiceDto(
-                                            e.getNumber(),
-                                            e.getCreationDate(),
-                                            e.getLastModifiedDate(),
-                                            getItemDtos(e.getItems()),
-                                            e.getCompanyName(),
-                                            e.getPaymentStatus(),
-                                            e.getTotalCost()))
-                    .collect(Collectors.toList());
+        invoiceService.findByPaymentStatus(PaymentStatus.UNPAID).stream()
+            .map(
+                e ->
+                    new InvoiceDto(
+                        e.getNumber(),
+                        e.getCreationDate(),
+                        e.getLastModifiedDate(),
+                        getItemDtos(e.getItems()),
+                        e.getCompanyName(),
+                        e.getPaymentStatus(),
+                        e.getTotalCost()))
+            .collect(Collectors.toList());
+    return new ResponseEntity<>(dtos, HttpStatus.OK);
+  }
+
+  @GetMapping("/invoices/unpaid/summary")
+  public ResponseEntity<List<InvoiceSummaryDto>> getUnpaidInvoicesSummary() {
+
+    List<InvoiceSummaryDto> dtos =
+        invoiceService.findByPaymentStatus(PaymentStatus.UNPAID).stream()
+            .map(
+                e ->
+                    new InvoiceSummaryDto(
+                        e.getNumber(), e.getCreationDate(), e.getPaymentStatus(), e.getTotalCost()))
+            .collect(Collectors.toList());
     return new ResponseEntity<>(dtos, HttpStatus.OK);
   }
 }

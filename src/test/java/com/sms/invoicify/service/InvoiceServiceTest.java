@@ -91,7 +91,8 @@ public class InvoiceServiceTest {
   @Test
   public void findUnpaidInvoiceTest() {
     InvoiceEntity invoiceEntity = new InvoiceEntity();
-    when(invoiceRepository.findByPaymentStatus(PaymentStatus.UNPAID)).thenReturn(List.of(invoiceEntity));
+    when(invoiceRepository.findByPaymentStatus(PaymentStatus.UNPAID))
+        .thenReturn(List.of(invoiceEntity));
 
     List<InvoiceEntity> actual = invoiceService.findByPaymentStatus(PaymentStatus.UNPAID);
     verify(invoiceRepository).findByPaymentStatus(PaymentStatus.UNPAID);
