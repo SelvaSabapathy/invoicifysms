@@ -113,13 +113,35 @@ include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/3/http-
 .response
 include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/3/http-response.adoc[]
 
+===== Summary View, Status=Unpaid
+
+Get Summary View of ALL Unpaid Invoices
+
+.request
+include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoices-summary/3/http-request.adoc[]
+
+.response
+include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoices-summary/3/http-response.adoc[]
+
+===== Detailed View, Status=Unpaid
+
+Get Details of ALL Unpaid Invoices
+
+.request
+include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoice-detail/3/http-request.adoc[]
+
+.response
+include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoice-detail/3/http-response.adoc[]
+
+===== Search invoice by number
+
 Search Invoice by number
 
 .request
-include::{snippets}/searchInvoiceByNumber/http-request.adoc[]
+include::{snippets}/invoice-controller-it/search-invoices-by-number/3/http-request.adoc[]
 
 .response
-include::{snippets}/searchInvoiceByNumber/http-response.adoc[]
+include::{snippets}/invoice-controller-it/search-invoices-by-number/3/http-response.adoc[]
 
 ==== PUT
 
