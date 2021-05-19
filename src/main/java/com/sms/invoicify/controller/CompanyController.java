@@ -1,6 +1,7 @@
 package com.sms.invoicify.controller;
 
 import com.sms.invoicify.models.Company;
+import com.sms.invoicify.models.CompanySummaryVO;
 import com.sms.invoicify.service.CompanyService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,12 @@ public class CompanyController {
   @ResponseStatus(HttpStatus.OK)
   public List<Company> getCompanyDetails() {
     return companyService.fetchAllCompany();
+  }
+
+  @GetMapping("/summary")
+  @ResponseStatus(HttpStatus.OK)
+  public List<CompanySummaryVO> getCompanySummary() {
+    return companyService.fetchCompanySummaryView();
   }
 
   @PostMapping

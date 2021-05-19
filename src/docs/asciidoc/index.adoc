@@ -177,6 +177,13 @@ include::{snippets}/company-controller-it/post-company-details/2/http-request.ad
 .response
 include::{snippets}/company-controller-it/post-company-details/2/http-response.adoc[]
 
+Get Summary View Of All Companies
+
+.request
+include::{snippets}/company-controller-it/get-company-summary-view/3/http-request.adoc[]
+
+.response
+include::{snippets}/company-controller-it/get-company-summary-view/3/http-response.adoc[]
 
 
 
