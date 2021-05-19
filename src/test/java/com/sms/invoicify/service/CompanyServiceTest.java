@@ -3,6 +3,7 @@ package com.sms.invoicify.service;
 import com.sms.invoicify.models.Address;
 import com.sms.invoicify.models.Company;
 import com.sms.invoicify.models.CompanyEntity;
+import com.sms.invoicify.models.CompanySummaryVO;
 import com.sms.invoicify.repository.CompanyRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -101,4 +102,39 @@ public class CompanyServiceTest {
     verify(companyRepository).findAll();
     verifyNoMoreInteractions(companyRepository);
   }
+
+  @Test
+  @DisplayName("Get Companies Summary")
+  void getCompaniesSummary() {
+    when(companyRepository.findAll())
+            .thenReturn(
+                    List.of(
+                            CompanyEntity.builder()
+                                    .companyName("Test1")
+                                    .address(Address.builder()
+                                            .street("100 N State Street")
+                                            .city("Chicago")
+                                            .state("IL")
+                                            .zipCode("60601")
+                                            .build())
+                                    .contactName("Name1")
+                                    .title("Title1")
+                                    .phoneNumber("312-777-7777")
+                                    .build()));
+
+    List<CompanySummaryVO> companySummaryFromService = companyService.fetchCompanySummaryView();
+
+    CompanySummaryVO companySummaryDtoExpected =
+            CompanySummaryVO.builder()
+                    .companyName("Test1")
+                    .city("Chicago")
+                    .state("IL")
+                    .build();
+
+    assertThat(companySummaryFromService).isEqualTo(List.of(companySummaryDtoExpected));
+
+    verify(companyRepository).findAll();
+    verifyNoMoreInteractions(companyRepository);
+  }
+
 }

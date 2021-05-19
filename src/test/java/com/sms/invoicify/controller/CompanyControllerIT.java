@@ -197,23 +197,23 @@ public class CompanyControllerIT {
     mockMvc
             .perform(get("/company/summary"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("length()").value(1))
+            .andExpect(jsonPath("length()").value(2))
             .andExpect(jsonPath("[0].companyName").value("Hampton DeVille Corp."))
-            .andExpect(jsonPath("[0].address.city").value("Chicago"))
-            .andExpect(jsonPath("[0].address.state").value("IL"))
+            .andExpect(jsonPath("[0].city").value("Chicago"))
+            .andExpect(jsonPath("[0].state").value("IL"))
             .andExpect(jsonPath("[1].companyName").value("Kitchener Corp."))
-            .andExpect(jsonPath("[1].address.city").value("Kitchener"))
-            .andExpect(jsonPath("[1].address.state").value("ON"))
+            .andExpect(jsonPath("[1].city").value("Kitchener"))
+            .andExpect(jsonPath("[1].state").value("ON"))
             .andDo(
                     document(
                             "{class-name}/{method-name}/{step}",
                             responseFields(
                                     fieldWithPath("[0].companyName").description("Company Name"),
-                                    fieldWithPath("[0].address.city").description("Location City"),
-                                    fieldWithPath("[0].address.state").description("Location State"),
+                                    fieldWithPath("[0].city").description("Location City"),
+                                    fieldWithPath("[0].state").description("Location State"),
                                     fieldWithPath("[1].companyName").description("Company Name"),
-                                    fieldWithPath("[1].address.city").description("Location City"),
-                                    fieldWithPath("[1].address.state").description("Location State")),
+                                    fieldWithPath("[1].city").description("Location City"),
+                                    fieldWithPath("[1].state").description("Location State")),
                     responseBody()));
 
     }
