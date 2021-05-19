@@ -169,14 +169,15 @@ include::{snippets}/company-controller-it/post-company-details/1/http-response.a
 
 ==== GET
 
-Get List of All Companies
-
+===== Detailed View, ALL
+Get Detailed View of All Companies
 .request
 include::{snippets}/company-controller-it/post-company-details/2/http-request.adoc[]
 
 .response
 include::{snippets}/company-controller-it/post-company-details/2/http-response.adoc[]
 
+===== Summary View, ALL
 Get Summary View Of All Companies
 
 .request
