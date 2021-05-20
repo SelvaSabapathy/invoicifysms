@@ -170,7 +170,9 @@ include::{snippets}/company-controller-it/post-company-details/1/http-response.a
 ==== GET
 
 ===== Detailed View, ALL
+
 Get Detailed View of All Companies
+
 .request
 include::{snippets}/company-controller-it/post-company-details/2/http-request.adoc[]
 
@@ -178,6 +180,7 @@ include::{snippets}/company-controller-it/post-company-details/2/http-request.ad
 include::{snippets}/company-controller-it/post-company-details/2/http-response.adoc[]
 
 ===== Summary View, ALL
+
 Get Summary View Of All Companies
 
 .request
@@ -185,6 +188,19 @@ include::{snippets}/company-controller-it/get-company-summary-view/3/http-reques
 
 .response
 include::{snippets}/company-controller-it/get-company-summary-view/3/http-response.adoc[]
+
+==== PUT
+
+Update Existing Company Details
+
+.request
+include::{snippets}/company-controller-it/update-company_when-company-exists/3/http-request.adoc[]
+
+include::{snippets}/company-controller-it/update-company_when-company-exists/3/request-fields.adoc[]
+
+.response
+include::{snippets}/company-controller-it/update-company_when-company-exists/3/http-response.adoc[]
+
 
 
 
