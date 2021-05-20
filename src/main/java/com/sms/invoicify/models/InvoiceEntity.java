@@ -35,7 +35,7 @@ public class InvoiceEntity {
 
     private LocalDate lastModifiedDate;
 
-    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemEntity> items;
 
     private String companyName;

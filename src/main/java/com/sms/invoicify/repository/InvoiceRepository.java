@@ -19,9 +19,12 @@ public interface InvoiceRepository extends JpaRepository<InvoiceEntity, Long> {
   @Modifying
   @Query(
       value =
-          "DELETE FROM InvoiceEntity i WHERE i.creationDate > :oneYearAgo AND i.paymentStatus = :paymentStatus")
+          "DELETE FROM InvoiceEntity i WHERE i.creationDate < :oneYearAgo AND i.paymentStatus = :paymentStatus")
   Object deleteYearOldAndPaid(
           @Param("oneYearAgo") LocalDate oneYearAgo, @Param("paymentStatus") PaymentStatus paymentStatus);
 
     List<InvoiceEntity> findByPaymentStatus(PaymentStatus paymentStatus);
+
+    @Query(value ="SELECT entity FROM InvoiceEntity entity WHERE entity.creationDate < :oneYearAgo AND entity.paymentStatus = :paymentStatus")
+    List<InvoiceEntity> findYearOldandPaid(@Param("oneYearAgo") LocalDate oneYearAgo, @Param("paymentStatus") PaymentStatus paymentStatus);
 }

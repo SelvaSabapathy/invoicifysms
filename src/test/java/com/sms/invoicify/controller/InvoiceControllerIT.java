@@ -535,7 +535,7 @@ public class InvoiceControllerIT {
             new BigDecimal(120.00));
     create(deleteInvoiceDto4, HttpStatus.CREATED);
 
-    // Create an item and attach it to an invoice
+    // Create an item and attach it to an invoice which is getting deleted
     mockMvc
         .perform(
             post("/items")
@@ -550,6 +550,21 @@ public class InvoiceControllerIT {
                             .build())))
         .andExpect(status().isCreated());
 
+    // Create an item and attach it to an invoice which is not getting deleted
+    mockMvc
+            .perform(
+                    post("/items")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(
+                                    objectMapper.writeValueAsString(
+                                            Item.builder()
+                                                    .description("Test Item Description-Invoice 120")
+                                                    .quantity(1)
+                                                    .totalFees(BigDecimal.valueOf(100).setScale(2))
+                                                    .invoice(InvoiceDto.builder().number(120L).build())
+                                                    .build())))
+            .andExpect(status().isCreated());
+
     // verify our setup before deleting -- item & invoice
     mockMvc
         .perform(get("/invoices").contentType(MediaType.APPLICATION_JSON))
@@ -559,7 +574,7 @@ public class InvoiceControllerIT {
     mockMvc
         .perform(get("/items").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("length()").value(1));
+        .andExpect(jsonPath("length()").value(2));
 
     // delete
     mockMvc
@@ -572,6 +587,12 @@ public class InvoiceControllerIT {
         .perform(get("/invoices").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("length()").value(3));
+
+    mockMvc
+            .perform(get("/items").contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("length()").value(1))
+            .andExpect(jsonPath("[0].description").value("Test Item Description-Invoice 120"));
   }
 
   @Test
