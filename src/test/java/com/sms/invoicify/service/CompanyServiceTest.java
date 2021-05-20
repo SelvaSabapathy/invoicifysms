@@ -177,7 +177,7 @@ public class CompanyServiceTest {
     Company companyFromService = companyService.fetchCompanyByName("myExistingCompany");
     assertThat(companyFromService).isEqualTo(expected);
 
-    verify(companyRepository.findById("myExistingCompany"));
+    verify(companyRepository).findById("myExistingCompany");
     verifyNoMoreInteractions(companyRepository);
   }
 }

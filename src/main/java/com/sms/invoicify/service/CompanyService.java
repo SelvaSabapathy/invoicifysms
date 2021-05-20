@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,7 +65,20 @@ public class CompanyService {
     public void updateCompany(String companyName, Company company) {
     }
 
-    public Company fetchCompanyByName(String myExistingCompany) {
-      return null;
+    public Company fetchCompanyByName(String companyName) {
+    Optional<CompanyEntity> companyEntityOptional = companyRepository.findById(companyName);
+    Company found = companyEntityOptional
+        .map(
+            companyEntity -> {
+              return Company.builder()
+                  .companyName(companyEntity.getCompanyName())
+                  .address(companyEntity.getAddress())
+                  .contactName(companyEntity.getContactName())
+                  .title(companyEntity.getTitle())
+                  .phoneNumber(companyEntity.getPhoneNumber())
+                  .build();
+            })
+        .orElse(null);
+    return found;
     }
 }
