@@ -153,6 +153,16 @@ include::{snippets}/invoice-controller-it/update-and-view-invoice-details/2/http
 .response
 include::{snippets}/invoice-controller-it/update-and-view-invoice-details/2/http-response.adoc[]
 
+==== DELETE
+
+Delete invoices (deletes more than one year old and paid invoices)
+
+.request
+include::{snippets}/invoice-controller-it/delete-invoices/9/http-request.adoc[]
+
+.response
+include::{snippets}/invoice-controller-it/delete-invoices/9/http-response.adoc[]
+
 === Companies
 
 ==== POST

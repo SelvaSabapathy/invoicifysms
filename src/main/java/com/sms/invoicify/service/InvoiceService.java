@@ -64,15 +64,23 @@ public class InvoiceService {
 
   public void delete() {
     LocalDate oneYearAgo = LocalDate.now().minusYears(1L);
-    List<InvoiceEntity> selectedEntities = invoiceRepository.findYearOldandPaid(oneYearAgo, PaymentStatus.PAID);
-    selectedEntities.forEach(e -> {
-      e.getItems().forEach(e1 -> {
-        e1.setInvoice(null);
-      });
-      invoiceRepository.save(e);
-      invoiceRepository.delete(e);
-    });
-   // invoiceRepository.deleteYearOldAndPaid(oneYearAgo, PaymentStatus.PAID);
+    List<InvoiceEntity> selectedInvoiceEntities =
+        invoiceRepository.findYearOldandPaid(oneYearAgo, PaymentStatus.PAID);
+    if (selectedInvoiceEntities.size() > 0) {
+      selectedInvoiceEntities.forEach(
+          entity -> {
+            if (entity.getItems() != null) {
+              entity
+                  .getItems()
+                  .forEach(
+                      item -> {
+                        item.setInvoice(null);
+                      });
+              invoiceRepository.save(entity);
+            }
+            invoiceRepository.delete(entity);
+          });
+    }
   }
 
   public List<InvoiceEntity> findByPaymentStatus(PaymentStatus paymentStatus) {

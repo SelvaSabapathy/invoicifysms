@@ -25,23 +25,23 @@ import java.util.List;
 @Builder
 public class InvoiceEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Long id;
 
-    private Long number;
+  private Long number;
 
-    private LocalDate creationDate;
+  private LocalDate creationDate;
 
-    private LocalDate lastModifiedDate;
+  private LocalDate lastModifiedDate;
 
-    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ItemEntity> items;
+  @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<ItemEntity> items;
 
-    private String companyName;
+  private String companyName;
 
-    @Enumerated(EnumType.ORDINAL)
-    private PaymentStatus paymentStatus;
+  @Enumerated(EnumType.ORDINAL)
+  private PaymentStatus paymentStatus;
 
-    private BigDecimal totalCost;
+  private BigDecimal totalCost;
 }

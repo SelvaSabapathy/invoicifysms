@@ -458,7 +458,9 @@ public class InvoiceControllerIT {
 
     // update paid status
     invoiceDto1.setPaymentStatus(PaymentStatus.PAID);
-    this.update(invoiceDto1, HttpStatus.NO_CONTENT).andDo(document("updateInvoice")).andReturn();
+    this.update(invoiceDto1, HttpStatus.NO_CONTENT)
+        .andDo(document("{class-name}/{method-name}/{step}"))
+        .andReturn();
 
     invoiceDto1.setItems(List.of());
 
@@ -552,18 +554,18 @@ public class InvoiceControllerIT {
 
     // Create an item and attach it to an invoice which is not getting deleted
     mockMvc
-            .perform(
-                    post("/items")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(
-                                    objectMapper.writeValueAsString(
-                                            Item.builder()
-                                                    .description("Test Item Description-Invoice 120")
-                                                    .quantity(1)
-                                                    .totalFees(BigDecimal.valueOf(100).setScale(2))
-                                                    .invoice(InvoiceDto.builder().number(120L).build())
-                                                    .build())))
-            .andExpect(status().isCreated());
+        .perform(
+            post("/items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    objectMapper.writeValueAsString(
+                        Item.builder()
+                            .description("Test Item Description-Invoice 120")
+                            .quantity(1)
+                            .totalFees(BigDecimal.valueOf(100).setScale(2))
+                            .invoice(InvoiceDto.builder().number(120L).build())
+                            .build())))
+        .andExpect(status().isCreated());
 
     // verify our setup before deleting -- item & invoice
     mockMvc
@@ -580,19 +582,22 @@ public class InvoiceControllerIT {
     mockMvc
         .perform(delete("/invoices").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNoContent())
-        .andReturn();
+        .andDo(document("{class-name}/{method-name}/{step}"));
 
     // verify after delete -- item & invoice
     mockMvc
         .perform(get("/invoices").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("length()").value(3));
+        .andExpect(jsonPath("length()").value(3))
+        .andExpect(jsonPath("[0].number").value(120L))
+        .andExpect(jsonPath("[1].number").value(121L))
+        .andExpect(jsonPath("[2].number").value(122L));
 
     mockMvc
-            .perform(get("/items").contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("length()").value(1))
-            .andExpect(jsonPath("[0].description").value("Test Item Description-Invoice 120"));
+        .perform(get("/items").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("length()").value(1))
+        .andExpect(jsonPath("[0].description").value("Test Item Description-Invoice 120"));
   }
 
   @Test

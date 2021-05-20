@@ -84,8 +84,13 @@ public class InvoiceServiceTest {
     LocalDate oneYearAgo = LocalDate.now().minusYears(1L);
     PaymentStatus paymentStatus = PaymentStatus.PAID;
 
+    InvoiceEntity invoiceEntity = new InvoiceEntity();
+    invoiceEntity.setNumber(100L);
+    when(invoiceRepository.findYearOldandPaid(oneYearAgo, paymentStatus)).thenReturn(List.of(invoiceEntity));
+
     invoiceService.delete();
-    verify(invoiceRepository).deleteYearOldAndPaid(oneYearAgo, paymentStatus);
+    verify(invoiceRepository).findYearOldandPaid(oneYearAgo, paymentStatus);
+    verify(invoiceRepository).delete(invoiceEntity);
   }
 
   @Test
