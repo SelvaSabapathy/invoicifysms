@@ -252,28 +252,28 @@ public class CompanyControllerIT {
                                     attributes(key("title").value("Fields for adding new Company")),
                                     fieldWithPath("companyName")
                                             .description("Name of the Company")
-                                            .attributes(key("constraints").value("Not Blank, Primary Key")),
+                                            .attributes(key("constraints").value("Must Match Path Variable Or Left Null")),
                                     fieldWithPath("address.street")
                                             .description("Street Address of Company")
-                                            .attributes(key("constraints").value("Not Null")),
+                                            .attributes(key("constraints").value("Nullable")),
                                     fieldWithPath("address.city")
                                             .description("Location City")
-                                            .attributes(key("constraints").value("Not Null")),
+                                            .attributes(key("constraints").value("Nullable")),
                                     fieldWithPath("address.state")
                                             .description("Location State")
-                                            .attributes(key("constraints").value("Not Null")),
+                                            .attributes(key("constraints").value("Nullable")),
                                     fieldWithPath("address.zipCode")
                                             .description("US Postal ZipCode")
-                                            .attributes(key("constraints").value("Not Null, 5 Digits")),
+                                            .attributes(key("constraints").value("Nullable, 5 Digits")),
                                     fieldWithPath("contactName")
                                             .description("Name of Primary Contact")
-                                            .attributes(key("constraints").value("")),
+                                            .attributes(key("constraints").value("Nullable")),
                                     fieldWithPath("title")
                                             .description("Title of Primary Contact")
-                                            .attributes(key("constraints").value("")),
+                                            .attributes(key("constraints").value("Nullable")),
                                     fieldWithPath("phoneNumber")
                                             .description("Phone Number of Primary Contact")
-                                            .attributes(key("constraints").value(""))),
+                                            .attributes(key("constraints").value("Nullable"))),
                             responseBody()));
 
     mockMvc.perform(get("/company"))
