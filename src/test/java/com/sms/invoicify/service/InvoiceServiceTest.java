@@ -1,11 +1,14 @@
 package com.sms.invoicify.service;
 
+import com.sms.invoicify.exception.InvoicifyCompanyNotExistsException;
 import com.sms.invoicify.exception.InvoicifyInvoiceExistsException;
 import com.sms.invoicify.exception.InvoicifyInvoiceNotExistsException;
+import com.sms.invoicify.models.Company;
 import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.repository.InvoiceRepository;
 import com.sms.invoicify.utilities.PaymentStatus;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -17,6 +20,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -30,15 +34,21 @@ public class InvoiceServiceTest {
 
   @AfterEach
   public void tearDown() {
-    verifyNoMoreInteractions(invoiceRepository);
+    verifyNoMoreInteractions(invoiceRepository,companyService);
   }
 
+  @Mock CompanyService companyService;
+
   @Test
-  public void create() throws InvoicifyInvoiceExistsException {
+  public void create() throws InvoicifyInvoiceExistsException, InvoicifyCompanyNotExistsException {
     InvoiceEntity invoiceEntity = new InvoiceEntity();
     invoiceEntity.setNumber(100L);
+    invoiceEntity.setCompanyName("aCompany");
+    when(companyService.fetchCompanyByName(anyString())).thenReturn(Company.builder().companyName("aCompany").build());
     invoiceService.create(invoiceEntity);
 
+    Assertions.assertEquals("aCompany",invoiceEntity.getCompanyName());
+    verify(companyService).fetchCompanyByName("aCompany");
     verify(invoiceRepository).findByNumber(100L);
     verify(invoiceRepository).save(invoiceEntity);
   }
