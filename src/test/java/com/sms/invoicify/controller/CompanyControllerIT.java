@@ -30,6 +30,7 @@ import static org.springframework.restdocs.snippet.Attributes.attributes;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -147,5 +148,75 @@ public class CompanyControllerIT {
                     fieldWithPath("[0].title")
                         .description("Primary Account Contact Position Title"),
                     fieldWithPath("[0].phoneNumber").description("Phone Number"))));
+  }
+
+  @Test
+  void updateCompany_whenCompanyExists() throws Exception {
+    Company updatedCompany =
+        Company.builder()
+            .companyName("Hampton DeVille Corp.")
+            .address(
+                Address.builder()
+                    .street("200 W Lake Street")
+                    .city("Chicago")
+                    .state("IL")
+                    .zipCode("60602")
+                    .build())
+            .contactName("Mary Jones")
+            .title("President - Accounts")
+            .phoneNumber("312-777-8888")
+            .build();
+
+    this.postCompanyDetails();
+
+    mockMvc
+        .perform(
+            put("/company/{companyName}", updatedCompany.getCompanyName())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedCompany)))
+        .andExpect(status().isNoContent())
+            .andDo(
+                    document(
+                            "{class-name}/{method-name}/{step}",
+                            relaxedRequestFields(
+                                    attributes(key("title").value("Fields for adding new Company")),
+                                    fieldWithPath("companyName")
+                                            .description("Name of the Company")
+                                            .attributes(key("constraints").value("Not Blank, Primary Key")),
+                                    fieldWithPath("address.street")
+                                            .description("Street Address of Company")
+                                            .attributes(key("constraints").value("Not Null")),
+                                    fieldWithPath("address.city")
+                                            .description("Location City")
+                                            .attributes(key("constraints").value("Not Null")),
+                                    fieldWithPath("address.state")
+                                            .description("Location State")
+                                            .attributes(key("constraints").value("Not Null")),
+                                    fieldWithPath("address.zipCode")
+                                            .description("US Postal ZipCode")
+                                            .attributes(key("constraints").value("Not Null, 5 Digits")),
+                                    fieldWithPath("contactName")
+                                            .description("Name of Primary Contact")
+                                            .attributes(key("constraints").value("")),
+                                    fieldWithPath("title")
+                                            .description("Title of Primary Contact")
+                                            .attributes(key("constraints").value("")),
+                                    fieldWithPath("phoneNumber")
+                                            .description("Phone Number of Primary Contact")
+                                            .attributes(key("constraints").value(""))),
+                            responseBody()));
+
+    mockMvc.perform(get("/company"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("length()").value(1))
+            .andExpect(jsonPath("[0].companyName").value("Hampton DeVille Corp."))
+            .andExpect(jsonPath("[0].address.street").value("200 W Lake Street"))
+            .andExpect(jsonPath("[0].address.city").value("Chicago"))
+            .andExpect(jsonPath("[0].address.state").value("IL"))
+            .andExpect(jsonPath("[0].address.zipCode").value("60602"))
+            .andExpect(jsonPath("[0].contactName").value("Mary Jones"))
+            .andExpect(jsonPath("[0].title").value("President - Accounts"))
+            .andExpect(jsonPath("[0].phoneNumber").value("12-777-8888"));
+
   }
 }
