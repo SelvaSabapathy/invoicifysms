@@ -253,7 +253,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             List.of(item),
-            "bCompany",
+            "aCompany",
             PaymentStatus.UNPAID,
             new BigDecimal(130.00));
     MvcResult mvcResult2 = create(invoiceDto2, HttpStatus.CREATED);
@@ -358,7 +358,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             List.of(item),
-            "bCompany",
+            "aCompany",
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
     create(invoiceDto2, HttpStatus.CREATED);
@@ -420,7 +420,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             List.of(item),
-            "bCompany",
+            "aCompany",
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
     create(invoiceDto2, HttpStatus.CREATED);
@@ -621,7 +621,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             List.of(item),
-            "bCompany",
+            "aCompany",
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
     create(invoiceDto2, HttpStatus.CREATED);
@@ -683,7 +683,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             List.of(item),
-            "bCompany",
+            "aCompany",
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
     create(invoiceDto2, HttpStatus.CREATED);
