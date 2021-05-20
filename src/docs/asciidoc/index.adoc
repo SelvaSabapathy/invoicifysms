@@ -113,13 +113,35 @@ include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/3/http-
 .response
 include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/3/http-response.adoc[]
 
+===== Summary View, Status=Unpaid
+
+Get Summary View of ALL Unpaid Invoices
+
+.request
+include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoices-summary/3/http-request.adoc[]
+
+.response
+include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoices-summary/3/http-response.adoc[]
+
+===== Detailed View, Status=Unpaid
+
+Get Details of ALL Unpaid Invoices
+
+.request
+include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoice-detail/3/http-request.adoc[]
+
+.response
+include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoice-detail/3/http-response.adoc[]
+
+===== Search invoice by number
+
 Search Invoice by number
 
 .request
-include::{snippets}/searchInvoiceByNumber/http-request.adoc[]
+include::{snippets}/invoice-controller-it/search-invoices-by-number/3/http-request.adoc[]
 
 .response
-include::{snippets}/searchInvoiceByNumber/http-response.adoc[]
+include::{snippets}/invoice-controller-it/search-invoices-by-number/3/http-response.adoc[]
 
 ==== PUT
 
@@ -147,14 +169,22 @@ include::{snippets}/company-controller-it/post-company-details/1/http-response.a
 
 ==== GET
 
-Get List of All Companies
-
+===== Detailed View, ALL
+Get Detailed View of All Companies
 .request
 include::{snippets}/company-controller-it/post-company-details/2/http-request.adoc[]
 
 .response
 include::{snippets}/company-controller-it/post-company-details/2/http-response.adoc[]
 
+===== Summary View, ALL
+Get Summary View Of All Companies
+
+.request
+include::{snippets}/company-controller-it/get-company-summary-view/3/http-request.adoc[]
+
+.response
+include::{snippets}/company-controller-it/get-company-summary-view/3/http-response.adoc[]
 
 
 

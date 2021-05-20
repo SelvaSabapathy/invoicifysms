@@ -8,6 +8,7 @@ import com.sms.invoicify.models.InvoiceSummaryDto;
 import com.sms.invoicify.models.Item;
 import com.sms.invoicify.models.ItemEntity;
 import com.sms.invoicify.service.InvoiceService;
+import com.sms.invoicify.utilities.PaymentStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -196,5 +197,37 @@ public class InvoiceController {
   public ResponseEntity deleteInvoices() {
     invoiceService.delete();
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  @GetMapping("/invoices/unpaid")
+  public ResponseEntity<List<InvoiceDto>> getUnpaidInvoices() {
+
+    List<InvoiceDto> dtos =
+        invoiceService.findByPaymentStatus(PaymentStatus.UNPAID).stream()
+            .map(
+                e ->
+                    new InvoiceDto(
+                        e.getNumber(),
+                        e.getCreationDate(),
+                        e.getLastModifiedDate(),
+                        getItemDtos(e.getItems()),
+                        e.getCompanyName(),
+                        e.getPaymentStatus(),
+                        e.getTotalCost()))
+            .collect(Collectors.toList());
+    return new ResponseEntity<>(dtos, HttpStatus.OK);
+  }
+
+  @GetMapping("/invoices/unpaid/summary")
+  public ResponseEntity<List<InvoiceSummaryDto>> getUnpaidInvoicesSummary() {
+
+    List<InvoiceSummaryDto> dtos =
+        invoiceService.findByPaymentStatus(PaymentStatus.UNPAID).stream()
+            .map(
+                e ->
+                    new InvoiceSummaryDto(
+                        e.getNumber(), e.getCreationDate(), e.getPaymentStatus(), e.getTotalCost()))
+            .collect(Collectors.toList());
+    return new ResponseEntity<>(dtos, HttpStatus.OK);
   }
 }
