@@ -286,7 +286,6 @@ public class CompanyControllerIT {
             .andExpect(jsonPath("[0].address.zipCode").value("60602"))
             .andExpect(jsonPath("[0].contactName").value("Mary Jones"))
             .andExpect(jsonPath("[0].title").value("President - Accounts"))
-            .andExpect(jsonPath("[0].phoneNumber").value("12-777-8888"));
-
+            .andExpect(jsonPath("[0].phoneNumber").value("312-777-8888"));
   }
 }
