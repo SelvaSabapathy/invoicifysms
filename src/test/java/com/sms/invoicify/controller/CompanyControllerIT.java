@@ -244,6 +244,7 @@ public class CompanyControllerIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updatedCompany)))
         .andExpect(status().isNoContent())
+            .andExpect(content().string("Hampton DeVille Corp. has been updated successfully."))
             .andDo(
                     document(
                             "{class-name}/{method-name}/{step}",

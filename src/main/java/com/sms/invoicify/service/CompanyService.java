@@ -60,4 +60,7 @@ public class CompanyService {
                       })
               .collect(Collectors.toList());
     }
+
+    public void updateCompany(String companyName, Company company) {
+    }
 }

@@ -6,7 +6,9 @@ import com.sms.invoicify.service.CompanyService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -38,5 +40,13 @@ public class CompanyController {
   public String postCompanyDetails(@RequestBody Company company) {
     companyService.createCompany(company);
     return company.getCompanyName() + " created Successfully";
+  }
+
+  @PutMapping("/{companyName}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public String updateCompany(@PathVariable("companyName") String companyName,
+                              @RequestBody Company company) {
+    companyService.updateCompany(companyName, company);
+    return companyName + " has been updated successfully.";
   }
 }

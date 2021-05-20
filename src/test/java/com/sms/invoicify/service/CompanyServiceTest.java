@@ -137,4 +137,5 @@ public class CompanyServiceTest {
     verifyNoMoreInteractions(companyRepository);
   }
 
+
 }
