@@ -12,9 +12,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -32,7 +35,8 @@ public class CompanyServiceTest {
     Company companyDto =
         Company.builder()
             .companyName("Test1")
-            .address(Address.builder()
+            .address(
+                Address.builder()
                     .street("100 N State Street")
                     .city("Chicago")
                     .state("IL")
@@ -49,7 +53,8 @@ public class CompanyServiceTest {
         .save(
             CompanyEntity.builder()
                 .companyName("Test1")
-                .address(Address.builder()
+                .address(
+                    Address.builder()
                         .street("100 N State Street")
                         .city("Chicago")
                         .state("IL")
@@ -70,7 +75,8 @@ public class CompanyServiceTest {
             List.of(
                 CompanyEntity.builder()
                     .companyName("Test1")
-                    .address(Address.builder()
+                    .address(
+                        Address.builder()
                             .street("100 N State Street")
                             .city("Chicago")
                             .state("IL")
@@ -86,7 +92,8 @@ public class CompanyServiceTest {
     Company companyDtoExpected =
         Company.builder()
             .companyName("Test1")
-            .address(Address.builder()
+            .address(
+                Address.builder()
                     .street("100 N State Street")
                     .city("Chicago")
                     .state("IL")
@@ -107,29 +114,26 @@ public class CompanyServiceTest {
   @DisplayName("Get Companies Summary")
   void getCompaniesSummary() {
     when(companyRepository.findAll())
-            .thenReturn(
-                    List.of(
-                            CompanyEntity.builder()
-                                    .companyName("Test1")
-                                    .address(Address.builder()
-                                            .street("100 N State Street")
-                                            .city("Chicago")
-                                            .state("IL")
-                                            .zipCode("60601")
-                                            .build())
-                                    .contactName("Name1")
-                                    .title("Title1")
-                                    .phoneNumber("312-777-7777")
-                                    .build()));
+        .thenReturn(
+            List.of(
+                CompanyEntity.builder()
+                    .companyName("Test1")
+                    .address(
+                        Address.builder()
+                            .street("100 N State Street")
+                            .city("Chicago")
+                            .state("IL")
+                            .zipCode("60601")
+                            .build())
+                    .contactName("Name1")
+                    .title("Title1")
+                    .phoneNumber("312-777-7777")
+                    .build()));
 
     List<CompanySummaryVO> companySummaryFromService = companyService.fetchCompanySummaryView();
 
     CompanySummaryVO companySummaryDtoExpected =
-            CompanySummaryVO.builder()
-                    .companyName("Test1")
-                    .city("Chicago")
-                    .state("IL")
-                    .build();
+        CompanySummaryVO.builder().companyName("Test1").city("Chicago").state("IL").build();
 
     assertThat(companySummaryFromService).isEqualTo(List.of(companySummaryDtoExpected));
 
@@ -137,5 +141,43 @@ public class CompanyServiceTest {
     verifyNoMoreInteractions(companyRepository);
   }
 
+  @Test
+  void getCompanyByName_whenCompanyExists_returnsCompany() {
+    when(companyRepository.findById(any()))
+        .thenReturn(
+            Optional.of(
+                CompanyEntity.builder()
+                    .companyName("myExistingCompany")
+                    .address(
+                        Address.builder()
+                            .street("100 N State Street")
+                            .city("Chicago")
+                            .state("IL")
+                            .zipCode("60601")
+                            .build())
+                    .contactName("Name1")
+                    .title("Title1")
+                    .phoneNumber("312-777-7777")
+                    .build()));
 
+    Company expected = Company.builder()
+            .companyName("myExistingCompany")
+            .address(
+                    Address.builder()
+                            .street("100 N State Street")
+                            .city("Chicago")
+                            .state("IL")
+                            .zipCode("60601")
+                            .build())
+            .contactName("Name1")
+            .title("Title1")
+            .phoneNumber("312-777-7777")
+            .build();
+
+    Company companyFromService = companyService.fetchCompanyByName("myExistingCompany");
+    assertThat(companyFromService).isEqualTo(expected);
+
+    verify(companyRepository.findById("myExistingCompany"));
+    verifyNoMoreInteractions(companyRepository);
+  }
 }

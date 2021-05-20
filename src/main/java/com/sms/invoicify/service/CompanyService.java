@@ -63,4 +63,8 @@ public class CompanyService {
 
     public void updateCompany(String companyName, Company company) {
     }
+
+    public Company fetchCompanyByName(String myExistingCompany) {
+      return null;
+    }
 }
