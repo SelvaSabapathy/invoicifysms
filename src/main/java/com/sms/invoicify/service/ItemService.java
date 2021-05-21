@@ -1,6 +1,6 @@
 package com.sms.invoicify.service;
 
-import com.sms.invoicify.models.InvoiceDto;
+import com.sms.invoicify.exception.InvoicifyInvoiceNotExistsException;
 import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.models.Item;
 import com.sms.invoicify.models.ItemEntity;
@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,23 +21,16 @@ public class ItemService {
   private final ItemsRepositiory itemsRepository;
   private InvoiceService invoiceService;
 
-  public Long createItem(Item itemDto) throws ParseException {
-    InvoiceDto invoiceDto = itemDto.getInvoice();
+  public Long createItem(Item itemDto) throws InvoicifyInvoiceNotExistsException {
 
     // verify whether invoice exists
-    InvoiceEntity invoiceEntity = invoiceService.findByNumber(invoiceDto.getNumber());
+    InvoiceEntity invoiceEntity = invoiceService.findByNumber(itemDto.getInvoiceNumber());
     if (invoiceEntity == null) {
-      invoiceEntity =
-          InvoiceEntity.builder()
-              .number(invoiceDto.getNumber())
-              .creationDate(invoiceDto.getCreationDate())
-              .lastModifiedDate(invoiceDto.getLastModifiedDate())
-              .companyName(invoiceDto.getCompanyName())
-              .paymentStatus(invoiceDto.getPaymentStatus())
-              .totalCost(itemDto.getTotalFees())
-              .build();
+      throw new InvoicifyInvoiceNotExistsException(
+          "Invoice does not exist, item cannot be created");
     } else {
       invoiceEntity.setLastModifiedDate(LocalDate.now());
+      invoiceEntity.setTotalCost(invoiceEntity.getTotalCost().add(itemDto.getTotalFees()));
     }
 
     ItemEntity persisted =
@@ -52,17 +44,6 @@ public class ItemService {
     return persisted.getItemId();
   }
 
-  private InvoiceDto convertFrom(InvoiceEntity invoiceEntity) {
-    return InvoiceDto.builder()
-        .number(invoiceEntity.getNumber())
-        .creationDate(invoiceEntity.getCreationDate())
-        .lastModifiedDate(invoiceEntity.getLastModifiedDate())
-        .companyName(invoiceEntity.getCompanyName())
-        .paymentStatus(invoiceEntity.getPaymentStatus())
-        .totalCost(invoiceEntity.getTotalCost())
-        .build();
-  }
-
   public List<Item> fetchAllItems() {
     return itemsRepository.findAll().stream()
         .map(
@@ -71,7 +52,7 @@ public class ItemService {
                   .description(itemEntity.getDescription())
                   .quantity(itemEntity.getQuantity())
                   .totalFees(itemEntity.getTotalFees())
-                  .invoice(convertFrom(itemEntity.getInvoice()))
+                  .invoiceNumber(itemEntity.getInvoice().getNumber())
                   .build();
             })
         .collect(Collectors.toList());

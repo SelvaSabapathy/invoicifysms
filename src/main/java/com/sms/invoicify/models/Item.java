@@ -19,5 +19,5 @@ public class Item {
   @NumberFormat(style = NumberFormat.Style.CURRENCY)
   BigDecimal totalFees;
 
-  InvoiceDto invoice;
+  Long invoiceNumber;
 }

@@ -115,27 +115,24 @@ public class InvoiceControllerIT {
                         fieldWithPath("number")
                             .description("Invoice ID Number")
                             .attributes(key("constraints").value("Not Null")),
-                        //                            fieldWithPath("creationDate")
-                        //                                    .description("Date timestamp when
-                        // Invoice Created")
-                        //
-                        // .attributes(key("constraints").value("")).ignored(),
-                        //                            fieldWithPath("lastModifiedDate")
-                        //                                    .description("Date timestamp of Last
-                        // Modification")
-                        //
-                        // .attributes(key("constraints").value("")).ignored(),
-                        //                            fieldWithPath("items")
-                        //                                    .description("List of Items Associated
-                        // with the invoice")
-                        //
-                        // .attributes(key("constraints").value("")).ignored(),
+                        fieldWithPath("creationDate")
+                            .description("Date timestamp when Invoice Created")
+                            .attributes(key("constraints").value(""))
+                            .ignored(),
+                        fieldWithPath("lastModifiedDate")
+                            .description("Date timestamp of Last Modification")
+                            .attributes(key("constraints").value(""))
+                            .ignored(),
+                        fieldWithPath("items")
+                            .description("List of Items Associated with the invoice")
+                            .attributes(key("constraints").value(""))
+                            .ignored(),
                         fieldWithPath("companyName")
                             .description("Company Billable for the Invoice")
                             .attributes(key("constraints").value("Not Null")),
                         paymentStatusField(),
                         fieldWithPath("totalCost")
-                            .description("Sum of All Line Item Charges on the Ivoice")
+                            .description("Sum of All Line Item Charges on the Invoice")
                             .attributes(key("constraints").value("Not Null"))),
                     responseBody()))
             .andReturn();
@@ -251,7 +248,7 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(122L).build())
+            .invoiceNumber(122L)
             .build();
     InvoiceDto invoiceDto2 =
         new InvoiceDto(
@@ -272,7 +269,7 @@ public class InvoiceControllerIT {
         invoiceDto2.getItems().stream()
             .map(
                 e -> {
-                  e.setInvoice(null);
+                  e.setInvoiceNumber(null);
                   return e;
                 })
             .collect(Collectors.toList());
@@ -300,7 +297,7 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(120L).build())
+            .invoiceNumber(120L)
             .build();
 
     InvoiceDto invoiceDto =
@@ -344,7 +341,7 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(121L).build())
+            .invoiceNumber(121L)
             .build();
 
     InvoiceDto invoiceDto1 =
@@ -406,7 +403,7 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(121L).build())
+            .invoiceNumber(121L)
             .build();
 
     InvoiceDto invoiceDto1 =
@@ -468,7 +465,7 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(121L).build())
+            .invoiceNumber(121L)
             .build();
 
     InvoiceDto invoiceDto1 =
@@ -484,7 +481,9 @@ public class InvoiceControllerIT {
 
     // update paid status
     invoiceDto1.setPaymentStatus(PaymentStatus.PAID);
-    this.update(invoiceDto1, HttpStatus.NO_CONTENT).andDo(document("updateInvoice")).andReturn();
+    this.update(invoiceDto1, HttpStatus.NO_CONTENT)
+        .andDo(document("{class-name}/{method-name}/{step}"))
+        .andReturn();
 
     invoiceDto1.setItems(List.of());
 
@@ -561,7 +560,7 @@ public class InvoiceControllerIT {
             new BigDecimal(120.00));
     create(deleteInvoiceDto4, HttpStatus.CREATED);
 
-    // Create an item and attach it to an invoice
+    // Create an item and attach it to an invoice which is getting deleted
     mockMvc
         .perform(
             post("/items")
@@ -572,7 +571,22 @@ public class InvoiceControllerIT {
                             .description("Test Item Description")
                             .quantity(1)
                             .totalFees(BigDecimal.valueOf(10).setScale(2))
-                            .invoice(InvoiceDto.builder().number(123L).build())
+                            .invoiceNumber(123L)
+                            .build())))
+        .andExpect(status().isCreated());
+
+    // Create an item and attach it to an invoice which is not getting deleted
+    mockMvc
+        .perform(
+            post("/items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    objectMapper.writeValueAsString(
+                        Item.builder()
+                            .description("Test Item Description-Invoice 120")
+                            .quantity(1)
+                            .totalFees(BigDecimal.valueOf(100).setScale(2))
+                            .invoiceNumber(120L)
                             .build())))
         .andExpect(status().isCreated());
 
@@ -585,19 +599,28 @@ public class InvoiceControllerIT {
     mockMvc
         .perform(get("/items").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("length()").value(1));
+        .andExpect(jsonPath("length()").value(2));
 
     // delete
     mockMvc
         .perform(delete("/invoices").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNoContent())
-        .andReturn();
+        .andDo(document("{class-name}/{method-name}/{step}"));
 
     // verify after delete -- item & invoice
     mockMvc
         .perform(get("/invoices").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("length()").value(3));
+        .andExpect(jsonPath("length()").value(3))
+        .andExpect(jsonPath("[0].number").value(120L))
+        .andExpect(jsonPath("[1].number").value(121L))
+        .andExpect(jsonPath("[2].number").value(122L));
+
+    mockMvc
+        .perform(get("/items").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("length()").value(1))
+        .andExpect(jsonPath("[0].description").value("Test Item Description-Invoice 120"));
   }
 
   @Test
@@ -607,7 +630,7 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(121L).build())
+            .invoiceNumber(121L)
             .build();
 
     InvoiceDto invoiceDto1 =
@@ -669,7 +692,7 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(121L).build())
+            .invoiceNumber(121L)
             .build();
 
     InvoiceDto invoiceDto1 =

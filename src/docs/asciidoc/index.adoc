@@ -57,12 +57,12 @@ use of HTTP verbs.
 Post a New Item
 
 .request
-include::{snippets}/items-controller-it/post-item/1/http-request.adoc[]
+include::{snippets}/items-controller-it/post-item/2/http-request.adoc[]
 
-include::{snippets}/items-controller-it/post-item/1/request-fields.adoc[]
+include::{snippets}/items-controller-it/post-item/2/request-fields.adoc[]
 
 .response
-include::{snippets}/items-controller-it/post-item/1/http-response.adoc[]
+include::{snippets}/items-controller-it/post-item/2/http-response.adoc[]
 
 [[specification-API-item-getall]]
 ==== GET
@@ -152,6 +152,16 @@ include::{snippets}/invoice-controller-it/update-and-view-invoice-details/2/http
 
 .response
 include::{snippets}/invoice-controller-it/update-and-view-invoice-details/2/http-response.adoc[]
+
+==== DELETE
+
+Delete invoices (deletes more than one year old and paid invoices)
+
+.request
+include::{snippets}/invoice-controller-it/delete-invoices/9/http-request.adoc[]
+
+.response
+include::{snippets}/invoice-controller-it/delete-invoices/9/http-response.adoc[]
 
 === Companies
 

@@ -1,6 +1,6 @@
 package com.sms.invoicify.service;
 
-import com.sms.invoicify.models.InvoiceDto;
+import com.sms.invoicify.exception.InvoicifyInvoiceNotExistsException;
 import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.models.Item;
 import com.sms.invoicify.models.ItemEntity;
@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,13 +34,13 @@ public class ItemServiceTest {
 
   @Test
   @DisplayName("Create new Item Test")
-  void createItem() throws ParseException {
+  void createItem() throws ParseException, InvoicifyInvoiceNotExistsException {
     Item itemDto =
         Item.builder()
             .description("MyInvoiceItem")
             .quantity(42)
             .totalFees(BigDecimal.valueOf(10.99))
-            .invoice(InvoiceDto.builder().number(120L).build())
+            .invoiceNumber(120L)
             .build();
 
     ItemEntity itemEntity =
@@ -47,7 +48,12 @@ public class ItemServiceTest {
             .description("MyInvoiceItem")
             .quantity(42)
             .totalFees(BigDecimal.valueOf(10.99))
-            .invoice(InvoiceEntity.builder().number(120L).build())
+            .invoice(
+                InvoiceEntity.builder()
+                    .number(120L)
+                    .lastModifiedDate(LocalDate.now())
+                    .totalCost(BigDecimal.valueOf(10.99))
+                    .build())
             .build();
 
     when(itemsRepositiory.save(any()))
@@ -59,10 +65,11 @@ public class ItemServiceTest {
                 .totalFees(BigDecimal.valueOf(10.99))
                 .invoice(InvoiceEntity.builder().number(120L).build())
                 .build());
+    when(invoiceService.findByNumber(120L))
+        .thenReturn(InvoiceEntity.builder().number(120L).totalCost(BigDecimal.ZERO).build());
 
     Long itemId = itemService.createItem(itemDto);
 
-    itemEntity.getInvoice().setTotalCost(BigDecimal.valueOf(10.99).setScale(2));
     verify(itemsRepositiory).save(itemEntity);
     verify(invoiceService).findByNumber(any());
     verifyNoMoreInteractions(invoiceService);
@@ -91,7 +98,7 @@ public class ItemServiceTest {
             .description("MyInvoiceItem")
             .quantity(42)
             .totalFees(BigDecimal.valueOf(10.99))
-            .invoice(InvoiceDto.builder().number(120L).build())
+            .invoiceNumber(120L)
             .build();
 
     assertThat(itemsFromService).isEqualTo(List.of(itemDtoExpected));
