@@ -62,11 +62,9 @@ public class InvoiceController {
     InvoiceEntity createdInvoiceEntity = null;
     try {
       createdInvoiceEntity = invoiceService.create(invoiceEntity);
-    } catch (InvoicifyInvoiceExistsException e) {
+    } catch (InvoicifyInvoiceExistsException | InvoicifyCompanyNotExistsException e) {
       return new ResponseEntity<InvoiceDto>(new InvoiceDto(), HttpStatus.BAD_REQUEST);
-    } catch (InvoicifyCompanyNotExistsException e) {
-      return new ResponseEntity<InvoiceDto>(new InvoiceDto(), HttpStatus.BAD_REQUEST);
-      }
+    }
 
     List<ItemEntity> retItemEnt = createdInvoiceEntity.getItems();
     List<Item> retItems =
@@ -187,9 +185,7 @@ public class InvoiceController {
             .build();
     try {
       invoiceService.update(invoiceEntity);
-    } catch (InvoicifyInvoiceNotExistsException e) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    } catch (ParseException e) {
+    } catch (InvoicifyInvoiceNotExistsException | ParseException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
