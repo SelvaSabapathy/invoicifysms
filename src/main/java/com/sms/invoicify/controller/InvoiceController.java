@@ -1,5 +1,6 @@
 package com.sms.invoicify.controller;
 
+import com.sms.invoicify.exception.InvoicifyCompanyNotExistsException;
 import com.sms.invoicify.exception.InvoicifyInvoiceExistsException;
 import com.sms.invoicify.exception.InvoicifyInvoiceNotExistsException;
 import com.sms.invoicify.models.InvoiceDto;
@@ -61,7 +62,7 @@ public class InvoiceController {
     InvoiceEntity createdInvoiceEntity = null;
     try {
       createdInvoiceEntity = invoiceService.create(invoiceEntity);
-    } catch (InvoicifyInvoiceExistsException e) {
+    } catch (InvoicifyInvoiceExistsException | InvoicifyCompanyNotExistsException e) {
       return new ResponseEntity<InvoiceDto>(new InvoiceDto(), HttpStatus.BAD_REQUEST);
     }
 
@@ -184,9 +185,7 @@ public class InvoiceController {
             .build();
     try {
       invoiceService.update(invoiceEntity);
-    } catch (InvoicifyInvoiceNotExistsException e) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    } catch (ParseException e) {
+    } catch (InvoicifyInvoiceNotExistsException | ParseException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 

@@ -70,7 +70,7 @@ public class CompanyControllerIT {
   }
 
   @Test
-  void postCompanyDetails() throws Exception {
+  public void postCompanyDetails() throws Exception {
     Company company =
         Company.builder()
             .companyName("Hampton DeVille Corp.")
