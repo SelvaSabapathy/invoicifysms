@@ -57,12 +57,12 @@ use of HTTP verbs.
 Post a New Item
 
 .request
-include::{snippets}/items-controller-it/post-item/1/http-request.adoc[]
+include::{snippets}/items-controller-it/post-item/2/http-request.adoc[]
 
-include::{snippets}/items-controller-it/post-item/1/request-fields.adoc[]
+include::{snippets}/items-controller-it/post-item/2/request-fields.adoc[]
 
 .response
-include::{snippets}/items-controller-it/post-item/1/http-response.adoc[]
+include::{snippets}/items-controller-it/post-item/2/http-response.adoc[]
 
 [[specification-API-item-getall]]
 ==== GET
