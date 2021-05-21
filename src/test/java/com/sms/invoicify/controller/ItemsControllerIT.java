@@ -2,6 +2,8 @@ package com.sms.invoicify.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sms.invoicify.models.Address;
+import com.sms.invoicify.models.Company;
 import com.sms.invoicify.models.InvoiceDto;
 import com.sms.invoicify.models.Item;
 import com.sms.invoicify.utilities.PaymentStatus;
@@ -99,6 +101,28 @@ public class ItemsControllerIT {
 
   @Test
   void postItem() throws Exception {
+    Company company =
+            Company.builder()
+                    .companyName("aCompany")
+                    .address(
+                            Address.builder()
+                                    .street("100 N State Street")
+                                    .city("Chicago")
+                                    .state("IL")
+                                    .zipCode("60601")
+                                    .build())
+                    .contactName("Jane Smith")
+                    .title("VP - Accounts")
+                    .phoneNumber("312-777-7777")
+                    .build();
+    mockMvc
+            .perform(
+                    post("/company")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(company)))
+            .andExpect(status().isCreated())
+            .andExpect(content().string("aCompany created Successfully"));
+
     Item item =
         Item.builder()
             .description("INVOICE_ITEM_NAME")
@@ -178,6 +202,28 @@ public class ItemsControllerIT {
 
   @Test
   void postMultipleItem() throws Exception {
+
+    Company company =
+            Company.builder()
+                    .companyName("aCompany")
+                    .address(
+                            Address.builder()
+                                    .street("100 N State Street")
+                                    .city("Chicago")
+                                    .state("IL")
+                                    .zipCode("60601")
+                                    .build())
+                    .contactName("Jane Smith")
+                    .title("VP - Accounts")
+                    .phoneNumber("312-777-7777")
+                    .build();
+    mockMvc
+            .perform(
+                    post("/company")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(company)))
+            .andExpect(status().isCreated())
+            .andExpect(content().string("aCompany created Successfully"));
 
     // post invoice 120
     InvoiceDto invoiceDto =
