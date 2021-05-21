@@ -67,7 +67,7 @@ public class InvoiceServiceTest {
 
   @Test
   public void updateInvoice()
-      throws InvoicifyInvoiceExistsException, InvoicifyInvoiceNotExistsException, ParseException {
+      throws InvoicifyInvoiceNotExistsException, ParseException {
     InvoiceEntity invoiceEntity = new InvoiceEntity();
     invoiceEntity.setNumber(100L);
     when(invoiceRepository.findByNumber(100L)).thenReturn(invoiceEntity);

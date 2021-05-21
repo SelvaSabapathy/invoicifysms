@@ -89,27 +89,24 @@ public class InvoiceControllerIT {
                         fieldWithPath("number")
                             .description("Invoice ID Number")
                             .attributes(key("constraints").value("Not Null")),
-                        //                            fieldWithPath("creationDate")
-                        //                                    .description("Date timestamp when
-                        // Invoice Created")
-                        //
-                        // .attributes(key("constraints").value("")).ignored(),
-                        //                            fieldWithPath("lastModifiedDate")
-                        //                                    .description("Date timestamp of Last
-                        // Modification")
-                        //
-                        // .attributes(key("constraints").value("")).ignored(),
-                        //                            fieldWithPath("items")
-                        //                                    .description("List of Items Associated
-                        // with the invoice")
-                        //
-                        // .attributes(key("constraints").value("")).ignored(),
+                        fieldWithPath("creationDate")
+                            .description("Date timestamp when Invoice Created")
+                            .attributes(key("constraints").value(""))
+                            .ignored(),
+                        fieldWithPath("lastModifiedDate")
+                            .description("Date timestamp of Last Modification")
+                            .attributes(key("constraints").value(""))
+                            .ignored(),
+                        fieldWithPath("items")
+                            .description("List of Items Associated with the invoice")
+                            .attributes(key("constraints").value(""))
+                            .ignored(),
                         fieldWithPath("companyName")
                             .description("Company Billable for the Invoice")
                             .attributes(key("constraints").value("Not Null")),
                         paymentStatusField(),
                         fieldWithPath("totalCost")
-                            .description("Sum of All Line Item Charges on the Ivoice")
+                            .description("Sum of All Line Item Charges on the Invoice")
                             .attributes(key("constraints").value("Not Null"))),
                     responseBody()))
             .andReturn();
@@ -225,7 +222,7 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(122L).build())
+            .invoiceNumber(122L)
             .build();
     InvoiceDto invoiceDto2 =
         new InvoiceDto(
@@ -246,7 +243,7 @@ public class InvoiceControllerIT {
         invoiceDto2.getItems().stream()
             .map(
                 e -> {
-                  e.setInvoice(null);
+                  e.setInvoiceNumber(null);
                   return e;
                 })
             .collect(Collectors.toList());
@@ -274,7 +271,7 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(120L).build())
+            .invoiceNumber(120L)
             .build();
 
     InvoiceDto invoiceDto =
@@ -318,7 +315,7 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(121L).build())
+            .invoiceNumber(121L)
             .build();
 
     InvoiceDto invoiceDto1 =
@@ -380,7 +377,7 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(121L).build())
+            .invoiceNumber(121L)
             .build();
 
     InvoiceDto invoiceDto1 =
@@ -442,7 +439,7 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(121L).build())
+            .invoiceNumber(121L)
             .build();
 
     InvoiceDto invoiceDto1 =
@@ -548,7 +545,7 @@ public class InvoiceControllerIT {
                             .description("Test Item Description")
                             .quantity(1)
                             .totalFees(BigDecimal.valueOf(10).setScale(2))
-                            .invoice(InvoiceDto.builder().number(123L).build())
+                            .invoiceNumber(123L)
                             .build())))
         .andExpect(status().isCreated());
 
@@ -563,7 +560,7 @@ public class InvoiceControllerIT {
                             .description("Test Item Description-Invoice 120")
                             .quantity(1)
                             .totalFees(BigDecimal.valueOf(100).setScale(2))
-                            .invoice(InvoiceDto.builder().number(120L).build())
+                            .invoiceNumber(120L)
                             .build())))
         .andExpect(status().isCreated());
 
@@ -607,7 +604,7 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(121L).build())
+            .invoiceNumber(121L)
             .build();
 
     InvoiceDto invoiceDto1 =
@@ -669,7 +666,7 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(121L).build())
+            .invoiceNumber(121L)
             .build();
 
     InvoiceDto invoiceDto1 =
