@@ -2,7 +2,11 @@ package com.sms.invoicify.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sms.invoicify.models.*;
+import com.sms.invoicify.models.Address;
+import com.sms.invoicify.models.Company;
+import com.sms.invoicify.models.InvoiceDto;
+import com.sms.invoicify.models.InvoiceSummaryDto;
+import com.sms.invoicify.models.Item;
 import com.sms.invoicify.utilities.PaymentStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +51,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -77,27 +83,27 @@ public class InvoiceControllerIT {
 
   private MvcResult create(InvoiceDto invoiceDto, HttpStatus status) throws Exception {
 
-      Company company =
-              Company.builder()
-                      .companyName("aCompany")
-                      .address(
-                              Address.builder()
-                                      .street("100 N State Street")
-                                      .city("Chicago")
-                                      .state("IL")
-                                      .zipCode("60601")
-                                      .build())
-                      .contactName("Jane Smith")
-                      .title("VP - Accounts")
-                      .phoneNumber("312-777-7777")
-                      .build();
-      mockMvc
-              .perform(
-                      post("/company")
-                              .contentType(MediaType.APPLICATION_JSON)
-                              .content(objectMapper.writeValueAsString(company)))
-              .andExpect(status().isCreated())
-              .andExpect(content().string("aCompany created Successfully"));
+    Company company =
+        Company.builder()
+            .companyName("aCompany")
+            .address(
+                Address.builder()
+                    .street("100 N State Street")
+                    .city("Chicago")
+                    .state("IL")
+                    .zipCode("60601")
+                    .build())
+            .contactName("Jane Smith")
+            .title("VP - Accounts")
+            .phoneNumber("312-777-7777")
+            .build();
+    mockMvc
+        .perform(
+            post("/company")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(company)))
+        .andExpect(status().isCreated())
+        .andExpect(content().string("aCompany created Successfully"));
 
     MvcResult mvcResult =
         this.createInner(invoiceDto, status)

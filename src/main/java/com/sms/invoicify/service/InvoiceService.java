@@ -3,7 +3,6 @@ package com.sms.invoicify.service;
 import com.sms.invoicify.exception.InvoicifyCompanyNotExistsException;
 import com.sms.invoicify.exception.InvoicifyInvoiceExistsException;
 import com.sms.invoicify.exception.InvoicifyInvoiceNotExistsException;
-import com.sms.invoicify.models.Company;
 import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.repository.InvoiceRepository;
 import com.sms.invoicify.utilities.PaymentStatus;

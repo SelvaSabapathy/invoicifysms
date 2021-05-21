@@ -8,7 +8,6 @@ import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.repository.InvoiceRepository;
 import com.sms.invoicify.utilities.PaymentStatus;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -20,6 +19,9 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -34,7 +36,7 @@ public class InvoiceServiceTest {
 
   @AfterEach
   public void tearDown() {
-    verifyNoMoreInteractions(invoiceRepository,companyService);
+    verifyNoMoreInteractions(invoiceRepository, companyService);
   }
 
   @Mock CompanyService companyService;
@@ -44,10 +46,11 @@ public class InvoiceServiceTest {
     InvoiceEntity invoiceEntity = new InvoiceEntity();
     invoiceEntity.setNumber(100L);
     invoiceEntity.setCompanyName("aCompany");
-    when(companyService.fetchCompanyByName(anyString())).thenReturn(Company.builder().companyName("aCompany").build());
+    when(companyService.fetchCompanyByName(anyString()))
+        .thenReturn(Company.builder().companyName("aCompany").build());
     invoiceService.create(invoiceEntity);
 
-    Assertions.assertEquals("aCompany",invoiceEntity.getCompanyName());
+    assertEquals("aCompany", invoiceEntity.getCompanyName());
     verify(companyService).fetchCompanyByName("aCompany");
     verify(invoiceRepository).findByNumber(100L);
     verify(invoiceRepository).save(invoiceEntity);
@@ -107,5 +110,43 @@ public class InvoiceServiceTest {
     List<InvoiceEntity> actual = invoiceService.findByPaymentStatus(PaymentStatus.UNPAID);
     verify(invoiceRepository).findByPaymentStatus(PaymentStatus.UNPAID);
     assertThat(actual, is(List.of(invoiceEntity)));
+  }
+
+  @Test
+  void create_throwsException_whenCompanyDoesNotExist()
+      throws InvoicifyInvoiceExistsException, InvoicifyCompanyNotExistsException {
+    InvoiceEntity invoiceEntity = new InvoiceEntity();
+    invoiceEntity.setNumber(100L);
+    invoiceEntity.setCompanyName("aCompany");
+
+    when(invoiceRepository.findByNumber(anyLong())).thenReturn(null);
+    when(companyService.fetchCompanyByName(anyString())).thenReturn(null);
+
+    assertThrows(
+        InvoicifyCompanyNotExistsException.class,
+        () -> {
+          invoiceService.create(invoiceEntity);
+        });
+
+    verify(companyService).fetchCompanyByName("aCompany");
+    verify(invoiceRepository).findByNumber(100L);
+  }
+
+  @Test
+  void create_throwsException_whenPreviousInvoiceNumberExists()
+      throws InvoicifyInvoiceExistsException, InvoicifyCompanyNotExistsException {
+    InvoiceEntity invoiceEntity = new InvoiceEntity();
+    invoiceEntity.setNumber(100L);
+    invoiceEntity.setCompanyName("aCompany");
+
+    when(invoiceRepository.findByNumber(anyLong())).thenReturn(InvoiceEntity.builder().build());
+
+    assertThrows(
+        InvoicifyInvoiceExistsException.class,
+        () -> {
+          invoiceService.create(invoiceEntity);
+        });
+
+    verify(invoiceRepository).findByNumber(100L);
   }
 }
