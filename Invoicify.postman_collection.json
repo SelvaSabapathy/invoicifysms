@@ -1,0 +1,564 @@
+{
+	"info": {
+		"_postman_id": "9ecb8cd5-e4a1-452f-9238-7a272c3b6291",
+		"name": "Invoicify",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Invoices-Summary",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{proto}}://{{domain}}/invoices/summary",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"invoices",
+						"summary"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Invoices-Detailed",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{proto}}://{{domain}}/invoices/",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"invoices",
+						""
+					]
+				},
+				"description": "ss"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Company - Detailed",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{proto}}://{{domain}}/company/",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"company",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Company - Summary",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{proto}}://{{domain}}/company/summary",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"company",
+						"summary"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Company 1",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"companyName\" : \"Hampton DeVille Corp.\",\r\n  \"address\" : {\r\n    \"street\" : \"100 N State Street\",\r\n    \"city\" : \"Chicago\",\r\n    \"state\" : \"IL\",\r\n    \"zipCode\" : \"60601\"\r\n  },\r\n  \"contactName\" : \"Jane Smith\",\r\n  \"title\" : \"VP - Accounts\",\r\n  \"phoneNumber\" : \"312-777-7777\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{proto}}://{{domain}}/company/",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"company",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Company 2",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"companyName\": \"MileHigh Corp.\",\r\n        \"address\": {\r\n            \"street\": \"100 N State Street\",\r\n            \"city\": \"Denver\",\r\n            \"state\": \"CO\",\r\n            \"zipCode\": \"80202\"\r\n        },\r\n        \"contactName\": \"Robert Smith\",\r\n        \"title\": \"VP - Accounts\",\r\n        \"phoneNumber\": \"444-777-7777\"\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{proto}}://{{domain}}/company/",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"company",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Invoice 1 - Hamilton Corp",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"number\" : 121,\r\n  \"creationDate\" : \"2021-05-21\",\r\n  \"lastModifiedDate\" : null,\r\n  \"items\" : null,\r\n  \"companyName\" : \"Hampton DeVille Corp.\",\r\n  \"paymentStatus\" : \"UNPAID\",\r\n  \"totalCost\" : 120\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{proto}}://{{domain}}/invoices",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"invoices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Invoice 2 - Hamilton Corp",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"number\" : 120,\r\n  \"creationDate\" : \"2021-05-21\",\r\n  \"lastModifiedDate\" : null,\r\n  \"items\" : null,\r\n  \"companyName\" : \"Hampton DeVille Corp.\",\r\n  \"paymentStatus\" : \"UNPAID\",\r\n  \"totalCost\" : 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{proto}}://{{domain}}/invoices",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"invoices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Invoice 1 - MileHigh Corp",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"number\" : 122,\r\n  \"creationDate\" : \"2021-05-21\",\r\n  \"lastModifiedDate\" : null,\r\n  \"items\" : null,\r\n  \"companyName\" : \"MileHigh Corp.\",\r\n  \"paymentStatus\" : \"UNPAID\",\r\n  \"totalCost\" : 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{proto}}://{{domain}}/invoices",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"invoices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Invoice 2 - MileHigh Corp",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"number\" : 123,\r\n  \"creationDate\" : \"2021-05-20\",\r\n  \"lastModifiedDate\" : null,\r\n  \"items\" : null,\r\n  \"companyName\" : \"MileHigh Corp.\",\r\n  \"paymentStatus\" : \"UNPAID\",\r\n  \"totalCost\" : 10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{proto}}://{{domain}}/invoices",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"invoices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Invoice - Company does not exist",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"number\":1001,\"creationDate\":\"2021-05-14\",\"lastModifiedDate\":null,\"items\":[],\"companyName\":\"Infosys\",\"paymentStatus\":0,\"totalCost\":200.0}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{proto}}://{{domain}}/invoices",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"invoices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Item Invoice 121",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"description\" : \"INVOICE_ITEM_NAME\",\r\n  \"quantity\" : 1,\r\n  \"totalFees\" : 10.0,\r\n  \"invoiceNumber\" : 121\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{proto}}://{{domain}}/items",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Item Invoice 123",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"description\" : \"INVOICE_ITEM_NAME\",\r\n  \"quantity\" : 1,\r\n  \"totalFees\" : 1000.0,\r\n  \"invoiceNumber\" : 123\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{proto}}://{{domain}}/items",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Item Invoice does not exist",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"description\" : \"INVOICE_ITEM_NAME\",\r\n  \"quantity\" : 1,\r\n  \"totalFees\" : 1000.0,\r\n  \"invoiceNumber\" : 12356564\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{proto}}://{{domain}}/items",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Unpaid Invoices-Detailed",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{proto}}://{{domain}}/invoices/unpaid",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"invoices",
+						"unpaid"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Unpaid Invoices-Summary",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{proto}}://{{domain}}/invoices/unpaid/summary",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"invoices",
+						"unpaid",
+						"summary"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search invoices",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{proto}}://{{domain}}/invoices/search/121",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"invoices",
+						"search",
+						"121"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Put Invoice - Company, Payment Status",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"number\" : 121,\r\n  \"creationDate\" : \"2021-05-21\",\r\n  \"lastModifiedDate\" : null,\r\n  \"items\" : null,\r\n  \"companyName\" : \"MileHigh Corp.\",\r\n  \"paymentStatus\" : \"PAID\",\r\n  \"totalCost\" : 200.1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{proto}}://{{domain}}/invoices",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"invoices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Invoice 1 - Hamilton Corp - Invoice Number Exist",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"number\" : 121,\r\n  \"creationDate\" : \"2021-05-21\",\r\n  \"lastModifiedDate\" : null,\r\n  \"items\" : null,\r\n  \"companyName\" : \"Hampton DeVille Corp.\",\r\n  \"paymentStatus\" : \"UNPAID\",\r\n  \"totalCost\" : 120\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{proto}}://{{domain}}/invoices",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"invoices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Invoice 2 - Paid More than One year Old",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"number\" : 124,\r\n  \"creationDate\" : \"2019-05-20\",\r\n  \"lastModifiedDate\" : null,\r\n  \"items\" : null,\r\n  \"companyName\" : \"MileHigh Corp.\",\r\n  \"paymentStatus\" : \"PAID\",\r\n  \"totalCost\" : 10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{proto}}://{{domain}}/invoices",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"invoices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Invoice 2 - Paid More than One year Old2",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"number\" : 125,\r\n  \"creationDate\" : \"2017-05-20\",\r\n  \"lastModifiedDate\" : null,\r\n  \"items\" : null,\r\n  \"companyName\" : \"MileHigh Corp.\",\r\n  \"paymentStatus\" : \"PAID\",\r\n  \"totalCost\" : 10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{proto}}://{{domain}}/invoices",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"invoices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Invoice - Paid and more than one year old",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{proto}}://{{domain}}/invoices",
+					"protocol": "{{proto}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"invoices"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
