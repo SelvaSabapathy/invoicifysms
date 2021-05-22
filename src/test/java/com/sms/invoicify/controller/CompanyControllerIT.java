@@ -70,6 +70,37 @@ public class CompanyControllerIT {
   }
 
   @Test
+  public void postCompanyDetailsWithExistingCompanyName() throws Exception {
+    Company company =
+        Company.builder()
+            .companyName("Hampton DeVille Corp.")
+            .address(
+                Address.builder()
+                    .street("100 N State Street")
+                    .city("Chicago")
+                    .state("IL")
+                    .zipCode("60601")
+                    .build())
+            .contactName("Jane Smith")
+            .title("VP - Accounts")
+            .phoneNumber("312-777-7777")
+            .build();
+    mockMvc
+        .perform(
+            post("/company")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(company)))
+        .andExpect(status().isCreated());
+
+    mockMvc
+        .perform(
+            post("/company")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(company)))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
   public void postCompanyDetails() throws Exception {
     Company company =
         Company.builder()
@@ -150,74 +181,72 @@ public class CompanyControllerIT {
                     fieldWithPath("[0].phoneNumber").description("Phone Number"))));
   }
 
-
   @Test
   void getCompanySummaryView() throws Exception {
     Company company1 =
-            Company.builder()
-                    .companyName("Hampton DeVille Corp.")
-                    .address(
-                            Address.builder()
-                                    .street("100 N State Street")
-                                    .city("Chicago")
-                                    .state("IL")
-                                    .zipCode("60601")
-                                    .build())
-                    .contactName("Jane Smith")
-                    .title("VP - Accounts")
-                    .phoneNumber("312-777-7777")
-                    .build();
+        Company.builder()
+            .companyName("Hampton DeVille Corp.")
+            .address(
+                Address.builder()
+                    .street("100 N State Street")
+                    .city("Chicago")
+                    .state("IL")
+                    .zipCode("60601")
+                    .build())
+            .contactName("Jane Smith")
+            .title("VP - Accounts")
+            .phoneNumber("312-777-7777")
+            .build();
     Company company2 =
-            Company.builder()
-                    .companyName("Kitchener Corp.")
-                    .address(
-                            Address.builder()
-                                    .street("100 N State Street")
-                                    .city("Kitchener")
-                                    .state("ON")
-                                    .zipCode("N2G 1B6")
-                                    .build())
-                    .contactName("Ravi Chellappa")
-                    .title("Tech Product Owner")
-                    .phoneNumber("215-366-7320")
-                    .build();
+        Company.builder()
+            .companyName("Kitchener Corp.")
+            .address(
+                Address.builder()
+                    .street("100 N State Street")
+                    .city("Kitchener")
+                    .state("ON")
+                    .zipCode("N2G 1B6")
+                    .build())
+            .contactName("Ravi Chellappa")
+            .title("Tech Product Owner")
+            .phoneNumber("215-366-7320")
+            .build();
     mockMvc
-            .perform(
-                    post("/company")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(company1)))
-            .andExpect(status().isCreated())
-            .andExpect(content().string("Hampton DeVille Corp. created Successfully"));
+        .perform(
+            post("/company")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(company1)))
+        .andExpect(status().isCreated())
+        .andExpect(content().string("Hampton DeVille Corp. created Successfully"));
     mockMvc
-            .perform(
-                    post("/company")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(company2)))
-            .andExpect(status().isCreated())
-            .andExpect(content().string("Kitchener Corp. created Successfully"));
+        .perform(
+            post("/company")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(company2)))
+        .andExpect(status().isCreated())
+        .andExpect(content().string("Kitchener Corp. created Successfully"));
     mockMvc
-            .perform(get("/company/summary"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("length()").value(2))
-            .andExpect(jsonPath("[0].companyName").value("Hampton DeVille Corp."))
-            .andExpect(jsonPath("[0].city").value("Chicago"))
-            .andExpect(jsonPath("[0].state").value("IL"))
-            .andExpect(jsonPath("[1].companyName").value("Kitchener Corp."))
-            .andExpect(jsonPath("[1].city").value("Kitchener"))
-            .andExpect(jsonPath("[1].state").value("ON"))
-            .andDo(
-                    document(
-                            "{class-name}/{method-name}/{step}",
-                            responseFields(
-                                    fieldWithPath("[0].companyName").description("Company Name"),
-                                    fieldWithPath("[0].city").description("Location City"),
-                                    fieldWithPath("[0].state").description("Location State"),
-                                    fieldWithPath("[1].companyName").description("Company Name"),
-                                    fieldWithPath("[1].city").description("Location City"),
-                                    fieldWithPath("[1].state").description("Location State")),
-                    responseBody()));
-
-    }
+        .perform(get("/company/summary"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("length()").value(2))
+        .andExpect(jsonPath("[0].companyName").value("Hampton DeVille Corp."))
+        .andExpect(jsonPath("[0].city").value("Chicago"))
+        .andExpect(jsonPath("[0].state").value("IL"))
+        .andExpect(jsonPath("[1].companyName").value("Kitchener Corp."))
+        .andExpect(jsonPath("[1].city").value("Kitchener"))
+        .andExpect(jsonPath("[1].state").value("ON"))
+        .andDo(
+            document(
+                "{class-name}/{method-name}/{step}",
+                responseFields(
+                    fieldWithPath("[0].companyName").description("Company Name"),
+                    fieldWithPath("[0].city").description("Location City"),
+                    fieldWithPath("[0].state").description("Location State"),
+                    fieldWithPath("[1].companyName").description("Company Name"),
+                    fieldWithPath("[1].city").description("Location City"),
+                    fieldWithPath("[1].state").description("Location State")),
+                responseBody()));
+  }
 
   @Test
   void updateCompany_whenCompanyExists() throws Exception {
@@ -244,48 +273,50 @@ public class CompanyControllerIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updatedCompany)))
         .andExpect(status().isNoContent())
-            .andExpect(content().string("Hampton DeVille Corp. has been updated successfully."))
-            .andDo(
-                    document(
-                            "{class-name}/{method-name}/{step}",
-                            relaxedRequestFields(
-                                    attributes(key("title").value("Fields for adding new Company")),
-                                    fieldWithPath("companyName")
-                                            .description("Name of the Company")
-                                            .attributes(key("constraints").value("Must Match Path Variable Or Left Null")),
-                                    fieldWithPath("address.street")
-                                            .description("Street Address of Company")
-                                            .attributes(key("constraints").value("Nullable")),
-                                    fieldWithPath("address.city")
-                                            .description("Location City")
-                                            .attributes(key("constraints").value("Nullable")),
-                                    fieldWithPath("address.state")
-                                            .description("Location State")
-                                            .attributes(key("constraints").value("Nullable")),
-                                    fieldWithPath("address.zipCode")
-                                            .description("US Postal ZipCode")
-                                            .attributes(key("constraints").value("Nullable, 5 Digits")),
-                                    fieldWithPath("contactName")
-                                            .description("Name of Primary Contact")
-                                            .attributes(key("constraints").value("Nullable")),
-                                    fieldWithPath("title")
-                                            .description("Title of Primary Contact")
-                                            .attributes(key("constraints").value("Nullable")),
-                                    fieldWithPath("phoneNumber")
-                                            .description("Phone Number of Primary Contact")
-                                            .attributes(key("constraints").value("Nullable"))),
-                            responseBody()));
+        .andExpect(content().string("Hampton DeVille Corp. has been updated successfully."))
+        .andDo(
+            document(
+                "{class-name}/{method-name}/{step}",
+                relaxedRequestFields(
+                    attributes(key("title").value("Fields for adding new Company")),
+                    fieldWithPath("companyName")
+                        .description("Name of the Company")
+                        .attributes(
+                            key("constraints").value("Must Match Path Variable Or Left Null")),
+                    fieldWithPath("address.street")
+                        .description("Street Address of Company")
+                        .attributes(key("constraints").value("Nullable")),
+                    fieldWithPath("address.city")
+                        .description("Location City")
+                        .attributes(key("constraints").value("Nullable")),
+                    fieldWithPath("address.state")
+                        .description("Location State")
+                        .attributes(key("constraints").value("Nullable")),
+                    fieldWithPath("address.zipCode")
+                        .description("US Postal ZipCode")
+                        .attributes(key("constraints").value("Nullable, 5 Digits")),
+                    fieldWithPath("contactName")
+                        .description("Name of Primary Contact")
+                        .attributes(key("constraints").value("Nullable")),
+                    fieldWithPath("title")
+                        .description("Title of Primary Contact")
+                        .attributes(key("constraints").value("Nullable")),
+                    fieldWithPath("phoneNumber")
+                        .description("Phone Number of Primary Contact")
+                        .attributes(key("constraints").value("Nullable"))),
+                responseBody()));
 
-    mockMvc.perform(get("/company"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("length()").value(1))
-            .andExpect(jsonPath("[0].companyName").value("Hampton DeVille Corp."))
-            .andExpect(jsonPath("[0].address.street").value("200 W Lake Street"))
-            .andExpect(jsonPath("[0].address.city").value("Chicago"))
-            .andExpect(jsonPath("[0].address.state").value("IL"))
-            .andExpect(jsonPath("[0].address.zipCode").value("60602"))
-            .andExpect(jsonPath("[0].contactName").value("Mary Jones"))
-            .andExpect(jsonPath("[0].title").value("President - Accounts"))
-            .andExpect(jsonPath("[0].phoneNumber").value("312-777-8888"));
+    mockMvc
+        .perform(get("/company"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("length()").value(1))
+        .andExpect(jsonPath("[0].companyName").value("Hampton DeVille Corp."))
+        .andExpect(jsonPath("[0].address.street").value("200 W Lake Street"))
+        .andExpect(jsonPath("[0].address.city").value("Chicago"))
+        .andExpect(jsonPath("[0].address.state").value("IL"))
+        .andExpect(jsonPath("[0].address.zipCode").value("60602"))
+        .andExpect(jsonPath("[0].contactName").value("Mary Jones"))
+        .andExpect(jsonPath("[0].title").value("President - Accounts"))
+        .andExpect(jsonPath("[0].phoneNumber").value("312-777-8888"));
   }
 }

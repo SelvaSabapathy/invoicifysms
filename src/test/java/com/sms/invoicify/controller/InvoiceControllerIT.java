@@ -81,11 +81,10 @@ public class InvoiceControllerIT {
             .build();
   }
 
-  private MvcResult create(InvoiceDto invoiceDto, HttpStatus status) throws Exception {
-
+  private void createCompany(String companyName) throws Exception {
     Company company =
         Company.builder()
-            .companyName("aCompany")
+            .companyName(companyName)
             .address(
                 Address.builder()
                     .street("100 N State Street")
@@ -104,6 +103,9 @@ public class InvoiceControllerIT {
                 .content(objectMapper.writeValueAsString(company)))
         .andExpect(status().isCreated())
         .andExpect(content().string("aCompany created Successfully"));
+  }
+
+  private MvcResult create(InvoiceDto invoiceDto, HttpStatus status) throws Exception {
 
     MvcResult mvcResult =
         this.createInner(invoiceDto, status)
@@ -190,13 +192,16 @@ public class InvoiceControllerIT {
 
   @Test
   public void createOneFailureExistingNumber() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
+
     InvoiceDto invoiceDto =
         new InvoiceDto(
             121L,
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
     MvcResult mvcResult = create(invoiceDto, HttpStatus.CREATED);
@@ -213,13 +218,16 @@ public class InvoiceControllerIT {
 
   @Test
   public void createOneSuccess() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
+
     InvoiceDto invoiceDto =
         new InvoiceDto(
             121L,
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
     MvcResult mvcResult = create(invoiceDto, HttpStatus.CREATED);
@@ -232,13 +240,16 @@ public class InvoiceControllerIT {
 
   @Test
   public void createMultiple() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
+
     InvoiceDto invoiceDto1 =
         new InvoiceDto(
             121L,
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
     MvcResult mvcResult1 = create(invoiceDto1, HttpStatus.CREATED);
@@ -256,7 +267,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             List.of(item),
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(130.00));
     MvcResult mvcResult2 = create(invoiceDto2, HttpStatus.CREATED);
@@ -291,6 +302,8 @@ public class InvoiceControllerIT {
 
   @Test
   public void createAndViewInvoiceSummary() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
 
     Item item =
         Item.builder()
@@ -306,7 +319,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             List.of(item),
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
     create(invoiceDto, HttpStatus.CREATED);
@@ -336,6 +349,9 @@ public class InvoiceControllerIT {
 
   @Test
   public void createAndViewInvoiceDetail() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
+
     Item item =
         Item.builder()
             .description("Test Item Description")
@@ -350,7 +366,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(200.1).setScale(2));
     create(invoiceDto1, HttpStatus.CREATED);
@@ -361,7 +377,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             List.of(item),
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
     create(invoiceDto2, HttpStatus.CREATED);
@@ -398,6 +414,9 @@ public class InvoiceControllerIT {
 
   @Test
   public void searchInvoicesByNumber() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
+
     Item item =
         Item.builder()
             .description("Test Item Description")
@@ -412,7 +431,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(200.1).setScale(2));
     create(invoiceDto1, HttpStatus.CREATED);
@@ -423,7 +442,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             List.of(item),
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
     create(invoiceDto2, HttpStatus.CREATED);
@@ -460,6 +479,9 @@ public class InvoiceControllerIT {
 
   @Test
   public void updateAndViewInvoiceDetails() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
+
     Item item =
         Item.builder()
             .description("Test Item Description")
@@ -474,7 +496,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(200.1).setScale(2));
     create(invoiceDto1, HttpStatus.CREATED);
@@ -516,13 +538,16 @@ public class InvoiceControllerIT {
 
   @Test
   public void deleteInvoices() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
+
     InvoiceDto undeleteInvoiceDto =
         new InvoiceDto(
             120L,
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
     create(undeleteInvoiceDto, HttpStatus.CREATED);
@@ -533,7 +558,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.PAID,
             new BigDecimal(120.00));
     create(undeleteInvoiceDto2, HttpStatus.CREATED);
@@ -544,7 +569,7 @@ public class InvoiceControllerIT {
             LocalDate.now().minusYears(1L).minusDays(1L),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
     create(undeleteInvoiceDto3, HttpStatus.CREATED);
@@ -555,7 +580,7 @@ public class InvoiceControllerIT {
             LocalDate.now().minusYears(1L).minusDays(1L),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.PAID,
             new BigDecimal(120.00));
     create(deleteInvoiceDto4, HttpStatus.CREATED);
@@ -625,6 +650,9 @@ public class InvoiceControllerIT {
 
   @Test
   public void createAndViewUnpaidInvoiceDetail() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
+
     Item item =
         Item.builder()
             .description("Test Item Description")
@@ -639,7 +667,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.PAID,
             BigDecimal.valueOf(200.1).setScale(2));
     create(invoiceDto1, HttpStatus.CREATED);
@@ -650,7 +678,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             List.of(item),
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
     create(invoiceDto2, HttpStatus.CREATED);
@@ -687,6 +715,9 @@ public class InvoiceControllerIT {
 
   @Test
   public void createAndViewUnpaidInvoicesSummary() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
+
     Item item =
         Item.builder()
             .description("Test Item Description")
@@ -701,7 +732,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.PAID,
             BigDecimal.valueOf(200.1).setScale(2));
     create(invoiceDto1, HttpStatus.CREATED);
@@ -712,7 +743,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             List.of(item),
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
     create(invoiceDto2, HttpStatus.CREATED);

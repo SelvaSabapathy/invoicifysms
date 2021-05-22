@@ -1,5 +1,7 @@
 package com.sms.invoicify.service;
 
+import com.sms.invoicify.exception.InvoicifyCompanyExistsException;
+import com.sms.invoicify.exception.InvoicifyCompanyNotExistsException;
 import com.sms.invoicify.models.Address;
 import com.sms.invoicify.models.Company;
 import com.sms.invoicify.models.CompanyEntity;
@@ -17,21 +19,28 @@ import java.util.stream.Collectors;
 public class CompanyService {
   private final CompanyRepository companyRepository;
 
-  public void createCompany(Company companyDto) {
+  private void saveCompany(Company companyDto) {
     companyRepository.save(
-        CompanyEntity.builder()
-            .companyName(companyDto.getCompanyName())
-            .address(
-                Address.builder()
-                    .street(companyDto.getAddress().getStreet())
-                    .city(companyDto.getAddress().getCity())
-                    .state(companyDto.getAddress().getState())
-                    .zipCode(companyDto.getAddress().getZipCode())
-                    .build())
-            .contactName(companyDto.getContactName())
-            .title(companyDto.getTitle())
-            .phoneNumber(companyDto.getPhoneNumber())
-            .build());
+            CompanyEntity.builder()
+                    .companyName(companyDto.getCompanyName())
+                    .address(
+                            Address.builder()
+                                    .street(companyDto.getAddress().getStreet())
+                                    .city(companyDto.getAddress().getCity())
+                                    .state(companyDto.getAddress().getState())
+                                    .zipCode(companyDto.getAddress().getZipCode())
+                                    .build())
+                    .contactName(companyDto.getContactName())
+                    .title(companyDto.getTitle())
+                    .phoneNumber(companyDto.getPhoneNumber())
+                    .build());
+  }
+
+  public void createCompany(Company companyDto) throws InvoicifyCompanyExistsException {
+    if (fetchCompanyByName(companyDto.getCompanyName()) != null) {
+      throw new InvoicifyCompanyExistsException("Company exists. Can't be created");
+    }
+    saveCompany(companyDto);
   }
 
   public List<Company> fetchAllCompany() {
@@ -62,7 +71,7 @@ public class CompanyService {
         .collect(Collectors.toList());
   }
 
-  public void updateCompany(String companyName, Company company) {
+  public void updateCompany(String companyName, Company company) throws InvoicifyCompanyExistsException {
     if (company.getCompanyName() != null
         && companyName.equalsIgnoreCase(company.getCompanyName())) {
       Company existingCompany = this.fetchCompanyByName(companyName);
@@ -75,7 +84,7 @@ public class CompanyService {
       Optional.ofNullable(company.getTitle()).ifPresent(existingCompany::setTitle);
       Optional.ofNullable(company.getPhoneNumber()).ifPresent(existingCompany::setPhoneNumber);
 
-      createCompany(existingCompany);
+      saveCompany(existingCompany);
     }
   }
 
