@@ -131,7 +131,7 @@ public class InvoiceControllerIT {
                             .ignored(),
                         fieldWithPath("companyName")
                             .description("Company Billable for the Invoice")
-                            .attributes(key("constraints").value("Not Null")),
+                            .attributes(key("constraints").value("Not Null, Company Name must match an Existing Saved Company")),
                         paymentStatusField(),
                         fieldWithPath("totalCost")
                             .description("Sum of All Line Item Charges on the Invoice")
@@ -909,27 +909,8 @@ public class InvoiceControllerIT {
 
   @Test
   void findALlInvoices_returnsSortedListByCreationDateAsc() throws Exception {
-    Company company =
-        Company.builder()
-            .companyName("Company")
-            .address(
-                Address.builder()
-                    .street("100 N State Street")
-                    .city("Chicago")
-                    .state("IL")
-                    .zipCode("60601")
-                    .build())
-            .contactName("Jane Smith")
-            .title("VP - Accounts")
-            .phoneNumber("312-777-7777")
-            .build();
-    mockMvc
-        .perform(
-            post("/company")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(company)))
-        .andExpect(status().isCreated())
-        .andExpect(content().string("Company created Successfully"));
+
+    createCompany("Company");
 
     Item item1 =
         Item.builder()
@@ -999,27 +980,7 @@ public class InvoiceControllerIT {
 
   @Test
   void findALlInvoices_returnsSummarySortedListByCreationDateAsc() throws Exception {
-    Company company =
-            Company.builder()
-                    .companyName("Company")
-                    .address(
-                            Address.builder()
-                                    .street("100 N State Street")
-                                    .city("Chicago")
-                                    .state("IL")
-                                    .zipCode("60601")
-                                    .build())
-                    .contactName("Jane Smith")
-                    .title("VP - Accounts")
-                    .phoneNumber("312-777-7777")
-                    .build();
-    mockMvc
-            .perform(
-                    post("/company")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(company)))
-            .andExpect(status().isCreated())
-            .andExpect(content().string("Company created Successfully"));
+    createCompany("Company");
 
     Item item1 =
             Item.builder()
@@ -1085,5 +1046,58 @@ public class InvoiceControllerIT {
             .perform(get("/invoices/summary?pageNumber=1&pageSize=2"))
             .andExpect(jsonPath("length()").value(1))
             .andExpect(jsonPath("[0].number").value(2));
+  }
+
+  @Test
+  void createInvoiceWithMultipleItems() throws Exception {
+    createCompany("COMPANY_NAME");
+
+    InvoiceDto invoice =
+        InvoiceDto.builder()
+            .companyName("COMPANY_NAME")
+            .number(42L)
+            .paymentStatus(PaymentStatus.UNPAID)
+            .items(generateItemsList(42L))
+            .build();
+
+    mockMvc
+        .perform(
+            post("/invoices")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invoice)))
+        .andExpect(status().isCreated())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.companyName", is("COMPANY_NAME")))
+            .andExpect(jsonPath("$.items.[0].description", is("FIRST_ITEM")))
+            .andExpect(jsonPath("$.items.[1].description", is("SECOND_ITEM")))
+            .andExpect(jsonPath("$.items.[2].description", is("THIRD_ITEM")));
+  }
+
+  private List<Item> generateItemsList(Long invoiceNumber) {
+    Item item1 =
+        Item.builder()
+            .description("FIRST_ITEM")
+            .quantity(5)
+            .totalFees(BigDecimal.valueOf(25.00))
+            .invoiceNumber(invoiceNumber)
+            .build();
+
+    Item item2 =
+        Item.builder()
+            .description("SECOND_ITEM")
+            .quantity(1)
+            .totalFees(BigDecimal.valueOf(45.00))
+            .invoiceNumber(invoiceNumber)
+            .build();
+
+    Item item3 =
+        Item.builder()
+            .description("THIRD_ITEM")
+            .quantity(1)
+            .totalFees(BigDecimal.valueOf(30.99))
+            .invoiceNumber(invoiceNumber)
+            .build();
+
+    return List.of(item1, item2, item3);
   }
 }
