@@ -22,4 +22,8 @@ public interface InvoiceRepository extends JpaRepository<InvoiceEntity, Long> {
   List<InvoiceEntity> findYearOldandPaid(
       @Param("oneYearAgo") LocalDate oneYearAgo,
       @Param("paymentStatus") PaymentStatus paymentStatus);
+
+  @Query(
+      value =    "SELECT * from InvoiceEntity entity order by entity.CreationDate ASC")
+  List<InvoiceEntity> findSortedByCreatedDate();
 }

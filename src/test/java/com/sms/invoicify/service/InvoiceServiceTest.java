@@ -69,6 +69,18 @@ public class InvoiceServiceTest {
   }
 
   @Test
+  public void fetchAllSortedByDate() {
+    InvoiceEntity invoiceEntity1 = new InvoiceEntity();
+    InvoiceEntity invoiceEntity2 = new InvoiceEntity();
+    when(invoiceRepository.findAll()).thenReturn(List.of(invoiceEntity1, invoiceEntity2));
+
+    List<InvoiceEntity> entityList = invoiceService.view();
+
+    verify(invoiceRepository).findAll();
+    assertThat(entityList, is(List.of(invoiceEntity1, invoiceEntity2)));
+  }
+
+  @Test
   public void findByNumberTest() {
     InvoiceEntity invoiceEntity = new InvoiceEntity();
     when(invoiceRepository.findByNumber(8L)).thenReturn(invoiceEntity);
