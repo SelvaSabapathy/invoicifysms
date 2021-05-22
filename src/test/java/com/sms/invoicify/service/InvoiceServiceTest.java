@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -79,8 +80,7 @@ public class InvoiceServiceTest {
   }
 
   @Test
-  public void updateInvoice()
-      throws InvoicifyInvoiceNotExistsException, ParseException {
+  public void updateInvoice() throws InvoicifyInvoiceNotExistsException, ParseException {
     InvoiceEntity invoiceEntity = new InvoiceEntity();
     invoiceEntity.setNumber(100L);
     when(invoiceRepository.findByNumber(100L)).thenReturn(invoiceEntity);
@@ -99,7 +99,8 @@ public class InvoiceServiceTest {
 
     InvoiceEntity invoiceEntity = new InvoiceEntity();
     invoiceEntity.setNumber(100L);
-    when(invoiceRepository.findYearOldandPaid(oneYearAgo, paymentStatus)).thenReturn(List.of(invoiceEntity));
+    when(invoiceRepository.findYearOldandPaid(oneYearAgo, paymentStatus))
+        .thenReturn(List.of(invoiceEntity));
 
     invoiceService.delete();
     verify(invoiceRepository).findYearOldandPaid(oneYearAgo, paymentStatus);
@@ -109,11 +110,13 @@ public class InvoiceServiceTest {
   @Test
   public void findUnpaidInvoiceTest() {
     InvoiceEntity invoiceEntity = new InvoiceEntity();
-    when(invoiceRepository.findByPaymentStatus(PaymentStatus.UNPAID))
+    when(invoiceRepository.findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(anyString(), eq(PaymentStatus.UNPAID)))
         .thenReturn(List.of(invoiceEntity));
 
-    List<InvoiceEntity> actual = invoiceService.findByPaymentStatus(PaymentStatus.UNPAID);
-    verify(invoiceRepository).findByPaymentStatus(PaymentStatus.UNPAID);
+    List<InvoiceEntity> actual =
+        invoiceService.findByCompanyNameAndPaymentStatusOrderByCreationDateAsc("aCompany", PaymentStatus.UNPAID);
+    verify(invoiceRepository)
+        .findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(anyString(), eq(PaymentStatus.UNPAID));
     assertThat(actual, is(List.of(invoiceEntity)));
   }
 

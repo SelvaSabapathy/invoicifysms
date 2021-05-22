@@ -16,6 +16,8 @@ public interface InvoiceRepository extends JpaRepository<InvoiceEntity, Long> {
 
   List<InvoiceEntity> findByPaymentStatus(PaymentStatus paymentStatus);
 
+  List<InvoiceEntity> findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(String companyName, PaymentStatus paymentStatus);
+
   @Query(
       value =
           "SELECT entity FROM InvoiceEntity entity WHERE entity.creationDate < :oneYearAgo AND entity.paymentStatus = :paymentStatus")

@@ -102,7 +102,7 @@ public class InvoiceControllerIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(company)))
         .andExpect(status().isCreated())
-        .andExpect(content().string("aCompany created Successfully"));
+        .andExpect(content().string(companyName + " created Successfully"));
   }
 
   private MvcResult create(InvoiceDto invoiceDto, HttpStatus status) throws Exception {
@@ -650,8 +650,10 @@ public class InvoiceControllerIT {
 
   @Test
   public void createAndViewUnpaidInvoiceDetail() throws Exception {
-    String companyName = "aCompany";
-    createCompany(companyName);
+    String aCompanyName = "aCompany";
+    String bCompanyName = "bCompany";
+    createCompany(aCompanyName);
+    createCompany(bCompanyName);
 
     Item item =
         Item.builder()
@@ -667,7 +669,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             null,
-            companyName,
+            aCompanyName,
             PaymentStatus.PAID,
             BigDecimal.valueOf(200.1).setScale(2));
     create(invoiceDto1, HttpStatus.CREATED);
@@ -678,17 +680,41 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             List.of(item),
-            companyName,
+            aCompanyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
     create(invoiceDto2, HttpStatus.CREATED);
 
+    InvoiceDto invoiceDto3 =
+        new InvoiceDto(
+            122L,
+            LocalDate.now(),
+            null,
+            List.of(item),
+            bCompanyName,
+            PaymentStatus.UNPAID,
+            BigDecimal.valueOf(122.1).setScale(2));
+    create(invoiceDto3, HttpStatus.CREATED);
+
+    InvoiceDto invoiceDto4 =
+        new InvoiceDto(
+            123L,
+            LocalDate.now().minusDays(1),
+            null,
+            List.of(item),
+            aCompanyName,
+            PaymentStatus.UNPAID,
+            BigDecimal.valueOf(121.1).setScale(2));
+    create(invoiceDto4, HttpStatus.CREATED);
+
     invoiceDto1.setItems(List.of());
     invoiceDto2.setItems(List.of());
+    invoiceDto3.setItems(List.of());
+    invoiceDto4.setItems(List.of());
 
     MvcResult mvcResult =
         mockMvc
-            .perform(get("/invoices/unpaid").contentType(MediaType.APPLICATION_JSON))
+            .perform(get("/invoices/unpaid/aCompany").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andDo(
                 document(
@@ -707,10 +733,11 @@ public class InvoiceControllerIT {
         objectMapper.readValue(
             mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
 
-    assertThat(dtos.size(), is(1));
+    assertThat(dtos.size(), is(2));
 
     invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(item.getTotalFees()));
-    assertThat(dtos, contains(invoiceDto2));
+    invoiceDto4.setTotalCost(invoiceDto4.getTotalCost().add(item.getTotalFees()));
+    assertThat(dtos, is(List.of(invoiceDto4, invoiceDto2)));
   }
 
   @Test

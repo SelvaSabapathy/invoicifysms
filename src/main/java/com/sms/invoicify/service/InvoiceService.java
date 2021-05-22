@@ -91,7 +91,7 @@ public class InvoiceService {
     }
   }
 
-  public List<InvoiceEntity> findByPaymentStatus(PaymentStatus paymentStatus) {
-    return invoiceRepository.findByPaymentStatus(paymentStatus);
+  public List<InvoiceEntity> findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(String companyName, PaymentStatus paymentStatus) {
+    return invoiceRepository.findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(companyName, paymentStatus);
   }
 }
