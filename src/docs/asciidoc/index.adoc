@@ -122,6 +122,8 @@ include::{snippets}/company-controller-it/update-company_when-company-exists/3/h
 
 ==== POST
 
+===== Create New Invoice
+
 Create an invoice
 
 .request
@@ -132,6 +134,15 @@ include::{snippets}/invoice-controller-it/create-one-success/2/request-fields.ad
 .response
 include::{snippets}/invoice-controller-it/create-one-success/2/http-response.adoc[]
 
+===== Create w/ Nested Items
+
+Create Invoice with multiple Line Items
+
+.request
+include::{snippets}/invoice-controller-it/create-invoice-with-multiple-items/2/http-request.adoc[]
+
+.response
+include::{snippets}/invoice-controller-it/create-invoice-with-multiple-items/2/http-response.adoc[]
 
 ==== GET
 
