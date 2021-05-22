@@ -96,7 +96,7 @@ public class InvoiceController {
   @GetMapping("/invoices/summary")
   public ResponseEntity<List<InvoiceSummaryDto>> getInvoicesSummary() {
     List<InvoiceSummaryDto> summaryDtoList =
-        invoiceService.view().stream()
+        invoiceService.viewAllinvoices().stream()
             .map(
                 e ->
                     new InvoiceSummaryDto(
@@ -109,7 +109,7 @@ public class InvoiceController {
   public ResponseEntity<List<InvoiceDto>> getInvoices() {
 
     List<InvoiceDto> dtos =
-        invoiceService.view().stream()
+        invoiceService.viewAllinvoices().stream()
             .map(
                 e ->
                     new InvoiceDto(
