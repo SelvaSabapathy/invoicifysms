@@ -72,10 +72,26 @@ public class InvoiceService {
 
   public void delete() {
     LocalDate oneYearAgo = LocalDate.now().minusYears(1L);
-    invoiceRepository.deleteYearOldAndPaid(oneYearAgo, PaymentStatus.PAID);
+    List<InvoiceEntity> selectedInvoiceEntities =
+        invoiceRepository.findYearOldandPaid(oneYearAgo, PaymentStatus.PAID);
+    if (selectedInvoiceEntities.size() > 0) {
+      selectedInvoiceEntities.forEach(
+          entity -> {
+            if (entity.getItems() != null) {
+              entity
+                  .getItems()
+                  .forEach(
+                      item -> {
+                        item.setInvoice(null);
+                      });
+              invoiceRepository.save(entity);
+            }
+            invoiceRepository.delete(entity);
+          });
+    }
   }
 
-  public List<InvoiceEntity> findByPaymentStatus(PaymentStatus paymentStatus) {
-    return invoiceRepository.findByPaymentStatus(paymentStatus);
+  public List<InvoiceEntity> findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(String companyName, PaymentStatus paymentStatus) {
+    return invoiceRepository.findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(companyName, paymentStatus);
   }
 }

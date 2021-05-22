@@ -81,11 +81,10 @@ public class InvoiceControllerIT {
             .build();
   }
 
-  private MvcResult create(InvoiceDto invoiceDto, HttpStatus status) throws Exception {
-
+  private void createCompany(String companyName) throws Exception {
     Company company =
         Company.builder()
-            .companyName("aCompany")
+            .companyName(companyName)
             .address(
                 Address.builder()
                     .street("100 N State Street")
@@ -103,7 +102,10 @@ public class InvoiceControllerIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(company)))
         .andExpect(status().isCreated())
-        .andExpect(content().string("aCompany created Successfully"));
+        .andExpect(content().string(companyName + " created Successfully"));
+  }
+
+  private MvcResult create(InvoiceDto invoiceDto, HttpStatus status) throws Exception {
 
     MvcResult mvcResult =
         this.createInner(invoiceDto, status)
@@ -115,12 +117,24 @@ public class InvoiceControllerIT {
                         fieldWithPath("number")
                             .description("Invoice ID Number")
                             .attributes(key("constraints").value("Not Null")),
+                        fieldWithPath("creationDate")
+                            .description("Date timestamp when Invoice Created")
+                            .attributes(key("constraints").value(""))
+                            .ignored(),
+                        fieldWithPath("lastModifiedDate")
+                            .description("Date timestamp of Last Modification")
+                            .attributes(key("constraints").value(""))
+                            .ignored(),
+                        fieldWithPath("items")
+                            .description("List of Items Associated with the invoice")
+                            .attributes(key("constraints").value(""))
+                            .ignored(),
                         fieldWithPath("companyName")
                             .description("Company Billable for the Invoice")
                             .attributes(key("constraints").value("Not Null")),
                         paymentStatusField(),
                         fieldWithPath("totalCost")
-                            .description("Sum of All Line Item Charges on the Ivoice")
+                            .description("Sum of All Line Item Charges on the Invoice")
                             .attributes(key("constraints").value("Not Null"))),
                     responseBody()))
             .andReturn();
@@ -178,13 +192,16 @@ public class InvoiceControllerIT {
 
   @Test
   public void createOneFailureExistingNumber() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
+
     InvoiceDto invoiceDto =
         new InvoiceDto(
             121L,
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
     MvcResult mvcResult = create(invoiceDto, HttpStatus.CREATED);
@@ -201,13 +218,16 @@ public class InvoiceControllerIT {
 
   @Test
   public void createOneSuccess() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
+
     InvoiceDto invoiceDto =
         new InvoiceDto(
             121L,
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
     MvcResult mvcResult = create(invoiceDto, HttpStatus.CREATED);
@@ -220,13 +240,16 @@ public class InvoiceControllerIT {
 
   @Test
   public void createMultiple() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
+
     InvoiceDto invoiceDto1 =
         new InvoiceDto(
             121L,
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
     MvcResult mvcResult1 = create(invoiceDto1, HttpStatus.CREATED);
@@ -236,7 +259,7 @@ public class InvoiceControllerIT {
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(122L).build())
+            .invoiceNumber(122L)
             .build();
     InvoiceDto invoiceDto2 =
         new InvoiceDto(
@@ -244,7 +267,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             List.of(item),
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(130.00));
     MvcResult mvcResult2 = create(invoiceDto2, HttpStatus.CREATED);
@@ -257,7 +280,7 @@ public class InvoiceControllerIT {
         invoiceDto2.getItems().stream()
             .map(
                 e -> {
-                  e.setInvoice(null);
+                  e.setInvoiceNumber(null);
                   return e;
                 })
             .collect(Collectors.toList());
@@ -279,13 +302,15 @@ public class InvoiceControllerIT {
 
   @Test
   public void createAndViewInvoiceSummary() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
 
     Item item =
         Item.builder()
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(120L).build())
+            .invoiceNumber(120L)
             .build();
 
     InvoiceDto invoiceDto =
@@ -294,7 +319,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             List.of(item),
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
     create(invoiceDto, HttpStatus.CREATED);
@@ -324,12 +349,15 @@ public class InvoiceControllerIT {
 
   @Test
   public void createAndViewInvoiceDetail() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
+
     Item item =
         Item.builder()
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(121L).build())
+            .invoiceNumber(121L)
             .build();
 
     InvoiceDto invoiceDto1 =
@@ -338,7 +366,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(200.1).setScale(2));
     create(invoiceDto1, HttpStatus.CREATED);
@@ -349,7 +377,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             List.of(item),
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
     create(invoiceDto2, HttpStatus.CREATED);
@@ -386,12 +414,15 @@ public class InvoiceControllerIT {
 
   @Test
   public void searchInvoicesByNumber() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
+
     Item item =
         Item.builder()
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(121L).build())
+            .invoiceNumber(121L)
             .build();
 
     InvoiceDto invoiceDto1 =
@@ -400,7 +431,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(200.1).setScale(2));
     create(invoiceDto1, HttpStatus.CREATED);
@@ -411,7 +442,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             List.of(item),
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
     create(invoiceDto2, HttpStatus.CREATED);
@@ -448,12 +479,15 @@ public class InvoiceControllerIT {
 
   @Test
   public void updateAndViewInvoiceDetails() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
+
     Item item =
         Item.builder()
             .description("Test Item Description")
             .quantity(1)
             .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(121L).build())
+            .invoiceNumber(121L)
             .build();
 
     InvoiceDto invoiceDto1 =
@@ -462,14 +496,16 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(200.1).setScale(2));
     create(invoiceDto1, HttpStatus.CREATED);
 
     // update paid status
     invoiceDto1.setPaymentStatus(PaymentStatus.PAID);
-    this.update(invoiceDto1, HttpStatus.NO_CONTENT).andDo(document("updateInvoice")).andReturn();
+    this.update(invoiceDto1, HttpStatus.NO_CONTENT)
+        .andDo(document("{class-name}/{method-name}/{step}"))
+        .andReturn();
 
     invoiceDto1.setItems(List.of());
 
@@ -502,13 +538,16 @@ public class InvoiceControllerIT {
 
   @Test
   public void deleteInvoices() throws Exception {
+    String companyName = "aCompany";
+    createCompany(companyName);
+
     InvoiceDto undeleteInvoiceDto =
         new InvoiceDto(
             120L,
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
     create(undeleteInvoiceDto, HttpStatus.CREATED);
@@ -519,7 +558,7 @@ public class InvoiceControllerIT {
             LocalDate.now(),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.PAID,
             new BigDecimal(120.00));
     create(undeleteInvoiceDto2, HttpStatus.CREATED);
@@ -530,7 +569,7 @@ public class InvoiceControllerIT {
             LocalDate.now().minusYears(1L).minusDays(1L),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
     create(undeleteInvoiceDto3, HttpStatus.CREATED);
@@ -541,12 +580,12 @@ public class InvoiceControllerIT {
             LocalDate.now().minusYears(1L).minusDays(1L),
             null,
             null,
-            "aCompany",
+            companyName,
             PaymentStatus.PAID,
             new BigDecimal(120.00));
     create(deleteInvoiceDto4, HttpStatus.CREATED);
 
-    // Create an item and attach it to an invoice
+    // Create an item and attach it to an invoice which is getting deleted
     mockMvc
         .perform(
             post("/items")
@@ -557,7 +596,22 @@ public class InvoiceControllerIT {
                             .description("Test Item Description")
                             .quantity(1)
                             .totalFees(BigDecimal.valueOf(10).setScale(2))
-                            .invoice(InvoiceDto.builder().number(123L).build())
+                            .invoiceNumber(123L)
+                            .build())))
+        .andExpect(status().isCreated());
+
+    // Create an item and attach it to an invoice which is not getting deleted
+    mockMvc
+        .perform(
+            post("/items")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    objectMapper.writeValueAsString(
+                        Item.builder()
+                            .description("Test Item Description-Invoice 120")
+                            .quantity(1)
+                            .totalFees(BigDecimal.valueOf(100).setScale(2))
+                            .invoiceNumber(120L)
                             .build())))
         .andExpect(status().isCreated());
 
@@ -570,59 +624,104 @@ public class InvoiceControllerIT {
     mockMvc
         .perform(get("/items").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("length()").value(1));
+        .andExpect(jsonPath("length()").value(2));
 
     // delete
     mockMvc
         .perform(delete("/invoices").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNoContent())
-        .andReturn();
+        .andDo(document("{class-name}/{method-name}/{step}"));
 
     // verify after delete -- item & invoice
     mockMvc
         .perform(get("/invoices").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("length()").value(3));
+        .andExpect(jsonPath("length()").value(3))
+        .andExpect(jsonPath("[0].number").value(122L))
+        .andExpect(jsonPath("[1].number").value(120L))
+        .andExpect(jsonPath("[2].number").value(121L));
+
+    mockMvc
+        .perform(get("/items").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("length()").value(1))
+        .andExpect(jsonPath("[0].description").value("Test Item Description-Invoice 120"));
+  }
+
+  private List<InvoiceDto> createAndViewUnpaidInvoices(String aCompanyName, String bCompanyName, BigDecimal itemCost) throws Exception {
+    createCompany(aCompanyName);
+    createCompany(bCompanyName);
+
+    Item item =
+            Item.builder()
+                    .description("Test Item Description")
+                    .quantity(1)
+                    .totalFees(BigDecimal.TEN)
+                    .invoiceNumber(121L)
+                    .build();
+
+    InvoiceDto invoiceDto1 =
+            new InvoiceDto(
+                    120L,
+                    LocalDate.now(),
+                    null,
+                    null,
+                    aCompanyName,
+                    PaymentStatus.PAID,
+                    BigDecimal.valueOf(200.1).setScale(2));
+    create(invoiceDto1, HttpStatus.CREATED);
+
+    InvoiceDto invoiceDto2 =
+            new InvoiceDto(
+                    121L,
+                    LocalDate.now(),
+                    null,
+                    List.of(item),
+                    aCompanyName,
+                    PaymentStatus.UNPAID,
+                    BigDecimal.valueOf(121.1).setScale(2));
+    create(invoiceDto2, HttpStatus.CREATED);
+
+    InvoiceDto invoiceDto3 =
+            new InvoiceDto(
+                    122L,
+                    LocalDate.now(),
+                    null,
+                    List.of(item),
+                    bCompanyName,
+                    PaymentStatus.UNPAID,
+                    BigDecimal.valueOf(122.1).setScale(2));
+    create(invoiceDto3, HttpStatus.CREATED);
+
+    InvoiceDto invoiceDto4 =
+            new InvoiceDto(
+                    123L,
+                    LocalDate.now().minusDays(1),
+                    null,
+                    List.of(item),
+                    aCompanyName,
+                    PaymentStatus.UNPAID,
+                    BigDecimal.valueOf(121.1).setScale(2));
+    create(invoiceDto4, HttpStatus.CREATED);
+
+    invoiceDto1.setItems(List.of());
+    invoiceDto2.setItems(List.of());
+    invoiceDto3.setItems(List.of());
+    invoiceDto4.setItems(List.of());
+
+    return List.of(invoiceDto1, invoiceDto2, invoiceDto3, invoiceDto4);
   }
 
   @Test
   public void createAndViewUnpaidInvoiceDetail() throws Exception {
-    Item item =
-        Item.builder()
-            .description("Test Item Description")
-            .quantity(1)
-            .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(121L).build())
-            .build();
-
-    InvoiceDto invoiceDto1 =
-        new InvoiceDto(
-            120L,
-            LocalDate.now(),
-            null,
-            null,
-            "aCompany",
-            PaymentStatus.PAID,
-            BigDecimal.valueOf(200.1).setScale(2));
-    create(invoiceDto1, HttpStatus.CREATED);
-
-    InvoiceDto invoiceDto2 =
-        new InvoiceDto(
-            121L,
-            LocalDate.now(),
-            null,
-            List.of(item),
-            "aCompany",
-            PaymentStatus.UNPAID,
-            BigDecimal.valueOf(121.1).setScale(2));
-    create(invoiceDto2, HttpStatus.CREATED);
-
-    invoiceDto1.setItems(List.of());
-    invoiceDto2.setItems(List.of());
+    BigDecimal itemCost = BigDecimal.TEN;
+    List<InvoiceDto> createdInvoiceDtos = createAndViewUnpaidInvoices("aCompany", "bCompany", itemCost);
+    InvoiceDto invoiceDto2 = createdInvoiceDtos.get(1);
+    InvoiceDto invoiceDto4 = createdInvoiceDtos.get(3);
 
     MvcResult mvcResult =
         mockMvc
-            .perform(get("/invoices/unpaid").contentType(MediaType.APPLICATION_JSON))
+            .perform(get("/invoices/unpaid/aCompany").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andDo(
                 document(
@@ -641,50 +740,26 @@ public class InvoiceControllerIT {
         objectMapper.readValue(
             mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
 
-    assertThat(dtos.size(), is(1));
+    assertThat(dtos.size(), is(2));
 
-    invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(item.getTotalFees()));
-    assertThat(dtos, contains(invoiceDto2));
+    invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(itemCost));
+    invoiceDto4.setTotalCost(invoiceDto4.getTotalCost().add(itemCost));
+    assertThat(dtos, is(List.of(invoiceDto4, invoiceDto2)));
   }
 
   @Test
   public void createAndViewUnpaidInvoicesSummary() throws Exception {
-    Item item =
-        Item.builder()
-            .description("Test Item Description")
-            .quantity(1)
-            .totalFees(BigDecimal.TEN)
-            .invoice(InvoiceDto.builder().number(121L).build())
-            .build();
+    BigDecimal itemCost = BigDecimal.TEN;
+    List<InvoiceDto> createdInvoiceDtos = createAndViewUnpaidInvoices("aCompany", "bCompany", itemCost);
+    InvoiceDto invoiceDto2 = createdInvoiceDtos.get(1);
+    InvoiceDto invoiceDto4 = createdInvoiceDtos.get(3);
 
-    InvoiceDto invoiceDto1 =
-        new InvoiceDto(
-            120L,
-            LocalDate.now(),
-            null,
-            null,
-            "aCompany",
-            PaymentStatus.PAID,
-            BigDecimal.valueOf(200.1).setScale(2));
-    create(invoiceDto1, HttpStatus.CREATED);
-
-    InvoiceDto invoiceDto2 =
-        new InvoiceDto(
-            121L,
-            LocalDate.now(),
-            null,
-            List.of(item),
-            "aCompany",
-            PaymentStatus.UNPAID,
-            BigDecimal.valueOf(121.1).setScale(2));
-    create(invoiceDto2, HttpStatus.CREATED);
-
-    invoiceDto1.setItems(List.of());
     invoiceDto2.setItems(List.of());
+    invoiceDto4.setItems(List.of());
 
     MvcResult mvcResult =
         mockMvc
-            .perform(get("/invoices/unpaid/summary").contentType(MediaType.APPLICATION_JSON))
+            .perform(get("/invoices/summary/unpaid/aCompany").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andDo(
                 document(
@@ -700,11 +775,14 @@ public class InvoiceControllerIT {
         objectMapper.readValue(
             mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
 
-    assertThat(dtos.size(), is(1));
+    assertThat(dtos.size(), is(2));
 
-    invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(item.getTotalFees()));
+    invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(itemCost));
+    invoiceDto4.setTotalCost(invoiceDto2.getTotalCost().add(itemCost));
     assertThat(dtos.get(0).getPaymentStatus(), is(PaymentStatus.UNPAID));
-    assertThat(dtos.get(0).getNumber(), is(invoiceDto2.getNumber()));
+    assertThat(dtos.get(0).getNumber(), is(invoiceDto4.getNumber()));
+    assertThat(dtos.get(1).getPaymentStatus(), is(PaymentStatus.UNPAID));
+    assertThat(dtos.get(1).getNumber(), is(invoiceDto2.getNumber()));
   }
 
   @Test
@@ -736,7 +814,7 @@ public class InvoiceControllerIT {
                     .description("MIDDLE DATE")
                     .quantity(1)
                     .totalFees(BigDecimal.TEN)
-                    .invoice(InvoiceDto.builder().number(121L).build())
+                    .invoiceNumber(121L)
                     .build();
 
     Item item2 =
@@ -744,7 +822,7 @@ public class InvoiceControllerIT {
                     .description("LAST DATE")
                     .quantity(1)
                     .totalFees(BigDecimal.TEN)
-                    .invoice(InvoiceDto.builder().number(121L).build())
+                    .invoiceNumber(121L)
                     .build();
 
     Item item3 =
@@ -752,7 +830,7 @@ public class InvoiceControllerIT {
                     .description("EARLIEST DATE")
                     .quantity(1)
                     .totalFees(BigDecimal.TEN)
-                    .invoice(InvoiceDto.builder().number(121L).build())
+                    .invoiceNumber(121L)
                     .build();
 
     InvoiceDto invoice1 =

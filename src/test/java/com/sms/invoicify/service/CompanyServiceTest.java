@@ -1,5 +1,6 @@
 package com.sms.invoicify.service;
 
+import com.sms.invoicify.exception.InvoicifyCompanyExistsException;
 import com.sms.invoicify.models.Address;
 import com.sms.invoicify.models.Company;
 import com.sms.invoicify.models.CompanyEntity;
@@ -31,7 +32,7 @@ public class CompanyServiceTest {
 
   @Test
   @DisplayName("Create new Company Test")
-  void createCompany() {
+  void createCompany() throws InvoicifyCompanyExistsException {
     Company companyDto =
         Company.builder()
             .companyName("Test1")
@@ -64,6 +65,7 @@ public class CompanyServiceTest {
                 .title("Title1")
                 .phoneNumber("312-777-7777")
                 .build());
+    verify(companyRepository).findById("Test1");
     verifyNoMoreInteractions(companyRepository);
   }
 
