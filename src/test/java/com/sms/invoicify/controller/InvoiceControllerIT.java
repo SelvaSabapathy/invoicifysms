@@ -704,12 +704,48 @@ public class InvoiceControllerIT {
                     BigDecimal.valueOf(121.1).setScale(2));
     create(invoiceDto4, HttpStatus.CREATED);
 
+    InvoiceDto invoiceDto5 =
+            new InvoiceDto(
+                    125L,
+                    LocalDate.now(),
+                    null,
+                    List.of(item),
+                    aCompanyName,
+                    PaymentStatus.UNPAID,
+                    BigDecimal.valueOf(121.1).setScale(2));
+    create(invoiceDto5, HttpStatus.CREATED);
+
+    InvoiceDto invoiceDto6 =
+            new InvoiceDto(
+                    126L,
+                    LocalDate.now(),
+                    null,
+                    List.of(item),
+                    aCompanyName,
+                    PaymentStatus.UNPAID,
+                    BigDecimal.valueOf(121.1).setScale(2));
+    create(invoiceDto6, HttpStatus.CREATED);
+
+    InvoiceDto invoiceDto7 =
+            new InvoiceDto(
+                    127L,
+                    LocalDate.now(),
+                    null,
+                    List.of(item),
+                    aCompanyName,
+                    PaymentStatus.UNPAID,
+                    BigDecimal.valueOf(121.1).setScale(2));
+    create(invoiceDto7, HttpStatus.CREATED);
+
     invoiceDto1.setItems(List.of());
     invoiceDto2.setItems(List.of());
     invoiceDto3.setItems(List.of());
     invoiceDto4.setItems(List.of());
+    invoiceDto5.setItems(List.of());
+    invoiceDto6.setItems(List.of());
+    invoiceDto7.setItems(List.of());
 
-    return List.of(invoiceDto1, invoiceDto2, invoiceDto3, invoiceDto4);
+    return List.of(invoiceDto1, invoiceDto2, invoiceDto3, invoiceDto4, invoiceDto5, invoiceDto6, invoiceDto7);
   }
 
   @Test
@@ -718,7 +754,11 @@ public class InvoiceControllerIT {
     List<InvoiceDto> createdInvoiceDtos = createAndViewUnpaidInvoices("aCompany", "bCompany", itemCost);
     InvoiceDto invoiceDto2 = createdInvoiceDtos.get(1);
     InvoiceDto invoiceDto4 = createdInvoiceDtos.get(3);
+    InvoiceDto invoiceDto5 = createdInvoiceDtos.get(4);
+    InvoiceDto invoiceDto6 = createdInvoiceDtos.get(5);
+    InvoiceDto invoiceDto7 = createdInvoiceDtos.get(6);
 
+   // Get  invoiceDto4, followed by invoiceDto2
     MvcResult mvcResult =
         mockMvc
             .perform(get("/invoices/unpaid/aCompany").contentType(MediaType.APPLICATION_JSON))
@@ -745,6 +785,14 @@ public class InvoiceControllerIT {
     invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(itemCost));
     invoiceDto4.setTotalCost(invoiceDto4.getTotalCost().add(itemCost));
     assertThat(dtos, is(List.of(invoiceDto4, invoiceDto2)));
+
+    // Get  invoiceDto5, followed by invoiceDto6
+
+      // sebin to fill code here
+
+    // Get  invoiceDto7
+
+      // sebin to fill code here
   }
 
   @Test
