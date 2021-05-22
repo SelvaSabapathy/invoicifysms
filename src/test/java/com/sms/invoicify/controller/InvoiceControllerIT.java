@@ -985,7 +985,7 @@ public class InvoiceControllerIT {
     this.createInner(invoice3, HttpStatus.CREATED);
 
     mockMvc
-        .perform(get("/invoices"))
+        .perform(get("/invoices?pageNumber=0&pageSize=2"))
         .andExpect(jsonPath("length()").value(3))
         .andExpect(jsonPath("[0].number").value(3))
         .andExpect(jsonPath("[1].number").value(1))

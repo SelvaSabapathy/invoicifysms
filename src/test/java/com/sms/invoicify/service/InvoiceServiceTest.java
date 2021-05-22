@@ -12,9 +12,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -62,12 +67,12 @@ public class InvoiceServiceTest {
   public void fetchAll() {
     InvoiceEntity invoiceEntity1 = new InvoiceEntity();
     InvoiceEntity invoiceEntity2 = new InvoiceEntity();
-    when(invoiceRepository.findByOrderByCreationDateAsc())
-        .thenReturn(List.of(invoiceEntity1, invoiceEntity2));
+    when(invoiceRepository.findAll(PageRequest.of(0, 2, Sort.by("creationDate").ascending())))
+        .thenReturn(new PageImpl<>(List.of(invoiceEntity1, invoiceEntity2)));
 
-    List<InvoiceEntity> entityList = invoiceService.viewAllinvoices();
+    List<InvoiceEntity> entityList = invoiceService.viewAllinvoices(0,2);
 
-    verify(invoiceRepository).findByOrderByCreationDateAsc();
+    verify(invoiceRepository).findAll(PageRequest.of(0, 2, Sort.by("creationDate").ascending()));
     assertThat(entityList, is(List.of(invoiceEntity1, invoiceEntity2)));
   }
 

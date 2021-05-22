@@ -50,8 +50,8 @@ public class InvoiceService {
     return invoiceRepository.save(invoiceEntity);
   }
 
-  public List<InvoiceEntity> viewAllinvoices() {
-    return invoiceRepository.findByOrderByCreationDateAsc();
+  public List<InvoiceEntity> viewAllinvoices(Integer pageNumber, Integer pageSize) {
+    return (List<InvoiceEntity>) invoiceRepository.findAll((Pageable) PageRequest.of(pageNumber, pageSize, Sort.by("creationDate").ascending()));
   }
 
   public InvoiceEntity findByNumber(Long number) {
