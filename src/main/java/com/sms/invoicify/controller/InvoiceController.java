@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -200,10 +201,13 @@ public class InvoiceController {
 
   @GetMapping("/invoices/unpaid/{companyName}")
   public ResponseEntity<List<InvoiceDto>> getUnpaidInvoices(
-      @PathVariable("companyName") String companyName) {
+          @PathVariable("companyName") String companyName,
+          @RequestParam(defaultValue = "0") Integer pageNumber,
+          @RequestParam(defaultValue = "10") Integer pageSize) {
 
     List<InvoiceDto> dtos =
-        invoiceService.findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(companyName, PaymentStatus.UNPAID).stream()
+        invoiceService.findByCompanyNameAndPaymentStatus(
+                companyName, PaymentStatus.UNPAID,pageNumber, pageSize).stream()
             .map(
                 e ->
                     new InvoiceDto(
@@ -222,7 +226,7 @@ public class InvoiceController {
   public ResponseEntity<List<InvoiceSummaryDto>> getUnpaidInvoicesSummary(@PathVariable("companyName") String companyName) {
 
     List<InvoiceSummaryDto> dtos =
-        invoiceService.findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(companyName, PaymentStatus.UNPAID).stream()
+        invoiceService.findByCompanyNameAndPaymentStatus(companyName, PaymentStatus.UNPAID,0,2).stream()
             .map(
                 e ->
                     new InvoiceSummaryDto(

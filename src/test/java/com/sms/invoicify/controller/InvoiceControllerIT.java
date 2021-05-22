@@ -674,7 +674,7 @@ public class InvoiceControllerIT {
     InvoiceDto invoiceDto2 =
             new InvoiceDto(
                     121L,
-                    LocalDate.now(),
+                    LocalDate.now().minusDays(3),
                     null,
                     List.of(item),
                     aCompanyName,
@@ -696,7 +696,7 @@ public class InvoiceControllerIT {
     InvoiceDto invoiceDto4 =
             new InvoiceDto(
                     123L,
-                    LocalDate.now().minusDays(1),
+                    LocalDate.now().minusDays(4),
                     null,
                     List.of(item),
                     aCompanyName,
@@ -707,7 +707,7 @@ public class InvoiceControllerIT {
     InvoiceDto invoiceDto5 =
             new InvoiceDto(
                     125L,
-                    LocalDate.now(),
+                    LocalDate.now().minusDays(2),
                     null,
                     List.of(item),
                     aCompanyName,
@@ -718,7 +718,7 @@ public class InvoiceControllerIT {
     InvoiceDto invoiceDto6 =
             new InvoiceDto(
                     126L,
-                    LocalDate.now(),
+                    LocalDate.now().minusDays(1),
                     null,
                     List.of(item),
                     aCompanyName,
@@ -761,7 +761,7 @@ public class InvoiceControllerIT {
    // Get  invoiceDto4, followed by invoiceDto2
     MvcResult mvcResult =
         mockMvc
-            .perform(get("/invoices/unpaid/aCompany").contentType(MediaType.APPLICATION_JSON))
+            .perform(get("/invoices/unpaid/aCompany?pageNumber=0&pageSize=2").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andDo(
                 document(
@@ -787,12 +787,37 @@ public class InvoiceControllerIT {
     assertThat(dtos, is(List.of(invoiceDto4, invoiceDto2)));
 
     // Get  invoiceDto5, followed by invoiceDto6
+    mvcResult =
+            mockMvc
+                    .perform(get("/invoices/unpaid/aCompany?pageNumber=1&pageSize=2").contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+            .andReturn();
 
-      // sebin to fill code here
+    dtos =
+            objectMapper.readValue(
+                    mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
+
+    assertThat(dtos.size(), is(2));
+
+    invoiceDto5.setTotalCost(invoiceDto5.getTotalCost().add(itemCost));
+    invoiceDto6.setTotalCost(invoiceDto6.getTotalCost().add(itemCost));
+    assertThat(dtos, is(List.of(invoiceDto5, invoiceDto6)));
 
     // Get  invoiceDto7
+    mvcResult =
+            mockMvc
+                    .perform(get("/invoices/unpaid/aCompany?pageNumber=2&pageSize=2").contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andReturn();
 
-      // sebin to fill code here
+    dtos =
+            objectMapper.readValue(
+                    mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
+
+    assertThat(dtos.size(), is(1));
+
+    invoiceDto7.setTotalCost(invoiceDto7.getTotalCost().add(itemCost));
+    assertThat(dtos, is(List.of(invoiceDto7)));
   }
 
   @Test

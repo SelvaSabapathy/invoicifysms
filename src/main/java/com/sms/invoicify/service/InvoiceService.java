@@ -7,6 +7,9 @@ import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.repository.InvoiceRepository;
 import com.sms.invoicify.utilities.PaymentStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -91,7 +94,9 @@ public class InvoiceService {
     }
   }
 
-  public List<InvoiceEntity> findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(String companyName, PaymentStatus paymentStatus) {
-    return invoiceRepository.findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(companyName, paymentStatus);
+  public List<InvoiceEntity> findByCompanyNameAndPaymentStatus(
+          String companyName, PaymentStatus paymentStatus, Integer pageNumber, Integer pageSize) {
+    return invoiceRepository.findByCompanyNameAndPaymentStatus(
+            companyName, paymentStatus, (Pageable) PageRequest.of(pageNumber, pageSize, Sort.by("creationDate").ascending()));
   }
 }

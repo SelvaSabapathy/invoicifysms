@@ -21,6 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -110,13 +111,13 @@ public class InvoiceServiceTest {
   @Test
   public void findUnpaidInvoiceTest() {
     InvoiceEntity invoiceEntity = new InvoiceEntity();
-    when(invoiceRepository.findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(anyString(), eq(PaymentStatus.UNPAID)))
+    when(invoiceRepository.findByCompanyNameAndPaymentStatus(anyString(), eq(PaymentStatus.UNPAID),any()))
         .thenReturn(List.of(invoiceEntity));
 
     List<InvoiceEntity> actual =
-        invoiceService.findByCompanyNameAndPaymentStatusOrderByCreationDateAsc("aCompany", PaymentStatus.UNPAID);
+        invoiceService.findByCompanyNameAndPaymentStatus("aCompany", PaymentStatus.UNPAID,0,2);
     verify(invoiceRepository)
-        .findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(anyString(), eq(PaymentStatus.UNPAID));
+        .findByCompanyNameAndPaymentStatus(anyString(), eq(PaymentStatus.UNPAID),any());
     assertThat(actual, is(List.of(invoiceEntity)));
   }
 
