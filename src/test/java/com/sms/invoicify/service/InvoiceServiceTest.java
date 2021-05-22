@@ -70,7 +70,7 @@ public class InvoiceServiceTest {
     when(invoiceRepository.findAll(PageRequest.of(0, 2, Sort.by("creationDate").ascending())))
         .thenReturn(new PageImpl<>(List.of(invoiceEntity1, invoiceEntity2)));
 
-    List<InvoiceEntity> entityList = invoiceService.viewAllinvoices(0,2);
+    List<InvoiceEntity> entityList = invoiceService.viewAllinvoices(0, 2);
 
     verify(invoiceRepository).findAll(PageRequest.of(0, 2, Sort.by("creationDate").ascending()));
     assertThat(entityList, is(List.of(invoiceEntity1, invoiceEntity2)));

@@ -363,7 +363,7 @@ public class InvoiceControllerIT {
     InvoiceDto invoiceDto1 =
         new InvoiceDto(
             120L,
-            LocalDate.now(),
+            LocalDate.now().minusDays(1),
             null,
             null,
             companyName,
@@ -544,7 +544,7 @@ public class InvoiceControllerIT {
     InvoiceDto undeleteInvoiceDto =
         new InvoiceDto(
             120L,
-            LocalDate.now(),
+            LocalDate.now().minusDays(1),
             null,
             null,
             companyName,
@@ -986,9 +986,14 @@ public class InvoiceControllerIT {
 
     mockMvc
         .perform(get("/invoices?pageNumber=0&pageSize=2"))
-        .andExpect(jsonPath("length()").value(3))
+        .andExpect(jsonPath("length()").value(2))
         .andExpect(jsonPath("[0].number").value(3))
-        .andExpect(jsonPath("[1].number").value(1))
-        .andExpect(jsonPath("[2].number").value(2));
+        .andExpect(jsonPath("[1].number").value(1));
+
+    // second page
+    mockMvc
+        .perform(get("/invoices?pageNumber=1&pageSize=2"))
+        .andExpect(jsonPath("length()").value(1))
+        .andExpect(jsonPath("[0].number").value(2));
   }
 }

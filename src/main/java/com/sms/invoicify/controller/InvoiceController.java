@@ -95,10 +95,11 @@ public class InvoiceController {
   }
 
   @GetMapping("/invoices/summary")
-  public ResponseEntity<List<InvoiceSummaryDto>> getInvoicesSummary( @RequestParam(defaultValue = "0") Integer pageNumber,
-                                                                     @RequestParam(defaultValue = "10") Integer pageSize) {
+  public ResponseEntity<List<InvoiceSummaryDto>> getInvoicesSummary(
+      @RequestParam(defaultValue = "0") Integer pageNumber,
+      @RequestParam(defaultValue = "10") Integer pageSize) {
     List<InvoiceSummaryDto> summaryDtoList =
-        invoiceService.viewAllinvoices(pageNumber,pageSize).stream()
+        invoiceService.viewAllinvoices(pageNumber, pageSize).stream()
             .map(
                 e ->
                     new InvoiceSummaryDto(
@@ -108,8 +109,9 @@ public class InvoiceController {
   }
 
   @GetMapping("/invoices")
-  public ResponseEntity<List<InvoiceDto>> getInvoices(  @RequestParam(defaultValue = "0") Integer pageNumber,
-                                                        @RequestParam(defaultValue = "10") Integer pageSize) {
+  public ResponseEntity<List<InvoiceDto>> getInvoices(
+      @RequestParam(defaultValue = "0") Integer pageNumber,
+      @RequestParam(defaultValue = "10") Integer pageSize) {
 
     List<InvoiceDto> dtos =
         invoiceService.viewAllinvoices(pageNumber, pageSize).stream()
