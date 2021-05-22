@@ -648,69 +648,76 @@ public class InvoiceControllerIT {
         .andExpect(jsonPath("[0].description").value("Test Item Description-Invoice 120"));
   }
 
-  @Test
-  public void createAndViewUnpaidInvoiceDetail() throws Exception {
-    String aCompanyName = "aCompany";
-    String bCompanyName = "bCompany";
+  private List<InvoiceDto> createAndViewUnpaidInvoices(String aCompanyName, String bCompanyName, BigDecimal itemCost) throws Exception {
     createCompany(aCompanyName);
     createCompany(bCompanyName);
 
     Item item =
-        Item.builder()
-            .description("Test Item Description")
-            .quantity(1)
-            .totalFees(BigDecimal.TEN)
-            .invoiceNumber(121L)
-            .build();
+            Item.builder()
+                    .description("Test Item Description")
+                    .quantity(1)
+                    .totalFees(BigDecimal.TEN)
+                    .invoiceNumber(121L)
+                    .build();
 
     InvoiceDto invoiceDto1 =
-        new InvoiceDto(
-            120L,
-            LocalDate.now(),
-            null,
-            null,
-            aCompanyName,
-            PaymentStatus.PAID,
-            BigDecimal.valueOf(200.1).setScale(2));
+            new InvoiceDto(
+                    120L,
+                    LocalDate.now(),
+                    null,
+                    null,
+                    aCompanyName,
+                    PaymentStatus.PAID,
+                    BigDecimal.valueOf(200.1).setScale(2));
     create(invoiceDto1, HttpStatus.CREATED);
 
     InvoiceDto invoiceDto2 =
-        new InvoiceDto(
-            121L,
-            LocalDate.now(),
-            null,
-            List.of(item),
-            aCompanyName,
-            PaymentStatus.UNPAID,
-            BigDecimal.valueOf(121.1).setScale(2));
+            new InvoiceDto(
+                    121L,
+                    LocalDate.now(),
+                    null,
+                    List.of(item),
+                    aCompanyName,
+                    PaymentStatus.UNPAID,
+                    BigDecimal.valueOf(121.1).setScale(2));
     create(invoiceDto2, HttpStatus.CREATED);
 
     InvoiceDto invoiceDto3 =
-        new InvoiceDto(
-            122L,
-            LocalDate.now(),
-            null,
-            List.of(item),
-            bCompanyName,
-            PaymentStatus.UNPAID,
-            BigDecimal.valueOf(122.1).setScale(2));
+            new InvoiceDto(
+                    122L,
+                    LocalDate.now(),
+                    null,
+                    List.of(item),
+                    bCompanyName,
+                    PaymentStatus.UNPAID,
+                    BigDecimal.valueOf(122.1).setScale(2));
     create(invoiceDto3, HttpStatus.CREATED);
 
     InvoiceDto invoiceDto4 =
-        new InvoiceDto(
-            123L,
-            LocalDate.now().minusDays(1),
-            null,
-            List.of(item),
-            aCompanyName,
-            PaymentStatus.UNPAID,
-            BigDecimal.valueOf(121.1).setScale(2));
+            new InvoiceDto(
+                    123L,
+                    LocalDate.now().minusDays(1),
+                    null,
+                    List.of(item),
+                    aCompanyName,
+                    PaymentStatus.UNPAID,
+                    BigDecimal.valueOf(121.1).setScale(2));
     create(invoiceDto4, HttpStatus.CREATED);
 
     invoiceDto1.setItems(List.of());
     invoiceDto2.setItems(List.of());
     invoiceDto3.setItems(List.of());
     invoiceDto4.setItems(List.of());
+
+    return List.of(invoiceDto1, invoiceDto2, invoiceDto3, invoiceDto4);
+  }
+
+  @Test
+  public void createAndViewUnpaidInvoiceDetail() throws Exception {
+    BigDecimal itemCost = BigDecimal.TEN;
+    List<InvoiceDto> createdInvoiceDtos = createAndViewUnpaidInvoices("aCompany", "bCompany", itemCost);
+    InvoiceDto invoiceDto2 = createdInvoiceDtos.get(1);
+    InvoiceDto invoiceDto4 = createdInvoiceDtos.get(3);
 
     MvcResult mvcResult =
         mockMvc
@@ -735,52 +742,24 @@ public class InvoiceControllerIT {
 
     assertThat(dtos.size(), is(2));
 
-    invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(item.getTotalFees()));
-    invoiceDto4.setTotalCost(invoiceDto4.getTotalCost().add(item.getTotalFees()));
+    invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(itemCost));
+    invoiceDto4.setTotalCost(invoiceDto4.getTotalCost().add(itemCost));
     assertThat(dtos, is(List.of(invoiceDto4, invoiceDto2)));
   }
 
   @Test
   public void createAndViewUnpaidInvoicesSummary() throws Exception {
-    String companyName = "aCompany";
-    createCompany(companyName);
+    BigDecimal itemCost = BigDecimal.TEN;
+    List<InvoiceDto> createdInvoiceDtos = createAndViewUnpaidInvoices("aCompany", "bCompany", itemCost);
+    InvoiceDto invoiceDto2 = createdInvoiceDtos.get(1);
+    InvoiceDto invoiceDto4 = createdInvoiceDtos.get(3);
 
-    Item item =
-        Item.builder()
-            .description("Test Item Description")
-            .quantity(1)
-            .totalFees(BigDecimal.TEN)
-            .invoiceNumber(121L)
-            .build();
-
-    InvoiceDto invoiceDto1 =
-        new InvoiceDto(
-            120L,
-            LocalDate.now(),
-            null,
-            null,
-            companyName,
-            PaymentStatus.PAID,
-            BigDecimal.valueOf(200.1).setScale(2));
-    create(invoiceDto1, HttpStatus.CREATED);
-
-    InvoiceDto invoiceDto2 =
-        new InvoiceDto(
-            121L,
-            LocalDate.now(),
-            null,
-            List.of(item),
-            companyName,
-            PaymentStatus.UNPAID,
-            BigDecimal.valueOf(121.1).setScale(2));
-    create(invoiceDto2, HttpStatus.CREATED);
-
-    invoiceDto1.setItems(List.of());
     invoiceDto2.setItems(List.of());
+    invoiceDto4.setItems(List.of());
 
     MvcResult mvcResult =
         mockMvc
-            .perform(get("/invoices/unpaid/summary").contentType(MediaType.APPLICATION_JSON))
+            .perform(get("/invoices/summary/unpaid/aCompany").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andDo(
                 document(
@@ -796,10 +775,13 @@ public class InvoiceControllerIT {
         objectMapper.readValue(
             mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
 
-    assertThat(dtos.size(), is(1));
+    assertThat(dtos.size(), is(2));
 
-    invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(item.getTotalFees()));
+    invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(itemCost));
+    invoiceDto4.setTotalCost(invoiceDto2.getTotalCost().add(itemCost));
     assertThat(dtos.get(0).getPaymentStatus(), is(PaymentStatus.UNPAID));
-    assertThat(dtos.get(0).getNumber(), is(invoiceDto2.getNumber()));
+    assertThat(dtos.get(0).getNumber(), is(invoiceDto4.getNumber()));
+    assertThat(dtos.get(1).getPaymentStatus(), is(PaymentStatus.UNPAID));
+    assertThat(dtos.get(1).getNumber(), is(invoiceDto2.getNumber()));
   }
 }

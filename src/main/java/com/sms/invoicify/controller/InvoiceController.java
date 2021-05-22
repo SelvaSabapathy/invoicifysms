@@ -218,11 +218,11 @@ public class InvoiceController {
     return new ResponseEntity<>(dtos, HttpStatus.OK);
   }
 
-  @GetMapping("/invoices/unpaid/summary")
-  public ResponseEntity<List<InvoiceSummaryDto>> getUnpaidInvoicesSummary() {
+  @GetMapping("/invoices/summary/unpaid/{companyName}")
+  public ResponseEntity<List<InvoiceSummaryDto>> getUnpaidInvoicesSummary(@PathVariable("companyName") String companyName) {
 
     List<InvoiceSummaryDto> dtos =
-        invoiceService.findByCompanyNameAndPaymentStatusOrderByCreationDateAsc("aCompany", PaymentStatus.UNPAID).stream()
+        invoiceService.findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(companyName, PaymentStatus.UNPAID).stream()
             .map(
                 e ->
                     new InvoiceSummaryDto(
