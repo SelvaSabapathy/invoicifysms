@@ -131,7 +131,7 @@ public class InvoiceControllerIT {
                             .ignored(),
                         fieldWithPath("companyName")
                             .description("Company Billable for the Invoice")
-                            .attributes(key("constraints").value("Not Null")),
+                            .attributes(key("constraints").value("Not Null, Company Name must match an Existing Saved Company")),
                         paymentStatusField(),
                         fieldWithPath("totalCost")
                             .description("Sum of All Line Item Charges on the Invoice")

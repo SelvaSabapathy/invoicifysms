@@ -82,14 +82,13 @@ include::{snippets}/items-controller-it/post-multiple-item/3/http-response.adoc[
 Create an invoice
 
 .request
-include::{snippets}/invoice-controller-it/create-one-success/1/http-request.adoc[]
+include::{snippets}/invoice-controller-it/create-one-success/2/http-request.adoc[]
 
-include::{snippets}/invoice-controller-it/create-one-success/1/request-fields.adoc[]
+include::{snippets}/invoice-controller-it/create-one-success/2/request-fields.adoc[]
 
 .response
-include::{snippets}/invoice-controller-it/create-one-success/1/http-response.adoc[]
+include::{snippets}/invoice-controller-it/create-one-success/2/http-response.adoc[]
 
-include::{snippets}/invoice-controller-it/create-one-success/1/response-body.adoc[]
 
 ==== GET
 
