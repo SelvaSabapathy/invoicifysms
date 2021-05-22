@@ -201,13 +201,15 @@ public class InvoiceController {
 
   @GetMapping("/invoices/unpaid/{companyName}")
   public ResponseEntity<List<InvoiceDto>> getUnpaidInvoices(
-          @PathVariable("companyName") String companyName,
-          @RequestParam(defaultValue = "0") Integer pageNumber,
-          @RequestParam(defaultValue = "10") Integer pageSize) {
+      @PathVariable("companyName") String companyName,
+      @RequestParam(defaultValue = "0") Integer pageNumber,
+      @RequestParam(defaultValue = "10") Integer pageSize) {
 
     List<InvoiceDto> dtos =
-        invoiceService.findByCompanyNameAndPaymentStatus(
-                companyName, PaymentStatus.UNPAID,pageNumber, pageSize).stream()
+        invoiceService
+            .findByCompanyNameAndPaymentStatus(
+                companyName, PaymentStatus.UNPAID, pageNumber, pageSize)
+            .stream()
             .map(
                 e ->
                     new InvoiceDto(
@@ -223,10 +225,16 @@ public class InvoiceController {
   }
 
   @GetMapping("/invoices/summary/unpaid/{companyName}")
-  public ResponseEntity<List<InvoiceSummaryDto>> getUnpaidInvoicesSummary(@PathVariable("companyName") String companyName) {
+  public ResponseEntity<List<InvoiceSummaryDto>> getUnpaidInvoicesSummary(
+      @PathVariable("companyName") String companyName,
+      @RequestParam(defaultValue = "0") Integer pageNumber,
+      @RequestParam(defaultValue = "10") Integer pageSize) {
 
     List<InvoiceSummaryDto> dtos =
-        invoiceService.findByCompanyNameAndPaymentStatus(companyName, PaymentStatus.UNPAID,0,2).stream()
+        invoiceService
+            .findByCompanyNameAndPaymentStatus(
+                companyName, PaymentStatus.UNPAID, pageNumber, pageSize)
+            .stream()
             .map(
                 e ->
                     new InvoiceSummaryDto(

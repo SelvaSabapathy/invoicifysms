@@ -16,7 +16,7 @@ public interface InvoiceRepository extends JpaRepository<InvoiceEntity, Long> {
   InvoiceEntity findByNumber(long number);
 
   List<InvoiceEntity> findByCompanyNameAndPaymentStatus(
-          String companyName, PaymentStatus paymentStatus, Pageable pageable);
+      String companyName, PaymentStatus paymentStatus, Pageable pageable);
 
   List<InvoiceEntity> findByOrderByCreationDateAsc();
 

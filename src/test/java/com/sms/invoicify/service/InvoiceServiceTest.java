@@ -62,7 +62,8 @@ public class InvoiceServiceTest {
   public void fetchAll() {
     InvoiceEntity invoiceEntity1 = new InvoiceEntity();
     InvoiceEntity invoiceEntity2 = new InvoiceEntity();
-    when(invoiceRepository.findByOrderByCreationDateAsc()).thenReturn(List.of(invoiceEntity1, invoiceEntity2));
+    when(invoiceRepository.findByOrderByCreationDateAsc())
+        .thenReturn(List.of(invoiceEntity1, invoiceEntity2));
 
     List<InvoiceEntity> entityList = invoiceService.viewAllinvoices();
 
@@ -111,13 +112,14 @@ public class InvoiceServiceTest {
   @Test
   public void findUnpaidInvoiceTest() {
     InvoiceEntity invoiceEntity = new InvoiceEntity();
-    when(invoiceRepository.findByCompanyNameAndPaymentStatus(anyString(), eq(PaymentStatus.UNPAID),any()))
+    when(invoiceRepository.findByCompanyNameAndPaymentStatus(
+            anyString(), eq(PaymentStatus.UNPAID), any()))
         .thenReturn(List.of(invoiceEntity));
 
     List<InvoiceEntity> actual =
-        invoiceService.findByCompanyNameAndPaymentStatus("aCompany", PaymentStatus.UNPAID,0,2);
+        invoiceService.findByCompanyNameAndPaymentStatus("aCompany", PaymentStatus.UNPAID, 0, 2);
     verify(invoiceRepository)
-        .findByCompanyNameAndPaymentStatus(anyString(), eq(PaymentStatus.UNPAID),any());
+        .findByCompanyNameAndPaymentStatus(anyString(), eq(PaymentStatus.UNPAID), any());
     assertThat(actual, is(List.of(invoiceEntity)));
   }
 
