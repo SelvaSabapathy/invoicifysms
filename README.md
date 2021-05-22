@@ -11,3 +11,6 @@ The contractor marks the invoice as paid when company pays the invoice.
 To bring up the docker containers you must create and start them.
 
 `docker-compose up`
+
+## Retrospectives
+Please find team retro @ 'retro/*'
