@@ -132,6 +132,13 @@ include::{snippets}/invoice-controller-it/create-one-success/2/request-fields.ad
 .response
 include::{snippets}/invoice-controller-it/create-one-success/2/http-response.adoc[]
 
+Create Invoice with multiple Line Items
+
+.request
+include::{snippets}/invoice-controller-it/create-invoice-with-multiple-items/2/http-request.adoc[]
+
+.response
+include::{snippets}/invoice-controller-it/create-invoice-with-multiple-items/2/http-response.adoc[]
 
 ==== GET
 
