@@ -14,9 +14,10 @@ import java.util.List;
 public interface InvoiceRepository extends JpaRepository<InvoiceEntity, Long> {
   InvoiceEntity findByNumber(long number);
 
-  List<InvoiceEntity> findByPaymentStatus(PaymentStatus paymentStatus);
+  List<InvoiceEntity> findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(
+      String companyName, PaymentStatus paymentStatus);
 
-  List<InvoiceEntity> findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(String companyName, PaymentStatus paymentStatus);
+  List<InvoiceEntity> findByOrderByCreationDateAsc();
 
   @Query(
       value =

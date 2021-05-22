@@ -46,8 +46,8 @@ public class InvoiceService {
     return invoiceRepository.save(invoiceEntity);
   }
 
-  public List<InvoiceEntity> view() {
-    return invoiceRepository.findAll();
+  public List<InvoiceEntity> viewAllinvoices() {
+    return invoiceRepository.findByOrderByCreationDateAsc();
   }
 
   public InvoiceEntity findByNumber(Long number) {

@@ -61,11 +61,11 @@ public class InvoiceServiceTest {
   public void fetchAll() {
     InvoiceEntity invoiceEntity1 = new InvoiceEntity();
     InvoiceEntity invoiceEntity2 = new InvoiceEntity();
-    when(invoiceRepository.findAll()).thenReturn(List.of(invoiceEntity1, invoiceEntity2));
+    when(invoiceRepository.findByOrderByCreationDateAsc()).thenReturn(List.of(invoiceEntity1, invoiceEntity2));
 
-    List<InvoiceEntity> entityList = invoiceService.view();
+    List<InvoiceEntity> entityList = invoiceService.viewAllinvoices();
 
-    verify(invoiceRepository).findAll();
+    verify(invoiceRepository).findByOrderByCreationDateAsc();
     assertThat(entityList, is(List.of(invoiceEntity1, invoiceEntity2)));
   }
 

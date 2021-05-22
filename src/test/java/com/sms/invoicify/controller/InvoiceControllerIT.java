@@ -637,9 +637,9 @@ public class InvoiceControllerIT {
         .perform(get("/invoices").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("length()").value(3))
-        .andExpect(jsonPath("[0].number").value(120L))
-        .andExpect(jsonPath("[1].number").value(121L))
-        .andExpect(jsonPath("[2].number").value(122L));
+        .andExpect(jsonPath("[0].number").value(122L))
+        .andExpect(jsonPath("[1].number").value(120L))
+        .andExpect(jsonPath("[2].number").value(121L));
 
     mockMvc
         .perform(get("/items").contentType(MediaType.APPLICATION_JSON))
@@ -783,5 +783,88 @@ public class InvoiceControllerIT {
     assertThat(dtos.get(0).getNumber(), is(invoiceDto4.getNumber()));
     assertThat(dtos.get(1).getPaymentStatus(), is(PaymentStatus.UNPAID));
     assertThat(dtos.get(1).getNumber(), is(invoiceDto2.getNumber()));
+  }
+
+  @Test
+  void findALlInvoices_returnsSortedListByCreationDateAsc() throws Exception {
+    Company company =
+            Company.builder()
+                    .companyName("Company")
+                    .address(
+                            Address.builder()
+                                    .street("100 N State Street")
+                                    .city("Chicago")
+                                    .state("IL")
+                                    .zipCode("60601")
+                                    .build())
+                    .contactName("Jane Smith")
+                    .title("VP - Accounts")
+                    .phoneNumber("312-777-7777")
+                    .build();
+    mockMvc
+            .perform(
+                    post("/company")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(company)))
+            .andExpect(status().isCreated())
+            .andExpect(content().string("Company created Successfully"));
+
+    Item item1 =
+            Item.builder()
+                    .description("MIDDLE DATE")
+                    .quantity(1)
+                    .totalFees(BigDecimal.TEN)
+                    .invoiceNumber(121L)
+                    .build();
+
+    Item item2 =
+            Item.builder()
+                    .description("LAST DATE")
+                    .quantity(1)
+                    .totalFees(BigDecimal.TEN)
+                    .invoiceNumber(121L)
+                    .build();
+
+    Item item3 =
+            Item.builder()
+                    .description("EARLIEST DATE")
+                    .quantity(1)
+                    .totalFees(BigDecimal.TEN)
+                    .invoiceNumber(121L)
+                    .build();
+
+    InvoiceDto invoice1 =
+        InvoiceDto.builder()
+            .companyName("Company")
+            .number(1L)
+            .paymentStatus(PaymentStatus.PAID)
+            .items(List.of(item1))
+            .creationDate(LocalDate.of(2021, 05, 22))
+            .build();
+    InvoiceDto invoice2 =
+        InvoiceDto.builder()
+            .companyName("Company")
+            .items(List.of(item2))
+            .number(2L)
+            .paymentStatus(PaymentStatus.PAID)
+            .creationDate(LocalDate.of(2021, 05, 23))
+            .build();
+    InvoiceDto invoice3 =
+        InvoiceDto.builder()
+            .companyName("Company")
+            .items(List.of(item3))
+            .number(3L)
+            .paymentStatus(PaymentStatus.PAID)
+            .creationDate(LocalDate.of(2021, 04, 22))
+            .build();
+
+    this.createInner(invoice1, HttpStatus.CREATED);
+    this.createInner(invoice2, HttpStatus.CREATED);
+    this.createInner(invoice3, HttpStatus.CREATED);
+
+    mockMvc.perform(get("/invoices")).andExpect(jsonPath("length()").value(3))
+            .andExpect(jsonPath("[0].number").value(3))
+            .andExpect(jsonPath("[1].number").value(1))
+            .andExpect(jsonPath("[2].number").value(2));
   }
 }
