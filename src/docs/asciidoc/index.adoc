@@ -14,12 +14,11 @@ API Documentation for Invoicify solutions by Team SMS
 
 [[overview-contributors]]
 == Contributors
+Raviindran Chellappa
 Sebin Francis
 Selva Sabapathy
 John Tansor
-
-(Maanickavasagam Arivarasu
-Raviindran Chellappa)
+(& Maanickavasagam Arivarasu)
 
 [[overview-description]]
 == Summary
@@ -29,7 +28,7 @@ Placeholder for brief summary of application
 [[overview-http-verbs]]
 == HTTP verbs
 
-RESTful notes tries to adhere as closely as possible to standard HTTP and REST conventions in its
+Invoicify tries to adhere as closely as possible to standard HTTP and REST conventions in its
 use of HTTP verbs.
 
 |===
@@ -40,6 +39,12 @@ use of HTTP verbs.
 
 | `POST`
 | Used to create a new resource
+
+| `PUT`
+| Used to update an existing resource
+
+| `DELETE`
+| Used to permanently remove a resource
 |===
 
 [[specification]]
