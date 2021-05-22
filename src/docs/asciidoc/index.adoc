@@ -13,23 +13,30 @@ API Documentation for Invoicify solutions by Team SMS
 = Overview
 
 [[overview-contributors]]
-== Contributors
-Sebin Francis
-Selva Sabapathy
-John Tansor
+== Contributors (Team SMS)
+- Raviindran Chellappa
+- Sebin Francis
+- Selva Sabapathy
+- John Tansor
 
-(Maanickavasagam Arivarasu
-Raviindran Chellappa)
+(& Maanickavasagam Arivarasu)
 
 [[overview-description]]
 == Summary
 
-Placeholder for brief summary of application
+Invoicify is tool for contractors to record and bill companies for services.
+
+Each invoice contains brief details about the products and services purchased. These products and services are commonly referred to simply as items on the invoice. Overall the software works like so:
+
+- A contractor creates an invoice when a company purchases a good or service.
+- They add items to the invoice for services rendered.
+- The invoice is sent to the companies for payment.
+- The contractor marks the invoice as paid when company pays the invoice.
 
 [[overview-http-verbs]]
 == HTTP verbs
 
-RESTful notes tries to adhere as closely as possible to standard HTTP and REST conventions in its
+Invoicify tries to adhere as closely as possible to standard HTTP and REST conventions in its
 use of HTTP verbs.
 
 |===
@@ -40,6 +47,12 @@ use of HTTP verbs.
 
 | `POST`
 | Used to create a new resource
+
+| `PUT`
+| Used to update an existing resource
+
+| `DELETE`
+| Used to permanently remove a resource
 |===
 
 [[specification]]
@@ -48,123 +61,10 @@ use of HTTP verbs.
 [[specification-API]]
 == Invoicify API
 
-[[specification-API-item]]
-=== Item
-
-[[specification-API-item-post]]
-==== POST
-
-Post a New Item
-
-.request
-include::{snippets}/items-controller-it/post-item/2/http-request.adoc[]
-
-include::{snippets}/items-controller-it/post-item/2/request-fields.adoc[]
-
-.response
-include::{snippets}/items-controller-it/post-item/2/http-response.adoc[]
-
-[[specification-API-item-getall]]
-==== GET
-
-Get List of All Items
-
-.request
-include::{snippets}/items-controller-it/post-multiple-item/3/http-request.adoc[]
-
-.response
-include::{snippets}/items-controller-it/post-multiple-item/3/http-response.adoc[]
-
-=== Invoice
-
-==== POST
-
-Create an invoice
-
-.request
-include::{snippets}/invoice-controller-it/create-one-success/1/http-request.adoc[]
-
-include::{snippets}/invoice-controller-it/create-one-success/1/request-fields.adoc[]
-
-.response
-include::{snippets}/invoice-controller-it/create-one-success/1/http-response.adoc[]
-
-include::{snippets}/invoice-controller-it/create-one-success/1/response-body.adoc[]
-
-==== GET
-
-===== Summary View, ALL
-
-Get Summary View of ALL Invoices
-
-.request
-include::{snippets}/invoice-controller-it/create-and-view-invoice-summary/2/http-request.adoc[]
-
-.response
-include::{snippets}/invoice-controller-it/create-and-view-invoice-summary/2/http-response.adoc[]
-
-===== Detailed View, ALL
-
-Get Details of ALL Invoices
-
-.request
-include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/3/http-request.adoc[]
-
-.response
-include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/3/http-response.adoc[]
-
-===== Summary View, Status=Unpaid
-
-Get Summary View of ALL Unpaid Invoices
-
-.request
-include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoices-summary/3/http-request.adoc[]
-
-.response
-include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoices-summary/3/http-response.adoc[]
-
-===== Detailed View, Status=Unpaid
-
-Get Details of ALL Unpaid Invoices
-
-.request
-include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoice-detail/3/http-request.adoc[]
-
-.response
-include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoice-detail/3/http-response.adoc[]
-
-===== Search invoice by number
-
-Search Invoice by number
-
-.request
-include::{snippets}/invoice-controller-it/search-invoices-by-number/3/http-request.adoc[]
-
-.response
-include::{snippets}/invoice-controller-it/search-invoices-by-number/3/http-response.adoc[]
-
-==== PUT
-
-Update invoice  (company name, payment status)
-
-.request
-include::{snippets}/invoice-controller-it/update-and-view-invoice-details/2/http-request.adoc[]
-
-.response
-include::{snippets}/invoice-controller-it/update-and-view-invoice-details/2/http-response.adoc[]
-
-==== DELETE
-
-Delete invoices (deletes more than one year old and paid invoices)
-
-.request
-include::{snippets}/invoice-controller-it/delete-invoices/9/http-request.adoc[]
-
-.response
-include::{snippets}/invoice-controller-it/delete-invoices/9/http-response.adoc[]
-
+[[specification-API-Company]]
 === Companies
 
+[[specification-API-Company-POST]]
 ==== POST
 
 Create / Add a New Company
@@ -177,21 +77,14 @@ include::{snippets}/company-controller-it/post-company-details/1/request-fields.
 .response
 include::{snippets}/company-controller-it/post-company-details/1/http-response.adoc[]
 
+[[specification-API-Company-GET]]
 ==== GET
-
-===== Detailed View, ALL
-
-Get Detailed View of All Companies
-
-.request
-include::{snippets}/company-controller-it/post-company-details/2/http-request.adoc[]
-
-.response
-include::{snippets}/company-controller-it/post-company-details/2/http-response.adoc[]
 
 ===== Summary View, ALL
 
 Get Summary View Of All Companies
+
+[small]#Simple view which only displays Company names & City/State location#
 
 .request
 include::{snippets}/company-controller-it/get-company-summary-view/3/http-request.adoc[]
@@ -199,6 +92,19 @@ include::{snippets}/company-controller-it/get-company-summary-view/3/http-reques
 .response
 include::{snippets}/company-controller-it/get-company-summary-view/3/http-response.adoc[]
 
+===== Detailed View, ALL
+
+Get Detailed View of All Companies
+
+[small]#Detailed view displays a list of all Companies, as well as all attributes for each company#
+
+.request
+include::{snippets}/company-controller-it/post-company-details/2/http-request.adoc[]
+
+.response
+include::{snippets}/company-controller-it/post-company-details/2/http-response.adoc[]
+
+[[specification-API-Company-PUT]]
 ==== PUT
 
 Update Existing Company Details
@@ -211,26 +117,121 @@ include::{snippets}/company-controller-it/update-company_when-company-exists/3/r
 .response
 include::{snippets}/company-controller-it/update-company_when-company-exists/3/http-response.adoc[]
 
+[[specification-API-Invoice]]
+=== Invoices
 
+==== POST
 
-
-
-
-
-
-WIP?
-Create an invoice without invoice number
+Create an invoice
 
 .request
-include::{snippets}/postInvoiceWithNoInvoiceNumber/http-request.adoc[]
+include::{snippets}/invoice-controller-it/create-one-success/2/http-request.adoc[]
+
+include::{snippets}/invoice-controller-it/create-one-success/2/request-fields.adoc[]
 
 .response
-include::{snippets}/postInvoiceWithNoInvoiceNumber/http-response.adoc[]
+include::{snippets}/invoice-controller-it/create-one-success/2/http-response.adoc[]
 
-Create an invoice with an existing invoice number
+
+==== GET
+
+===== Summary View, ALL
+
+Get Summary View of ALL Invoices
 
 .request
-include::{snippets}/postInvoiceWithExistingInvoiceNumber/http-request.adoc[]
+include::{snippets}/invoice-controller-it/create-and-view-invoice-summary/3/http-request.adoc[]
 
 .response
-include::{snippets}/postInvoiceWithExistingInvoiceNumber/http-response.adoc[]
+include::{snippets}/invoice-controller-it/create-and-view-invoice-summary/3/http-response.adoc[]
+
+===== Detailed View, ALL
+
+Get Details of ALL Invoices
+
+.request
+include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/5/http-request.adoc[]
+
+.response
+include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/5/http-response.adoc[]
+
+===== Summary View, Status=Unpaid
+
+Get Summary View of ALL Unpaid Invoices
+
+.request
+include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoices-summary/7/http-request.adoc[]
+
+.response
+include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoices-summary/7/http-response.adoc[]
+
+===== Detailed View, Status=Unpaid
+
+Get Details of ALL Unpaid Invoices
+
+.request
+include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoice-detail/7/http-request.adoc[]
+
+.response
+include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoice-detail/7/http-response.adoc[]
+
+===== Search invoice by number
+
+Search Invoice by number
+
+.request
+include::{snippets}/invoice-controller-it/search-invoices-by-number/5/http-request.adoc[]
+
+.response
+include::{snippets}/invoice-controller-it/search-invoices-by-number/5/http-response.adoc[]
+
+==== PUT
+
+Update invoice  (company name, payment status)
+
+.request
+include::{snippets}/invoice-controller-it/update-and-view-invoice-details/3/http-request.adoc[]
+
+.response
+
+include::{snippets}/invoice-controller-it/update-and-view-invoice-details/3/http-response.adoc[]
+
+==== DELETE
+
+Delete invoices
+
+[small]#Deletes all invoices with a status of `PAID` and a creation date greater than one year from the current date.#
+
+.request
+include::{snippets}/invoice-controller-it/delete-invoices/10/http-request.adoc[]
+
+.response
+include::{snippets}/invoice-controller-it/delete-invoices/10/http-response.adoc[]
+
+
+[[specification-API-item]]
+=== Item
+
+[[specification-API-item-post]]
+==== POST
+
+Post a New Item
+
+.request
+include::{snippets}/items-controller-it/post-item/3/http-request.adoc[]
+
+include::{snippets}/items-controller-it/post-item/3/request-fields.adoc[]
+
+.response
+include::{snippets}/items-controller-it/post-item/3/http-response.adoc[]
+
+[[specification-API-item-getall]]
+==== GET
+
+Get List of All Items
+
+.request
+include::{snippets}/items-controller-it/post-multiple-item/5/http-request.adoc[]
+
+.response
+include::{snippets}/items-controller-it/post-multiple-item/5/http-response.adoc[]
