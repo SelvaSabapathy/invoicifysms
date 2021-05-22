@@ -134,7 +134,7 @@ include::{snippets}/invoice-controller-it/create-one-success/2/request-fields.ad
 .response
 include::{snippets}/invoice-controller-it/create-one-success/2/http-response.adoc[]
 
-===== Nested Items
+===== Create w/ Nested Items
 
 Create Invoice with multiple Line Items
 
