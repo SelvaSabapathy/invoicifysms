@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ItemService {
 
-  private ItemsRepositiory itemsRepository;
+  private final ItemsRepositiory itemsRepository;
   private InvoiceService invoiceService;
 
   public Long createItem(Item itemDto) throws InvoicifyInvoiceNotExistsException {

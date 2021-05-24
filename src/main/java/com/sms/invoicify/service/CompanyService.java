@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Transactional
 @AllArgsConstructor
 public class CompanyService {
-  private CompanyRepository companyRepository;
+  private final CompanyRepository companyRepository;
 
   private void saveCompany(Company companyDto) {
     companyRepository.save(

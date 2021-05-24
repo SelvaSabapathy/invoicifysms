@@ -23,7 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 public class InvoiceService {
 
-  private InvoiceRepository invoiceRepository;
+  private final InvoiceRepository invoiceRepository;
   private CompanyService companyService;
 
   public InvoiceEntity create(InvoiceEntity invoiceEntity)
