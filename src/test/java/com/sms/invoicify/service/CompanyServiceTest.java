@@ -4,7 +4,7 @@ import com.sms.invoicify.exception.InvoicifyCompanyExistsException;
 import com.sms.invoicify.models.Address;
 import com.sms.invoicify.models.Company;
 import com.sms.invoicify.models.CompanyEntity;
-import com.sms.invoicify.models.CompanySummaryVO;
+import com.sms.invoicify.models.CompanySummary;
 import com.sms.invoicify.repository.CompanyRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -132,10 +131,10 @@ public class CompanyServiceTest {
                     .phoneNumber("312-777-7777")
                     .build()));
 
-    List<CompanySummaryVO> companySummaryFromService = companyService.fetchCompanySummaryView();
+    List<CompanySummary> companySummaryFromService = companyService.fetchCompanySummaryView();
 
-    CompanySummaryVO companySummaryDtoExpected =
-        CompanySummaryVO.builder().companyName("Test1").city("Chicago").state("IL").build();
+    CompanySummary companySummaryDtoExpected =
+        CompanySummary.builder().companyName("Test1").city("Chicago").state("IL").build();
 
     assertThat(companySummaryFromService).isEqualTo(List.of(companySummaryDtoExpected));
 

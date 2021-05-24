@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
-@Repository
 public interface InvoiceRepository extends JpaRepository<InvoiceEntity, Long> {
   InvoiceEntity findByNumber(long number);
 

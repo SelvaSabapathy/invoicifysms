@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sms.invoicify.models.Address;
 import com.sms.invoicify.models.Company;
-import com.sms.invoicify.models.InvoiceDto;
-import com.sms.invoicify.models.InvoiceSummaryDto;
+import com.sms.invoicify.models.Invoice;
+import com.sms.invoicify.models.InvoiceSummary;
 import com.sms.invoicify.models.Item;
 import com.sms.invoicify.utilities.PaymentStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -105,10 +105,10 @@ public class InvoiceControllerIT {
         .andExpect(content().string(companyName + " created Successfully"));
   }
 
-  private MvcResult create(InvoiceDto invoiceDto, HttpStatus status) throws Exception {
+  private MvcResult create(Invoice invoice, HttpStatus status) throws Exception {
 
     MvcResult mvcResult =
-        this.createInner(invoiceDto, status)
+        this.createInner(invoice, status)
             .andDo(
                 document(
                     "{class-name}/{method-name}/{step}",
@@ -151,28 +151,28 @@ public class InvoiceControllerIT {
         .attributes(key("constraints").value("Enumerated, One of: " + formattedValues));
   }
 
-  private ResultActions createInner(InvoiceDto invoiceDto, HttpStatus status) throws Exception {
+  private ResultActions createInner(Invoice invoice, HttpStatus status) throws Exception {
     return mockMvc
         .perform(
             post("/invoices")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invoiceDto)))
+                .content(objectMapper.writeValueAsString(invoice)))
         .andExpect(status().is(status.value()));
   }
 
-  private ResultActions update(InvoiceDto invoiceDto, HttpStatus status) throws Exception {
+  private ResultActions update(Invoice invoice, HttpStatus status) throws Exception {
     return mockMvc
         .perform(
             put("/invoices")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invoiceDto)))
+                .content(objectMapper.writeValueAsString(invoice)))
         .andExpect(status().is(status.value()));
   }
 
   @Test
   public void createOneFailureNullNumber() throws Exception {
-    InvoiceDto invoiceDto =
-        new InvoiceDto(
+    Invoice invoice =
+        new Invoice(
             null,
             LocalDate.now(),
             null,
@@ -184,7 +184,7 @@ public class InvoiceControllerIT {
         .perform(
             post("/invoices")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invoiceDto)))
+                .content(objectMapper.writeValueAsString(invoice)))
         .andExpect(status().isBadRequest())
         .andDo(document("{class-name}/{method-name}/{step}"))
         .andReturn();
@@ -195,8 +195,8 @@ public class InvoiceControllerIT {
     String companyName = "aCompany";
     createCompany(companyName);
 
-    InvoiceDto invoiceDto =
-        new InvoiceDto(
+    Invoice invoice =
+        new Invoice(
             121L,
             LocalDate.now(),
             null,
@@ -204,13 +204,13 @@ public class InvoiceControllerIT {
             companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
-    MvcResult mvcResult = create(invoiceDto, HttpStatus.CREATED);
+    MvcResult mvcResult = create(invoice, HttpStatus.CREATED);
 
     mockMvc
         .perform(
             post("/invoices")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invoiceDto)))
+                .content(objectMapper.writeValueAsString(invoice)))
         .andExpect(status().isBadRequest())
         .andDo(document("{class-name}/{method-name}/{step}"))
         .andReturn();
@@ -221,8 +221,8 @@ public class InvoiceControllerIT {
     String companyName = "aCompany";
     createCompany(companyName);
 
-    InvoiceDto invoiceDto =
-        new InvoiceDto(
+    Invoice invoice =
+        new Invoice(
             121L,
             LocalDate.now(),
             null,
@@ -230,12 +230,12 @@ public class InvoiceControllerIT {
             companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
-    MvcResult mvcResult = create(invoiceDto, HttpStatus.CREATED);
+    MvcResult mvcResult = create(invoice, HttpStatus.CREATED);
 
-    InvoiceDto createdInvoiceCto =
-        objectMapper.readValue(mvcResult.getResponse().getContentAsString(), InvoiceDto.class);
+    Invoice createdInvoiceCto =
+        objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Invoice.class);
 
-    assertThat(createdInvoiceCto, is(invoiceDto));
+    assertThat(createdInvoiceCto, is(invoice));
   }
 
   @Test
@@ -243,8 +243,8 @@ public class InvoiceControllerIT {
     String companyName = "aCompany";
     createCompany(companyName);
 
-    InvoiceDto invoiceDto1 =
-        new InvoiceDto(
+    Invoice invoice1 =
+        new Invoice(
             121L,
             LocalDate.now(),
             null,
@@ -252,7 +252,7 @@ public class InvoiceControllerIT {
             companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
-    MvcResult mvcResult1 = create(invoiceDto1, HttpStatus.CREATED);
+    MvcResult mvcResult1 = create(invoice1, HttpStatus.CREATED);
 
     Item item =
         Item.builder()
@@ -261,8 +261,8 @@ public class InvoiceControllerIT {
             .totalFees(BigDecimal.TEN)
             .invoiceNumber(122L)
             .build();
-    InvoiceDto invoiceDto2 =
-        new InvoiceDto(
+    Invoice invoice2 =
+        new Invoice(
             122L,
             LocalDate.now(),
             null,
@@ -270,27 +270,27 @@ public class InvoiceControllerIT {
             companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(130.00));
-    MvcResult mvcResult2 = create(invoiceDto2, HttpStatus.CREATED);
+    MvcResult mvcResult2 = create(invoice2, HttpStatus.CREATED);
 
-    InvoiceDto createdInvoiceCto =
-        objectMapper.readValue(mvcResult1.getResponse().getContentAsString(), InvoiceDto.class);
-    assertThat(createdInvoiceCto, is(invoiceDto1));
+    Invoice createdInvoiceCto =
+        objectMapper.readValue(mvcResult1.getResponse().getContentAsString(), Invoice.class);
+    assertThat(createdInvoiceCto, is(invoice1));
 
     List<Item> items =
-        invoiceDto2.getItems().stream()
+        invoice2.getItems().stream()
             .map(
                 e -> {
                   e.setInvoiceNumber(null);
                   return e;
                 })
             .collect(Collectors.toList());
-    invoiceDto2.setItems(items);
+    invoice2.setItems(items);
 
     createdInvoiceCto =
-        objectMapper.readValue(mvcResult2.getResponse().getContentAsString(), InvoiceDto.class);
+        objectMapper.readValue(mvcResult2.getResponse().getContentAsString(), Invoice.class);
 
-    invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(item.getTotalFees()));
-    assertThat(createdInvoiceCto, is(invoiceDto2));
+    invoice2.setTotalCost(invoice2.getTotalCost().add(item.getTotalFees()));
+    assertThat(createdInvoiceCto, is(invoice2));
   }
 
   @Test
@@ -313,8 +313,8 @@ public class InvoiceControllerIT {
             .invoiceNumber(120L)
             .build();
 
-    InvoiceDto invoiceDto =
-        new InvoiceDto(
+    Invoice invoice =
+        new Invoice(
             121L,
             LocalDate.now(),
             null,
@@ -322,7 +322,7 @@ public class InvoiceControllerIT {
             companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
-    create(invoiceDto, HttpStatus.CREATED);
+    create(invoice, HttpStatus.CREATED);
 
     MvcResult mvcResult =
         mockMvc
@@ -338,13 +338,13 @@ public class InvoiceControllerIT {
                         fieldWithPath("[0].totalCost").description("Invoice total cost"))))
             .andReturn();
 
-    List<InvoiceSummaryDto> dtos =
+    List<InvoiceSummary> dtos =
         objectMapper.readValue(
             mvcResult.getResponse().getContentAsString(),
-            new TypeReference<List<InvoiceSummaryDto>>() {});
+            new TypeReference<List<InvoiceSummary>>() {});
 
-    assertThat(dtos.get(0).getNumber(), is(invoiceDto.getNumber()));
-    assertThat(dtos.get(0).getCreationDate(), is(invoiceDto.getCreationDate()));
+    assertThat(dtos.get(0).getNumber(), is(invoice.getNumber()));
+    assertThat(dtos.get(0).getCreationDate(), is(invoice.getCreationDate()));
   }
 
   @Test
@@ -360,8 +360,8 @@ public class InvoiceControllerIT {
             .invoiceNumber(121L)
             .build();
 
-    InvoiceDto invoiceDto1 =
-        new InvoiceDto(
+    Invoice invoice1 =
+        new Invoice(
             120L,
             LocalDate.now().minusDays(1),
             null,
@@ -369,10 +369,10 @@ public class InvoiceControllerIT {
             companyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(200.1).setScale(2));
-    create(invoiceDto1, HttpStatus.CREATED);
+    create(invoice1, HttpStatus.CREATED);
 
-    InvoiceDto invoiceDto2 =
-        new InvoiceDto(
+    Invoice invoice2 =
+        new Invoice(
             121L,
             LocalDate.now(),
             null,
@@ -380,10 +380,10 @@ public class InvoiceControllerIT {
             companyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
-    create(invoiceDto2, HttpStatus.CREATED);
+    create(invoice2, HttpStatus.CREATED);
 
-    invoiceDto1.setItems(List.of());
-    invoiceDto2.setItems(List.of());
+    invoice1.setItems(List.of());
+    invoice2.setItems(List.of());
 
     MvcResult mvcResult =
         mockMvc
@@ -402,14 +402,14 @@ public class InvoiceControllerIT {
                         fieldWithPath("[0].totalCost").description("Invoice total cost"))))
             .andReturn();
 
-    List<InvoiceDto> dtos =
+    List<Invoice> dtos =
         objectMapper.readValue(
-            mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
+            mvcResult.getResponse().getContentAsString(), new TypeReference<List<Invoice>>() {});
 
     assertThat(dtos.size(), is(2));
 
-    invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(item.getTotalFees()));
-    assertThat(dtos, contains(invoiceDto1, invoiceDto2));
+    invoice2.setTotalCost(invoice2.getTotalCost().add(item.getTotalFees()));
+    assertThat(dtos, contains(invoice1, invoice2));
   }
 
   @Test
@@ -425,8 +425,8 @@ public class InvoiceControllerIT {
             .invoiceNumber(121L)
             .build();
 
-    InvoiceDto invoiceDto1 =
-        new InvoiceDto(
+    Invoice invoice1 =
+        new Invoice(
             120L,
             LocalDate.now(),
             null,
@@ -434,10 +434,10 @@ public class InvoiceControllerIT {
             companyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(200.1).setScale(2));
-    create(invoiceDto1, HttpStatus.CREATED);
+    create(invoice1, HttpStatus.CREATED);
 
-    InvoiceDto invoiceDto2 =
-        new InvoiceDto(
+    Invoice invoice2 =
+        new Invoice(
             121L,
             LocalDate.now(),
             null,
@@ -445,10 +445,10 @@ public class InvoiceControllerIT {
             companyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
-    create(invoiceDto2, HttpStatus.CREATED);
+    create(invoice2, HttpStatus.CREATED);
 
-    invoiceDto1.setItems(List.of());
-    invoiceDto2.setItems(List.of());
+    invoice1.setItems(List.of());
+    invoice2.setItems(List.of());
 
     MvcResult mvcResult =
         mockMvc
@@ -467,14 +467,14 @@ public class InvoiceControllerIT {
                         fieldWithPath("[0].totalCost").description("Invoice total cost"))))
             .andReturn();
 
-    List<InvoiceDto> dtos =
+    List<Invoice> dtos =
         objectMapper.readValue(
-            mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
+            mvcResult.getResponse().getContentAsString(), new TypeReference<List<Invoice>>() {});
 
     assertThat(dtos.size(), is(1));
 
-    invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(item.getTotalFees()));
-    assertThat(dtos, contains(invoiceDto2));
+    invoice2.setTotalCost(invoice2.getTotalCost().add(item.getTotalFees()));
+    assertThat(dtos, contains(invoice2));
   }
 
   @Test
@@ -490,8 +490,8 @@ public class InvoiceControllerIT {
             .invoiceNumber(121L)
             .build();
 
-    InvoiceDto invoiceDto1 =
-        new InvoiceDto(
+    Invoice invoice1 =
+        new Invoice(
             120L,
             LocalDate.now(),
             null,
@@ -499,15 +499,15 @@ public class InvoiceControllerIT {
             companyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(200.1).setScale(2));
-    create(invoiceDto1, HttpStatus.CREATED);
+    create(invoice1, HttpStatus.CREATED);
 
     // update paid status
-    invoiceDto1.setPaymentStatus(PaymentStatus.PAID);
-    this.update(invoiceDto1, HttpStatus.NO_CONTENT)
+    invoice1.setPaymentStatus(PaymentStatus.PAID);
+    this.update(invoice1, HttpStatus.NO_CONTENT)
         .andDo(document("{class-name}/{method-name}/{step}"))
         .andReturn();
 
-    invoiceDto1.setItems(List.of());
+    invoice1.setItems(List.of());
 
     MvcResult mvcResult =
         mockMvc
@@ -526,14 +526,14 @@ public class InvoiceControllerIT {
                         fieldWithPath("[0].totalCost").description("Invoice total cost"))))
             .andReturn();
 
-    List<InvoiceDto> dtos =
+    List<Invoice> dtos =
         objectMapper.readValue(
-            mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
+            mvcResult.getResponse().getContentAsString(), new TypeReference<List<Invoice>>() {});
 
     // modifed date will be changed due to update
-    invoiceDto1.setLastModifiedDate(LocalDate.now());
+    invoice1.setLastModifiedDate(LocalDate.now());
     assertThat(dtos.size(), is(1));
-    assertThat(dtos, contains(invoiceDto1));
+    assertThat(dtos, contains(invoice1));
   }
 
   @Test
@@ -541,8 +541,8 @@ public class InvoiceControllerIT {
     String companyName = "aCompany";
     createCompany(companyName);
 
-    InvoiceDto undeleteInvoiceDto =
-        new InvoiceDto(
+    Invoice undeleteInvoice =
+        new Invoice(
             120L,
             LocalDate.now().minusDays(1),
             null,
@@ -550,10 +550,10 @@ public class InvoiceControllerIT {
             companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
-    create(undeleteInvoiceDto, HttpStatus.CREATED);
+    create(undeleteInvoice, HttpStatus.CREATED);
 
-    InvoiceDto undeleteInvoiceDto2 =
-        new InvoiceDto(
+    Invoice undeleteInvoice2 =
+        new Invoice(
             121L,
             LocalDate.now(),
             null,
@@ -561,10 +561,10 @@ public class InvoiceControllerIT {
             companyName,
             PaymentStatus.PAID,
             new BigDecimal(120.00));
-    create(undeleteInvoiceDto2, HttpStatus.CREATED);
+    create(undeleteInvoice2, HttpStatus.CREATED);
 
-    InvoiceDto undeleteInvoiceDto3 =
-        new InvoiceDto(
+    Invoice undeleteInvoice3 =
+        new Invoice(
             122L,
             LocalDate.now().minusYears(1L).minusDays(1L),
             null,
@@ -572,10 +572,10 @@ public class InvoiceControllerIT {
             companyName,
             PaymentStatus.UNPAID,
             new BigDecimal(120.00));
-    create(undeleteInvoiceDto3, HttpStatus.CREATED);
+    create(undeleteInvoice3, HttpStatus.CREATED);
 
-    InvoiceDto deleteInvoiceDto4 =
-        new InvoiceDto(
+    Invoice deleteInvoice4 =
+        new Invoice(
             123L,
             LocalDate.now().minusYears(1L).minusDays(1L),
             null,
@@ -583,7 +583,7 @@ public class InvoiceControllerIT {
             companyName,
             PaymentStatus.PAID,
             new BigDecimal(120.00));
-    create(deleteInvoiceDto4, HttpStatus.CREATED);
+    create(deleteInvoice4, HttpStatus.CREATED);
 
     // Create an item and attach it to an invoice which is getting deleted
     mockMvc
@@ -648,7 +648,7 @@ public class InvoiceControllerIT {
         .andExpect(jsonPath("[0].description").value("Test Item Description-Invoice 120"));
   }
 
-  private List<InvoiceDto> createAndViewUnpaidInvoices(
+  private List<Invoice> createAndViewUnpaidInvoices(
       String aCompanyName, String bCompanyName, BigDecimal itemCost) throws Exception {
     createCompany(aCompanyName);
     createCompany(bCompanyName);
@@ -661,8 +661,8 @@ public class InvoiceControllerIT {
             .invoiceNumber(121L)
             .build();
 
-    InvoiceDto invoiceDto1 =
-        new InvoiceDto(
+    Invoice invoice1 =
+        new Invoice(
             120L,
             LocalDate.now(),
             null,
@@ -670,10 +670,10 @@ public class InvoiceControllerIT {
             aCompanyName,
             PaymentStatus.PAID,
             BigDecimal.valueOf(200.1).setScale(2));
-    create(invoiceDto1, HttpStatus.CREATED);
+    create(invoice1, HttpStatus.CREATED);
 
-    InvoiceDto invoiceDto2 =
-        new InvoiceDto(
+    Invoice invoice2 =
+        new Invoice(
             121L,
             LocalDate.now().minusDays(3),
             null,
@@ -681,10 +681,10 @@ public class InvoiceControllerIT {
             aCompanyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
-    create(invoiceDto2, HttpStatus.CREATED);
+    create(invoice2, HttpStatus.CREATED);
 
-    InvoiceDto invoiceDto3 =
-        new InvoiceDto(
+    Invoice invoice3 =
+        new Invoice(
             122L,
             LocalDate.now(),
             null,
@@ -692,10 +692,10 @@ public class InvoiceControllerIT {
             bCompanyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(122.1).setScale(2));
-    create(invoiceDto3, HttpStatus.CREATED);
+    create(invoice3, HttpStatus.CREATED);
 
-    InvoiceDto invoiceDto4 =
-        new InvoiceDto(
+    Invoice invoice4 =
+        new Invoice(
             123L,
             LocalDate.now().minusDays(4),
             null,
@@ -703,10 +703,10 @@ public class InvoiceControllerIT {
             aCompanyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
-    create(invoiceDto4, HttpStatus.CREATED);
+    create(invoice4, HttpStatus.CREATED);
 
-    InvoiceDto invoiceDto5 =
-        new InvoiceDto(
+    Invoice invoice5 =
+        new Invoice(
             125L,
             LocalDate.now().minusDays(2),
             null,
@@ -714,10 +714,10 @@ public class InvoiceControllerIT {
             aCompanyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
-    create(invoiceDto5, HttpStatus.CREATED);
+    create(invoice5, HttpStatus.CREATED);
 
-    InvoiceDto invoiceDto6 =
-        new InvoiceDto(
+    Invoice invoice6 =
+        new Invoice(
             126L,
             LocalDate.now().minusDays(1),
             null,
@@ -725,10 +725,10 @@ public class InvoiceControllerIT {
             aCompanyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
-    create(invoiceDto6, HttpStatus.CREATED);
+    create(invoice6, HttpStatus.CREATED);
 
-    InvoiceDto invoiceDto7 =
-        new InvoiceDto(
+    Invoice invoice7 =
+        new Invoice(
             127L,
             LocalDate.now(),
             null,
@@ -736,30 +736,30 @@ public class InvoiceControllerIT {
             aCompanyName,
             PaymentStatus.UNPAID,
             BigDecimal.valueOf(121.1).setScale(2));
-    create(invoiceDto7, HttpStatus.CREATED);
+    create(invoice7, HttpStatus.CREATED);
 
-    invoiceDto1.setItems(List.of());
-    invoiceDto2.setItems(List.of());
-    invoiceDto3.setItems(List.of());
-    invoiceDto4.setItems(List.of());
-    invoiceDto5.setItems(List.of());
-    invoiceDto6.setItems(List.of());
-    invoiceDto7.setItems(List.of());
+    invoice1.setItems(List.of());
+    invoice2.setItems(List.of());
+    invoice3.setItems(List.of());
+    invoice4.setItems(List.of());
+    invoice5.setItems(List.of());
+    invoice6.setItems(List.of());
+    invoice7.setItems(List.of());
 
     return List.of(
-        invoiceDto1, invoiceDto2, invoiceDto3, invoiceDto4, invoiceDto5, invoiceDto6, invoiceDto7);
+            invoice1, invoice2, invoice3, invoice4, invoice5, invoice6, invoice7);
   }
 
   @Test
   public void createAndViewUnpaidInvoiceDetail() throws Exception {
     BigDecimal itemCost = BigDecimal.TEN;
-    List<InvoiceDto> createdInvoiceDtos =
+    List<Invoice> createdInvoices =
         createAndViewUnpaidInvoices("aCompany", "bCompany", itemCost);
-    InvoiceDto invoiceDto2 = createdInvoiceDtos.get(1);
-    InvoiceDto invoiceDto4 = createdInvoiceDtos.get(3);
-    InvoiceDto invoiceDto5 = createdInvoiceDtos.get(4);
-    InvoiceDto invoiceDto6 = createdInvoiceDtos.get(5);
-    InvoiceDto invoiceDto7 = createdInvoiceDtos.get(6);
+    Invoice invoice2 = createdInvoices.get(1);
+    Invoice invoice4 = createdInvoices.get(3);
+    Invoice invoice5 = createdInvoices.get(4);
+    Invoice invoice6 = createdInvoices.get(5);
+    Invoice invoice7 = createdInvoices.get(6);
 
     // Get  invoiceDto4, followed by invoiceDto2
     MvcResult mvcResult =
@@ -781,15 +781,15 @@ public class InvoiceControllerIT {
                         fieldWithPath("[0].totalCost").description("Invoice total cost"))))
             .andReturn();
 
-    List<InvoiceDto> dtos =
+    List<Invoice> dtos =
         objectMapper.readValue(
-            mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
+            mvcResult.getResponse().getContentAsString(), new TypeReference<List<Invoice>>() {});
 
     assertThat(dtos.size(), is(2));
 
-    invoiceDto2.setTotalCost(invoiceDto2.getTotalCost().add(itemCost));
-    invoiceDto4.setTotalCost(invoiceDto4.getTotalCost().add(itemCost));
-    assertThat(dtos, is(List.of(invoiceDto4, invoiceDto2)));
+    invoice2.setTotalCost(invoice2.getTotalCost().add(itemCost));
+    invoice4.setTotalCost(invoice4.getTotalCost().add(itemCost));
+    assertThat(dtos, is(List.of(invoice4, invoice2)));
 
     // Get  invoiceDto5, followed by invoiceDto6
     mvcResult =
@@ -802,13 +802,13 @@ public class InvoiceControllerIT {
 
     dtos =
         objectMapper.readValue(
-            mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
+            mvcResult.getResponse().getContentAsString(), new TypeReference<List<Invoice>>() {});
 
     assertThat(dtos.size(), is(2));
 
-    invoiceDto5.setTotalCost(invoiceDto5.getTotalCost().add(itemCost));
-    invoiceDto6.setTotalCost(invoiceDto6.getTotalCost().add(itemCost));
-    assertThat(dtos, is(List.of(invoiceDto5, invoiceDto6)));
+    invoice5.setTotalCost(invoice5.getTotalCost().add(itemCost));
+    invoice6.setTotalCost(invoice6.getTotalCost().add(itemCost));
+    assertThat(dtos, is(List.of(invoice5, invoice6)));
 
     // Get  invoiceDto7
     mvcResult =
@@ -821,24 +821,24 @@ public class InvoiceControllerIT {
 
     dtos =
         objectMapper.readValue(
-            mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
+            mvcResult.getResponse().getContentAsString(), new TypeReference<List<Invoice>>() {});
 
     assertThat(dtos.size(), is(1));
 
-    invoiceDto7.setTotalCost(invoiceDto7.getTotalCost().add(itemCost));
-    assertThat(dtos, is(List.of(invoiceDto7)));
+    invoice7.setTotalCost(invoice7.getTotalCost().add(itemCost));
+    assertThat(dtos, is(List.of(invoice7)));
   }
 
   @Test
   public void createAndViewUnpaidInvoiceSummary() throws Exception {
     BigDecimal itemCost = BigDecimal.TEN;
-    List<InvoiceDto> createdInvoiceDtos =
+    List<Invoice> createdInvoices =
         createAndViewUnpaidInvoices("aCompany", "bCompany", itemCost);
-    InvoiceDto invoiceDto2 = createdInvoiceDtos.get(1);
-    InvoiceDto invoiceDto4 = createdInvoiceDtos.get(3);
-    InvoiceDto invoiceDto5 = createdInvoiceDtos.get(4);
-    InvoiceDto invoiceDto6 = createdInvoiceDtos.get(5);
-    InvoiceDto invoiceDto7 = createdInvoiceDtos.get(6);
+    Invoice invoice2 = createdInvoices.get(1);
+    Invoice invoice4 = createdInvoices.get(3);
+    Invoice invoice5 = createdInvoices.get(4);
+    Invoice invoice6 = createdInvoices.get(5);
+    Invoice invoice7 = createdInvoices.get(6);
 
     // Get  invoiceDto4, followed by invoiceDto2
     MvcResult mvcResult =
@@ -857,16 +857,16 @@ public class InvoiceControllerIT {
                         fieldWithPath("[0].totalCost").description("Invoice total cost"))))
             .andReturn();
 
-    List<InvoiceDto> dtos =
+    List<Invoice> dtos =
         objectMapper.readValue(
-            mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
+            mvcResult.getResponse().getContentAsString(), new TypeReference<List<Invoice>>() {});
 
     assertThat(dtos.size(), is(2));
 
-    assertThat(dtos.get(0).getNumber(), is(invoiceDto4.getNumber()));
-    assertThat(dtos.get(0).getPaymentStatus(), is(invoiceDto4.getPaymentStatus()));
-    assertThat(dtos.get(1).getNumber(), is(invoiceDto2.getNumber()));
-    assertThat(dtos.get(1).getPaymentStatus(), is(invoiceDto2.getPaymentStatus()));
+    assertThat(dtos.get(0).getNumber(), is(invoice4.getNumber()));
+    assertThat(dtos.get(0).getPaymentStatus(), is(invoice4.getPaymentStatus()));
+    assertThat(dtos.get(1).getNumber(), is(invoice2.getNumber()));
+    assertThat(dtos.get(1).getPaymentStatus(), is(invoice2.getPaymentStatus()));
 
     // Get  invoiceDto5, followed by invoiceDto6
     mvcResult =
@@ -879,14 +879,14 @@ public class InvoiceControllerIT {
 
     dtos =
         objectMapper.readValue(
-            mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
+            mvcResult.getResponse().getContentAsString(), new TypeReference<List<Invoice>>() {});
 
     assertThat(dtos.size(), is(2));
 
-    assertThat(dtos.get(0).getNumber(), is(invoiceDto5.getNumber()));
-    assertThat(dtos.get(0).getPaymentStatus(), is(invoiceDto5.getPaymentStatus()));
-    assertThat(dtos.get(1).getNumber(), is(invoiceDto6.getNumber()));
-    assertThat(dtos.get(1).getPaymentStatus(), is(invoiceDto6.getPaymentStatus()));
+    assertThat(dtos.get(0).getNumber(), is(invoice5.getNumber()));
+    assertThat(dtos.get(0).getPaymentStatus(), is(invoice5.getPaymentStatus()));
+    assertThat(dtos.get(1).getNumber(), is(invoice6.getNumber()));
+    assertThat(dtos.get(1).getPaymentStatus(), is(invoice6.getPaymentStatus()));
 
     // Get  invoiceDto7
     mvcResult =
@@ -899,12 +899,12 @@ public class InvoiceControllerIT {
 
     dtos =
         objectMapper.readValue(
-            mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
+            mvcResult.getResponse().getContentAsString(), new TypeReference<List<Invoice>>() {});
 
     assertThat(dtos.size(), is(1));
 
-    assertThat(dtos.get(0).getNumber(), is(invoiceDto7.getNumber()));
-    assertThat(dtos.get(0).getPaymentStatus(), is(invoiceDto7.getPaymentStatus()));
+    assertThat(dtos.get(0).getNumber(), is(invoice7.getNumber()));
+    assertThat(dtos.get(0).getPaymentStatus(), is(invoice7.getPaymentStatus()));
   }
 
   @Test
@@ -936,24 +936,24 @@ public class InvoiceControllerIT {
             .invoiceNumber(121L)
             .build();
 
-    InvoiceDto invoice1 =
-        InvoiceDto.builder()
+    Invoice invoice1 =
+        Invoice.builder()
             .companyName("Company")
             .number(1L)
             .paymentStatus(PaymentStatus.PAID)
             .items(List.of(item1))
             .creationDate(LocalDate.of(2021, 05, 22))
             .build();
-    InvoiceDto invoice2 =
-        InvoiceDto.builder()
+    Invoice invoice2 =
+        Invoice.builder()
             .companyName("Company")
             .items(List.of(item2))
             .number(2L)
             .paymentStatus(PaymentStatus.PAID)
             .creationDate(LocalDate.of(2021, 05, 23))
             .build();
-    InvoiceDto invoice3 =
-        InvoiceDto.builder()
+    Invoice invoice3 =
+        Invoice.builder()
             .companyName("Company")
             .items(List.of(item3))
             .number(3L)
@@ -1006,24 +1006,24 @@ public class InvoiceControllerIT {
                     .invoiceNumber(121L)
                     .build();
 
-    InvoiceDto invoice1 =
-            InvoiceDto.builder()
+    Invoice invoice1 =
+            Invoice.builder()
                     .companyName("Company")
                     .number(1L)
                     .paymentStatus(PaymentStatus.PAID)
                     .items(List.of(item1))
                     .creationDate(LocalDate.of(2021, 05, 22))
                     .build();
-    InvoiceDto invoice2 =
-            InvoiceDto.builder()
+    Invoice invoice2 =
+            Invoice.builder()
                     .companyName("Company")
                     .items(List.of(item2))
                     .number(2L)
                     .paymentStatus(PaymentStatus.PAID)
                     .creationDate(LocalDate.of(2021, 05, 23))
                     .build();
-    InvoiceDto invoice3 =
-            InvoiceDto.builder()
+    Invoice invoice3 =
+            Invoice.builder()
                     .companyName("Company")
                     .items(List.of(item3))
                     .number(3L)
@@ -1052,8 +1052,8 @@ public class InvoiceControllerIT {
   void createInvoiceWithMultipleItems() throws Exception {
     createCompany("COMPANY_NAME");
 
-    InvoiceDto invoice =
-        InvoiceDto.builder()
+    Invoice invoice =
+        Invoice.builder()
             .companyName("COMPANY_NAME")
             .number(42L)
             .paymentStatus(PaymentStatus.UNPAID)
