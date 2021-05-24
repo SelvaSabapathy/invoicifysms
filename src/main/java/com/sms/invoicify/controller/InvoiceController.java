@@ -10,6 +10,7 @@ import com.sms.invoicify.models.Item;
 import com.sms.invoicify.models.ItemEntity;
 import com.sms.invoicify.service.InvoiceService;
 import com.sms.invoicify.utilities.PaymentStatus;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,12 +31,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/invoices")
+@AllArgsConstructor
 @Validated
 public class InvoiceController {
 
-  @Autowired private InvoiceService invoiceService;
+  private InvoiceService invoiceService;
 
-  @PostMapping("/invoices")
+  @PostMapping
   public ResponseEntity<InvoiceDto> create(@Valid @RequestBody InvoiceDto invoiceDto) {
     List<Item> items = invoiceDto.getItems();
     List<ItemEntity> itemEntities =
@@ -94,7 +98,7 @@ public class InvoiceController {
     return new ResponseEntity<InvoiceDto>(createdInvoiceDto, HttpStatus.CREATED);
   }
 
-  @GetMapping("/invoices/summary")
+  @GetMapping("/summary")
   public ResponseEntity<List<InvoiceSummaryDto>> getInvoicesSummary(
       @RequestParam(defaultValue = "0") Integer pageNumber,
       @RequestParam(defaultValue = "10") Integer pageSize) {
@@ -108,7 +112,7 @@ public class InvoiceController {
     return new ResponseEntity<>(summaryDtoList, HttpStatus.OK);
   }
 
-  @GetMapping("/invoices")
+  @GetMapping
   public ResponseEntity<List<InvoiceDto>> getInvoices(
       @RequestParam(defaultValue = "0") Integer pageNumber,
       @RequestParam(defaultValue = "10") Integer pageSize) {
@@ -129,7 +133,7 @@ public class InvoiceController {
     return new ResponseEntity<>(dtos, HttpStatus.OK);
   }
 
-  @GetMapping("/invoices/search/{number}")
+  @GetMapping("/search/{number}")
   public ResponseEntity<List<InvoiceDto>> searchInvoices(@PathVariable("number") Long number) {
 
     List<InvoiceDto> dtos =
@@ -163,7 +167,7 @@ public class InvoiceController {
             .collect(Collectors.toList());
   }
 
-  @PutMapping("/invoices")
+  @PutMapping
   public ResponseEntity<InvoiceDto> update(@Valid @RequestBody InvoiceDto invoiceDto) {
     List<Item> items = invoiceDto.getItems();
     List<ItemEntity> itemEntities =
@@ -197,13 +201,13 @@ public class InvoiceController {
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
-  @DeleteMapping("/invoices")
+  @DeleteMapping
   public ResponseEntity deleteInvoices() {
     invoiceService.delete();
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
-  @GetMapping("/invoices/unpaid/{companyName}")
+  @GetMapping("/unpaid/{companyName}")
   public ResponseEntity<List<InvoiceDto>> getUnpaidInvoices(
       @PathVariable("companyName") String companyName,
       @RequestParam(defaultValue = "0") Integer pageNumber,
@@ -228,7 +232,7 @@ public class InvoiceController {
     return new ResponseEntity<>(dtos, HttpStatus.OK);
   }
 
-  @GetMapping("/invoices/summary/unpaid/{companyName}")
+  @GetMapping("/summary/unpaid/{companyName}")
   public ResponseEntity<List<InvoiceSummaryDto>> getUnpaidInvoicesSummary(
       @PathVariable("companyName") String companyName,
       @RequestParam(defaultValue = "0") Integer pageNumber,

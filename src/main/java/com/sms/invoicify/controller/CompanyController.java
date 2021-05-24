@@ -23,7 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CompanyController {
 
-  CompanyService companyService;
+  private CompanyService companyService;
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
