@@ -2,6 +2,8 @@ package com.sms.invoicify.repository;
 
 import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.utilities.PaymentStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,10 +16,10 @@ import java.util.List;
 public interface InvoiceRepository extends JpaRepository<InvoiceEntity, Long> {
   InvoiceEntity findByNumber(long number);
 
-  List<InvoiceEntity> findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(
-      String companyName, PaymentStatus paymentStatus);
+  List<InvoiceEntity> findByCompanyNameAndPaymentStatus(
+      String companyName, PaymentStatus paymentStatus, Pageable pageable);
 
-  List<InvoiceEntity> findByOrderByCreationDateAsc();
+  Page<InvoiceEntity> findAll(Pageable pageable);
 
   @Query(
       value =

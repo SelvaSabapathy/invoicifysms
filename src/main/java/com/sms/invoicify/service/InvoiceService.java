@@ -7,6 +7,9 @@ import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.repository.InvoiceRepository;
 import com.sms.invoicify.utilities.PaymentStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -22,32 +25,36 @@ public class InvoiceService {
   @Autowired private InvoiceRepository invoiceRepository;
   @Autowired private CompanyService companyService;
 
-  public InvoiceEntity create(InvoiceEntity invoiceEntity) throws InvoicifyInvoiceExistsException, InvoicifyCompanyNotExistsException {
+  public InvoiceEntity create(InvoiceEntity invoiceEntity)
+      throws InvoicifyInvoiceExistsException, InvoicifyCompanyNotExistsException {
     if (null != invoiceRepository.findByNumber(invoiceEntity.getNumber())) {
       throw new InvoicifyInvoiceExistsException("Invoice exists, and can't be created again");
     }
     if (companyService.fetchCompanyByName(invoiceEntity.getCompanyName()) == null) {
-      throw new InvoicifyCompanyNotExistsException("Company Does not exists. Invoice cannot be created");
+      throw new InvoicifyCompanyNotExistsException(
+          "Company Does not exists. Invoice cannot be created");
     }
 
-      BigDecimal invoiceTotalCost =
-          invoiceEntity.getTotalCost() == null
-              ? BigDecimal.valueOf(0).setScale(2)
-              : invoiceEntity.getTotalCost();
-      BigDecimal itemsTotalCost =
-          invoiceEntity.getItems() == null
-              ? new BigDecimal(0)
-              : invoiceEntity.getItems().stream()
-                  .map(i -> i.getTotalFees())
-                  .reduce(BigDecimal.ZERO, BigDecimal::add);
-      invoiceEntity.setTotalCost(invoiceTotalCost.add(itemsTotalCost));
-
+    BigDecimal invoiceTotalCost =
+        invoiceEntity.getTotalCost() == null
+            ? BigDecimal.valueOf(0).setScale(2)
+            : invoiceEntity.getTotalCost();
+    BigDecimal itemsTotalCost =
+        invoiceEntity.getItems() == null
+            ? new BigDecimal(0)
+            : invoiceEntity.getItems().stream()
+                .map(i -> i.getTotalFees())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    invoiceEntity.setTotalCost(invoiceTotalCost.add(itemsTotalCost));
 
     return invoiceRepository.save(invoiceEntity);
   }
 
-  public List<InvoiceEntity> viewAllinvoices() {
-    return invoiceRepository.findByOrderByCreationDateAsc();
+  public List<InvoiceEntity> viewAllinvoices(Integer pageNumber, Integer pageSize) {
+    return invoiceRepository
+        .findAll(
+            (Pageable) PageRequest.of(pageNumber, pageSize, Sort.by("creationDate").ascending()))
+        .getContent();
   }
 
   public InvoiceEntity findByNumber(Long number) {
@@ -91,7 +98,11 @@ public class InvoiceService {
     }
   }
 
-  public List<InvoiceEntity> findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(String companyName, PaymentStatus paymentStatus) {
-    return invoiceRepository.findByCompanyNameAndPaymentStatusOrderByCreationDateAsc(companyName, paymentStatus);
+  public List<InvoiceEntity> findByCompanyNameAndPaymentStatus(
+      String companyName, PaymentStatus paymentStatus, Integer pageNumber, Integer pageSize) {
+    return invoiceRepository.findByCompanyNameAndPaymentStatus(
+        companyName,
+        paymentStatus,
+        (Pageable) PageRequest.of(pageNumber, pageSize, Sort.by("creationDate").ascending()));
   }
 }
