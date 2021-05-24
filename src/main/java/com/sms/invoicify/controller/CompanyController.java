@@ -2,7 +2,7 @@ package com.sms.invoicify.controller;
 
 import com.sms.invoicify.exception.InvoicifyCompanyExistsException;
 import com.sms.invoicify.models.Company;
-import com.sms.invoicify.models.CompanySummaryVO;
+import com.sms.invoicify.models.CompanySummary;
 import com.sms.invoicify.service.CompanyService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,7 +33,7 @@ public class CompanyController {
 
   @GetMapping("/summary")
   @ResponseStatus(HttpStatus.OK)
-  public List<CompanySummaryVO> getCompanySummary() {
+  public List<CompanySummary> getCompanySummary() {
     return companyService.fetchCompanySummaryView();
   }
 

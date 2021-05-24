@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sms.invoicify.models.Address;
 import com.sms.invoicify.models.Company;
-import com.sms.invoicify.models.InvoiceDto;
+import com.sms.invoicify.models.Invoice;
 import com.sms.invoicify.models.Item;
 import com.sms.invoicify.utilities.PaymentStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -132,8 +132,8 @@ public class ItemsControllerIT {
             .build();
 
     // post invoice 120
-    InvoiceDto invoiceDto =
-        new InvoiceDto(
+    Invoice invoice =
+        new Invoice(
             120L,
             LocalDate.now(),
             null,
@@ -146,7 +146,7 @@ public class ItemsControllerIT {
         .perform(
             post("/invoices")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invoiceDto)))
+                .content(objectMapper.writeValueAsString(invoice)))
         .andExpect(status().isCreated());
 
     // post items
@@ -192,12 +192,12 @@ public class ItemsControllerIT {
             .andExpect(status().isOk())
             .andReturn();
 
-    List<InvoiceDto> invoiceDtos =
+    List<Invoice> invoices =
         objectMapper.readValue(
-            mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
-    assertThat(invoiceDtos.size(), is(1));
-    assertThat(invoiceDtos.get(0).getNumber(), is(120L));
-    assertThat(invoiceDtos.get(0).getTotalCost(), is(BigDecimal.valueOf(130).setScale(2)));
+            mvcResult.getResponse().getContentAsString(), new TypeReference<List<Invoice>>() {});
+    assertThat(invoices.size(), is(1));
+    assertThat(invoices.get(0).getNumber(), is(120L));
+    assertThat(invoices.get(0).getTotalCost(), is(BigDecimal.valueOf(130).setScale(2)));
   }
 
   @Test
@@ -226,8 +226,8 @@ public class ItemsControllerIT {
             .andExpect(content().string("aCompany created Successfully"));
 
     // post invoice 120
-    InvoiceDto invoiceDto =
-        new InvoiceDto(
+    Invoice invoice =
+        new Invoice(
             120L,
             LocalDate.now(),
             null,
@@ -240,7 +240,7 @@ public class ItemsControllerIT {
         .perform(
             post("/invoices")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invoiceDto)))
+                .content(objectMapper.writeValueAsString(invoice)))
         .andExpect(status().isCreated());
 
     Item item =
@@ -307,11 +307,11 @@ public class ItemsControllerIT {
             .andExpect(status().isOk())
             .andReturn();
 
-    List<InvoiceDto> invoiceDtos =
+    List<Invoice> invoices =
         objectMapper.readValue(
-            mvcResult.getResponse().getContentAsString(), new TypeReference<List<InvoiceDto>>() {});
-    assertThat(invoiceDtos.size(), is(1));
-    assertThat(invoiceDtos.get(0).getNumber(), is(120L));
-    assertThat(invoiceDtos.get(0).getTotalCost(), is(BigDecimal.valueOf(159.99).setScale(2)));
+            mvcResult.getResponse().getContentAsString(), new TypeReference<List<Invoice>>() {});
+    assertThat(invoices.size(), is(1));
+    assertThat(invoices.get(0).getNumber(), is(120L));
+    assertThat(invoices.get(0).getTotalCost(), is(BigDecimal.valueOf(159.99).setScale(2)));
   }
 }
