@@ -9,14 +9,16 @@ import com.sms.invoicify.repository.CompanyRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class CompanyService {
-  private final CompanyRepository companyRepository;
+  private CompanyRepository companyRepository;
 
   private void saveCompany(Company companyDto) {
     companyRepository.save(

@@ -6,7 +6,7 @@ import com.sms.invoicify.exception.InvoicifyInvoiceNotExistsException;
 import com.sms.invoicify.models.InvoiceEntity;
 import com.sms.invoicify.repository.InvoiceRepository;
 import com.sms.invoicify.utilities.PaymentStatus;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,10 +20,11 @@ import java.util.List;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class InvoiceService {
 
-  @Autowired private InvoiceRepository invoiceRepository;
-  @Autowired private CompanyService companyService;
+  private InvoiceRepository invoiceRepository;
+  private CompanyService companyService;
 
   public InvoiceEntity create(InvoiceEntity invoiceEntity)
       throws InvoicifyInvoiceExistsException, InvoicifyCompanyNotExistsException {
