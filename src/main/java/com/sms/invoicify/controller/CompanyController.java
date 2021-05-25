@@ -2,7 +2,7 @@ package com.sms.invoicify.controller;
 
 import com.sms.invoicify.exception.InvoicifyCompanyExistsException;
 import com.sms.invoicify.models.Company;
-import com.sms.invoicify.models.CompanySummaryVO;
+import com.sms.invoicify.models.CompanySummary;
 import com.sms.invoicify.service.CompanyService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CompanyController {
 
-  CompanyService companyService;
+  private CompanyService companyService;
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
@@ -33,7 +33,7 @@ public class CompanyController {
 
   @GetMapping("/summary")
   @ResponseStatus(HttpStatus.OK)
-  public List<CompanySummaryVO> getCompanySummary() {
+  public List<CompanySummary> getCompanySummary() {
     return companyService.fetchCompanySummaryView();
   }
 
@@ -42,19 +42,23 @@ public class CompanyController {
     try {
       companyService.createCompany(company);
     } catch (InvoicifyCompanyExistsException e) {
-      return new ResponseEntity<String>("Company exists, and can't be created", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<String>(
+          "Company exists, and can't be created", HttpStatus.BAD_REQUEST);
     }
-    return new ResponseEntity<String>(company.getCompanyName() + " created Successfully", HttpStatus.CREATED);
+    return new ResponseEntity<String>(
+        company.getCompanyName() + " created Successfully", HttpStatus.CREATED);
   }
 
   @PutMapping("/{companyName}")
-  public ResponseEntity<String> updateCompany(@PathVariable("companyName") String companyName,
-                                              @RequestBody Company company) {
+  public ResponseEntity<String> updateCompany(
+      @PathVariable("companyName") String companyName, @RequestBody Company company) {
     try {
       companyService.updateCompany(companyName, company);
     } catch (InvoicifyCompanyExistsException e) {
-      return new ResponseEntity<String>("Company exists, and can't be created", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<String>(
+          "Company exists, and can't be created", HttpStatus.BAD_REQUEST);
     }
-    return new ResponseEntity<String>(companyName + " has been updated successfully.", HttpStatus.NO_CONTENT);
+    return new ResponseEntity<String>(
+        companyName + " has been updated successfully.", HttpStatus.NO_CONTENT);
   }
 }

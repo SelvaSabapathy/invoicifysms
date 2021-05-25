@@ -36,7 +36,8 @@ public class ItemsController {
       return new ResponseEntity<String>(
           item.getDescription() + " created Successfully", HttpStatus.CREATED);
     } catch (InvoicifyInvoiceNotExistsException e) {
-      return new ResponseEntity<String>("Invoice does not exist. Please use valid invoice.", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<String>(
+          "Invoice does not exist. Please use valid invoice.", HttpStatus.BAD_REQUEST);
     }
   }
 }

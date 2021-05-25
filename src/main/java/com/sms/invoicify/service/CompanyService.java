@@ -1,20 +1,21 @@
 package com.sms.invoicify.service;
 
 import com.sms.invoicify.exception.InvoicifyCompanyExistsException;
-import com.sms.invoicify.exception.InvoicifyCompanyNotExistsException;
 import com.sms.invoicify.models.Address;
 import com.sms.invoicify.models.Company;
 import com.sms.invoicify.models.CompanyEntity;
-import com.sms.invoicify.models.CompanySummaryVO;
+import com.sms.invoicify.models.CompanySummary;
 import com.sms.invoicify.repository.CompanyRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class CompanyService {
   private final CompanyRepository companyRepository;
@@ -58,11 +59,11 @@ public class CompanyService {
         .collect(Collectors.toList());
   }
 
-  public List<CompanySummaryVO> fetchCompanySummaryView() {
+  public List<CompanySummary> fetchCompanySummaryView() {
     return companyRepository.findAll().stream()
         .map(
             companyEntity -> {
-              return CompanySummaryVO.builder()
+              return CompanySummary.builder()
                   .companyName(companyEntity.getCompanyName())
                   .city(companyEntity.getAddress().getCity())
                   .state(companyEntity.getAddress().getState())

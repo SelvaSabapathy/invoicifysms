@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompanySummaryVO {
+public class CompanySummary {
 
         @NotBlank(message = "Company Name is Required")
         String companyName;
