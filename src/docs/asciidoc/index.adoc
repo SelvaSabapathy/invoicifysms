@@ -103,6 +103,18 @@ include::{snippets}/company-controller-it/post-company-details/1/request-fields.
 .response
 include::{snippets}/company-controller-it/post-company-details/1/http-response.adoc[]
 
+.Error 4xx
+
+|===
+| Field | Description | Status Code
+
+| InvoicifyCompanyExistsException
+| Matching Company Exists with Same Name
+| 400 - Bad Request
+
+|===
+
+
 [[specification-API-Company-GET]]
 ==== GET
 
@@ -161,6 +173,21 @@ include::{snippets}/invoice-controller-it/create-one-success/2/request-fields.ad
 
 .response
 include::{snippets}/invoice-controller-it/create-one-success/2/http-response.adoc[]
+
+.Error 4xx
+
+|===
+| Field | Description | Status Code
+
+| InvoicifyInvoiceExistsException
+| Invoice Id Already Exists
+| 400 - Bad Request
+
+| InvoicifyCompanyNotExistsException
+| Matching company does not exist for invoice creation
+| 400 - Bad Request
+
+|===
 
 ===== POST -- Nested Items
 
@@ -265,6 +292,18 @@ include::{snippets}/items-controller-it/post-item/3/request-fields.adoc[]
 
 .response
 include::{snippets}/items-controller-it/post-item/3/http-response.adoc[]
+
+.Error 4xx
+
+|===
+| Field | Description | Status Code
+
+| InvoicifyInvoiceNotExistsException
+| Matching Invoice Number Does Not Exist
+| 400 - Bad Request
+
+|===
+
 
 [[specification-API-item-getall]]
 ==== GET
