@@ -182,27 +182,27 @@ include::{snippets}/invoice-controller-it/create-and-view-invoice-summary/3/http
 .response
 include::{snippets}/invoice-controller-it/create-and-view-invoice-summary/3/http-response.adoc[]
 
+===== Summary View, UNPAID
+
+Get Summary View of ALL Unpaid Invoices
+
+.request
+include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoice-summary/10/http-request.adoc[]
+
+.response
+include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoice-summary/10/http-response.adoc[]
+
 ===== Detailed View, ALL
 
 Get Details of ALL Invoices
 
 .request
-include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/5/http-request.adoc[]
+include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/4/http-request.adoc[]
 
 .response
-include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/5/http-response.adoc[]
+include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/4/http-response.adoc[]
 
-===== Summary View, Status=Unpaid
-
-Get Summary View of ALL Unpaid Invoices
-
-.request
-include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoices-summary/7/http-request.adoc[]
-
-.response
-include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoices-summary/7/http-response.adoc[]
-
-===== Detailed View, Status=Unpaid
+===== Detailed View, UNPAID
 
 Get Details of ALL Unpaid Invoices
 
@@ -212,19 +212,19 @@ include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoice-detail/
 .response
 include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoice-detail/7/http-response.adoc[]
 
-===== Search invoice by number
+===== GET Invoice by Number
 
-Search Invoice by number
+Retrieve an invoice by an invoice number.
 
 .request
-include::{snippets}/invoice-controller-it/search-invoices-by-number/5/http-request.adoc[]
+include::{snippets}/invoice-controller-it/search-invoices-by-number/4/http-request.adoc[]
 
 .response
-include::{snippets}/invoice-controller-it/search-invoices-by-number/5/http-response.adoc[]
+include::{snippets}/invoice-controller-it/search-invoices-by-number/4/http-response.adoc[]
 
 ==== PUT
 
-Update invoice  (company name, payment status)
+Update invoice - Change the payment status for a given invoice
 
 .request
 include::{snippets}/invoice-controller-it/update-and-view-invoice-details/3/http-request.adoc[]
