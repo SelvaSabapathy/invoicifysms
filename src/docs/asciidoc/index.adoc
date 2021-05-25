@@ -1,4 +1,4 @@
-= Invoicify API v1.0.0
+= Invoicify API v1.1.0
 API Documentation for Invoicify solutions by Team SMS
 :doctype: book
 :icons: font
@@ -93,7 +93,7 @@ Invoicify attempts to adhere as closely as possible to standard HTTP and REST co
 [[specification-API-Company-POST]]
 ==== POST
 
-Create / Add a New Company
+[small]#Creates a new company#
 
 .request
 include::{snippets}/company-controller-it/post-company-details/1/http-request.adoc[]
@@ -103,14 +103,26 @@ include::{snippets}/company-controller-it/post-company-details/1/request-fields.
 .response
 include::{snippets}/company-controller-it/post-company-details/1/http-response.adoc[]
 
+.Error 4xx
+
+|===
+| Field | Description | Status Code
+
+| InvoicifyCompanyExistsException
+| Matching Company Exists with Same Name
+| 400 - Bad Request
+
+|===
+
+
 [[specification-API-Company-GET]]
 ==== GET
 
 ===== Summary View, ALL
 
-Get Summary View Of All Companies
+Get summary list view of all companies
 
-[small]#Simple view which only displays Company names & City/State location#
+[small]#Simple view which only displays company names & City/State location information#
 
 .request
 include::{snippets}/company-controller-it/get-company-summary-view/3/http-request.adoc[]
@@ -120,9 +132,9 @@ include::{snippets}/company-controller-it/get-company-summary-view/3/http-respon
 
 ===== Detailed View, ALL
 
-Get Detailed View of All Companies
+Get detailed list view of all companies
 
-[small]#Detailed view displays a list of all Companies, as well as all attributes for each company#
+[small]#Detailed view displays a list of all companies, as well as all attributes for each company#
 
 .request
 include::{snippets}/company-controller-it/post-company-details/2/http-request.adoc[]
@@ -133,7 +145,9 @@ include::{snippets}/company-controller-it/post-company-details/2/http-response.a
 [[specification-API-Company-PUT]]
 ==== PUT
 
-Update Existing Company Details
+Update existing company details
+
+[small]#Update the attribute details of a particular company#
 
 .request
 include::{snippets}/company-controller-it/update-company_when-company-exists/3/http-request.adoc[]
@@ -148,9 +162,9 @@ include::{snippets}/company-controller-it/update-company_when-company-exists/3/h
 
 ==== POST
 
-===== Create New Invoice
+===== POST Invoice
 
-Create an invoice
+Creates a new invoice
 
 .request
 include::{snippets}/invoice-controller-it/create-one-success/2/http-request.adoc[]
@@ -160,9 +174,24 @@ include::{snippets}/invoice-controller-it/create-one-success/2/request-fields.ad
 .response
 include::{snippets}/invoice-controller-it/create-one-success/2/http-response.adoc[]
 
-===== Create w/ Nested Items
+.Error 4xx
 
-Create Invoice with multiple Line Items
+|===
+| Field | Description | Status Code
+
+| InvoicifyInvoiceExistsException
+| Invoice Id Already Exists
+| 400 - Bad Request
+
+| InvoicifyCompanyNotExistsException
+| Matching company does not exist for invoice creation
+| 400 - Bad Request
+
+|===
+
+===== POST -- Nested Items
+
+[small]#Create an invoice with multiple line items#
 
 .request
 include::{snippets}/invoice-controller-it/create-invoice-with-multiple-items/2/http-request.adoc[]
@@ -174,7 +203,7 @@ include::{snippets}/invoice-controller-it/create-invoice-with-multiple-items/2/h
 
 ===== Summary View, ALL
 
-Get Summary View of ALL Invoices
+[small]#Get summary view list of all invoices#
 
 .request
 include::{snippets}/invoice-controller-it/create-and-view-invoice-summary/3/http-request.adoc[]
@@ -182,29 +211,29 @@ include::{snippets}/invoice-controller-it/create-and-view-invoice-summary/3/http
 .response
 include::{snippets}/invoice-controller-it/create-and-view-invoice-summary/3/http-response.adoc[]
 
+===== Summary View, UNPAID
+
+[small]#Get summary view list of all `UNPAID` invoices#
+
+.request
+include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoice-summary/10/http-request.adoc[]
+
+.response
+include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoice-summary/10/http-response.adoc[]
+
 ===== Detailed View, ALL
 
-Get Details of ALL Invoices
+[small]#Get a detailed list of all invoices#
 
 .request
-include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/5/http-request.adoc[]
+include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/4/http-request.adoc[]
 
 .response
-include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/5/http-response.adoc[]
+include::{snippets}/invoice-controller-it/create-and-view-invoice-detail/4/http-response.adoc[]
 
-===== Summary View, Status=Unpaid
+===== Detailed View, UNPAID
 
-Get Summary View of ALL Unpaid Invoices
-
-.request
-include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoices-summary/7/http-request.adoc[]
-
-.response
-include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoices-summary/7/http-response.adoc[]
-
-===== Detailed View, Status=Unpaid
-
-Get Details of ALL Unpaid Invoices
+[small]#Get a detailed list of all `UNPAID` invoices#
 
 .request
 include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoice-detail/7/http-request.adoc[]
@@ -212,19 +241,21 @@ include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoice-detail/
 .response
 include::{snippets}/invoice-controller-it/create-and-view-unpaid-invoice-detail/7/http-response.adoc[]
 
-===== Search invoice by number
+===== GET Invoice by Number
 
-Search Invoice by number
+[small]#Retrieve a particular invoice by its invoice number#
 
 .request
-include::{snippets}/invoice-controller-it/search-invoices-by-number/5/http-request.adoc[]
+include::{snippets}/invoice-controller-it/search-invoices-by-number/4/http-request.adoc[]
 
 .response
-include::{snippets}/invoice-controller-it/search-invoices-by-number/5/http-response.adoc[]
+include::{snippets}/invoice-controller-it/search-invoices-by-number/4/http-response.adoc[]
 
 ==== PUT
 
-Update invoice  (company name, payment status)
+Update an Invoice
+
+[small]#Change the payment status for a given invoice#
 
 .request
 include::{snippets}/invoice-controller-it/update-and-view-invoice-details/3/http-request.adoc[]
@@ -262,10 +293,22 @@ include::{snippets}/items-controller-it/post-item/3/request-fields.adoc[]
 .response
 include::{snippets}/items-controller-it/post-item/3/http-response.adoc[]
 
+.Error 4xx
+
+|===
+| Field | Description | Status Code
+
+| InvoicifyInvoiceNotExistsException
+| Matching Invoice Number Does Not Exist
+| 400 - Bad Request
+
+|===
+
+
 [[specification-API-item-getall]]
 ==== GET
 
-Get List of All Items
+Get a list of all items
 
 .request
 include::{snippets}/items-controller-it/post-multiple-item/5/http-request.adoc[]
