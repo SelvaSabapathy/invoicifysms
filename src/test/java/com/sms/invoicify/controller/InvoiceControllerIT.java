@@ -2,6 +2,7 @@ package com.sms.invoicify.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sms.invoicify.exception.InvoicifyCompanyNotExistsException;
 import com.sms.invoicify.models.Address;
 import com.sms.invoicify.models.Company;
 import com.sms.invoicify.models.InvoiceDto;
@@ -32,11 +33,16 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.sms.invoicify.utilities.Constants.EXCEPTION_MESSAGE_COMPANY_NOT_EXISTS;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
@@ -1110,13 +1116,13 @@ public class InvoiceControllerIT {
             .totalCost(BigDecimal.valueOf(99.99))
             .build();
 
-  mockMvc.perform(post("/invoices").contentType(MediaType.APPLICATION_JSON)
+  Objects.requireNonNull(mockMvc.perform(post("/invoices")
+          .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(invoice)))
           .andExpect(status().isBadRequest())
-//  .andDo(document("{class-name}/{method-name}/{step}",
-//          relaxedResponseFields(
-//                  fieldWithPath("message").type("String")
-//                          .description("Company referenced by Invoice does not Exist")
-  ;
+          .andExpect(result -> assertEquals(EXCEPTION_MESSAGE_COMPANY_NOT_EXISTS,
+                  Objects.requireNonNull(result.getResponse().getErrorMessage())))
+          .andDo(result -> document("{class-name}/{method-name}/{step}",
+                  responseBody())));
     }
 }

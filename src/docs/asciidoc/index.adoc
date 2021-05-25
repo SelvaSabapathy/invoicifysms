@@ -55,6 +55,32 @@ use of HTTP verbs.
 | Used to permanently remove a resource
 |===
 
+[[overview-http-statusCodes]]
+
+== HTTP Status Codes
+Invoicify attempts to adhere as closely as possible to standard HTTP and REST conventions in its use of HTTP status codes.
+
+|===
+| Status Code | Usage
+
+| `200 OK`
+| The request completed successfully
+
+| `201 Created`
+| A new resource has been created successfully.
+
+| `204 No Content`
+| An update to an existing resource has been applied successfully
+
+| `400 Bad Request`
+| The request was malformed. The response body will include an error message providing further information
+
+| `404 Not Found`
+| The requested resource did not exist
+
+|===
+
+
 [[specification]]
 = Specifications
 

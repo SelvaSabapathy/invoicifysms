@@ -18,6 +18,9 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.sms.invoicify.utilities.Constants.EXCEPTION_MESSAGE_COMPANY_NOT_EXISTS;
+import static com.sms.invoicify.utilities.Constants.EXCEPTION_MESSAGE_INVOICE_ALREADY_EXISTS;
+
 @Service
 @Transactional
 public class InvoiceService {
@@ -28,11 +31,10 @@ public class InvoiceService {
   public InvoiceEntity create(InvoiceEntity invoiceEntity)
       throws InvoicifyInvoiceExistsException, InvoicifyCompanyNotExistsException {
     if (null != invoiceRepository.findByNumber(invoiceEntity.getNumber())) {
-      throw new InvoicifyInvoiceExistsException("Invoice exists, and can't be created again");
+      throw new InvoicifyInvoiceExistsException(EXCEPTION_MESSAGE_INVOICE_ALREADY_EXISTS);
     }
     if (companyService.fetchCompanyByName(invoiceEntity.getCompanyName()) == null) {
-      throw new InvoicifyCompanyNotExistsException(
-          "Company does not exist. Invoice cannot be created");
+      throw new InvoicifyCompanyNotExistsException(EXCEPTION_MESSAGE_COMPANY_NOT_EXISTS);
     }
 
     BigDecimal invoiceTotalCost =
