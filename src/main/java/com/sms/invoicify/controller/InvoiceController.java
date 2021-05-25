@@ -22,7 +22,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.text.ParseException;
@@ -67,7 +69,7 @@ public class InvoiceController {
     try {
       createdInvoiceEntity = invoiceService.create(invoiceEntity);
     } catch (InvoicifyInvoiceExistsException | InvoicifyCompanyNotExistsException e) {
-      return new ResponseEntity<Invoice>(new Invoice(), HttpStatus.BAD_REQUEST);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     List<ItemEntity> retItemEnt = createdInvoiceEntity.getItems();

@@ -32,11 +32,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.sms.invoicify.utilities.Constants.EXCEPTION_MESSAGE_COMPANY_NOT_EXISTS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
@@ -131,7 +134,10 @@ public class InvoiceControllerIT {
                             .ignored(),
                         fieldWithPath("companyName")
                             .description("Company Billable for the Invoice")
-                            .attributes(key("constraints").value("Not Null, Company Name must match an Existing Saved Company")),
+                            .attributes(
+                                key("constraints")
+                                    .value(
+                                        "Not Null, Company Name must match an Existing Saved Company")),
                         paymentStatusField(),
                         fieldWithPath("totalCost")
                             .description("Sum of All Line Item Charges on the Invoice")
@@ -746,15 +752,13 @@ public class InvoiceControllerIT {
     invoice6.setItems(List.of());
     invoice7.setItems(List.of());
 
-    return List.of(
-            invoice1, invoice2, invoice3, invoice4, invoice5, invoice6, invoice7);
+    return List.of(invoice1, invoice2, invoice3, invoice4, invoice5, invoice6, invoice7);
   }
 
   @Test
   public void createAndViewUnpaidInvoiceDetail() throws Exception {
     BigDecimal itemCost = BigDecimal.TEN;
-    List<Invoice> createdInvoices =
-        createAndViewUnpaidInvoices("aCompany", "bCompany", itemCost);
+    List<Invoice> createdInvoices = createAndViewUnpaidInvoices("aCompany", "bCompany", itemCost);
     Invoice invoice2 = createdInvoices.get(1);
     Invoice invoice4 = createdInvoices.get(3);
     Invoice invoice5 = createdInvoices.get(4);
@@ -832,8 +836,7 @@ public class InvoiceControllerIT {
   @Test
   public void createAndViewUnpaidInvoiceSummary() throws Exception {
     BigDecimal itemCost = BigDecimal.TEN;
-    List<Invoice> createdInvoices =
-        createAndViewUnpaidInvoices("aCompany", "bCompany", itemCost);
+    List<Invoice> createdInvoices = createAndViewUnpaidInvoices("aCompany", "bCompany", itemCost);
     Invoice invoice2 = createdInvoices.get(1);
     Invoice invoice4 = createdInvoices.get(3);
     Invoice invoice5 = createdInvoices.get(4);
@@ -983,69 +986,69 @@ public class InvoiceControllerIT {
     createCompany("Company");
 
     Item item1 =
-            Item.builder()
-                    .description("MIDDLE DATE")
-                    .quantity(1)
-                    .totalFees(BigDecimal.TEN)
-                    .invoiceNumber(121L)
-                    .build();
+        Item.builder()
+            .description("MIDDLE DATE")
+            .quantity(1)
+            .totalFees(BigDecimal.TEN)
+            .invoiceNumber(121L)
+            .build();
 
     Item item2 =
-            Item.builder()
-                    .description("LAST DATE")
-                    .quantity(1)
-                    .totalFees(BigDecimal.TEN)
-                    .invoiceNumber(121L)
-                    .build();
+        Item.builder()
+            .description("LAST DATE")
+            .quantity(1)
+            .totalFees(BigDecimal.TEN)
+            .invoiceNumber(121L)
+            .build();
 
     Item item3 =
-            Item.builder()
-                    .description("EARLIEST DATE")
-                    .quantity(1)
-                    .totalFees(BigDecimal.TEN)
-                    .invoiceNumber(121L)
-                    .build();
+        Item.builder()
+            .description("EARLIEST DATE")
+            .quantity(1)
+            .totalFees(BigDecimal.TEN)
+            .invoiceNumber(121L)
+            .build();
 
     Invoice invoice1 =
-            Invoice.builder()
-                    .companyName("Company")
-                    .number(1L)
-                    .paymentStatus(PaymentStatus.PAID)
-                    .items(List.of(item1))
-                    .creationDate(LocalDate.of(2021, 05, 22))
-                    .build();
+        Invoice.builder()
+            .companyName("Company")
+            .number(1L)
+            .paymentStatus(PaymentStatus.PAID)
+            .items(List.of(item1))
+            .creationDate(LocalDate.of(2021, 05, 22))
+            .build();
     Invoice invoice2 =
-            Invoice.builder()
-                    .companyName("Company")
-                    .items(List.of(item2))
-                    .number(2L)
-                    .paymentStatus(PaymentStatus.PAID)
-                    .creationDate(LocalDate.of(2021, 05, 23))
-                    .build();
+        Invoice.builder()
+            .companyName("Company")
+            .items(List.of(item2))
+            .number(2L)
+            .paymentStatus(PaymentStatus.PAID)
+            .creationDate(LocalDate.of(2021, 05, 23))
+            .build();
     Invoice invoice3 =
-            Invoice.builder()
-                    .companyName("Company")
-                    .items(List.of(item3))
-                    .number(3L)
-                    .paymentStatus(PaymentStatus.PAID)
-                    .creationDate(LocalDate.of(2021, 04, 22))
-                    .build();
+        Invoice.builder()
+            .companyName("Company")
+            .items(List.of(item3))
+            .number(3L)
+            .paymentStatus(PaymentStatus.PAID)
+            .creationDate(LocalDate.of(2021, 04, 22))
+            .build();
 
     this.createInner(invoice1, HttpStatus.CREATED);
     this.createInner(invoice2, HttpStatus.CREATED);
     this.createInner(invoice3, HttpStatus.CREATED);
 
     mockMvc
-            .perform(get("/invoices/summary?pageNumber=0&pageSize=2"))
-            .andExpect(jsonPath("length()").value(2))
-            .andExpect(jsonPath("[0].number").value(3))
-            .andExpect(jsonPath("[1].number").value(1));
+        .perform(get("/invoices/summary?pageNumber=0&pageSize=2"))
+        .andExpect(jsonPath("length()").value(2))
+        .andExpect(jsonPath("[0].number").value(3))
+        .andExpect(jsonPath("[1].number").value(1));
 
     // second page
     mockMvc
-            .perform(get("/invoices/summary?pageNumber=1&pageSize=2"))
-            .andExpect(jsonPath("length()").value(1))
-            .andExpect(jsonPath("[0].number").value(2));
+        .perform(get("/invoices/summary?pageNumber=1&pageSize=2"))
+        .andExpect(jsonPath("length()").value(1))
+        .andExpect(jsonPath("[0].number").value(2));
   }
 
   @Test
@@ -1066,11 +1069,11 @@ public class InvoiceControllerIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invoice)))
         .andExpect(status().isCreated())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.companyName", is("COMPANY_NAME")))
-            .andExpect(jsonPath("$.items.[0].description", is("FIRST_ITEM")))
-            .andExpect(jsonPath("$.items.[1].description", is("SECOND_ITEM")))
-            .andExpect(jsonPath("$.items.[2].description", is("THIRD_ITEM")));
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.companyName", is("COMPANY_NAME")))
+        .andExpect(jsonPath("$.items.[0].description", is("FIRST_ITEM")))
+        .andExpect(jsonPath("$.items.[1].description", is("SECOND_ITEM")))
+        .andExpect(jsonPath("$.items.[2].description", is("THIRD_ITEM")));
   }
 
   private List<Item> generateItemsList(Long invoiceNumber) {
@@ -1099,5 +1102,30 @@ public class InvoiceControllerIT {
             .build();
 
     return List.of(item1, item2, item3);
+  }
+
+  @Test
+  void create_ThrowsException_whenCompanyNotExists() throws Exception {
+    Invoice invoice =
+        Invoice.builder()
+            .number(101L)
+            .companyName("NON_EXISTING_COMPANY")
+            .paymentStatus(PaymentStatus.UNPAID)
+            .totalCost(BigDecimal.valueOf(99.99))
+            .build();
+
+    Objects.requireNonNull(
+        mockMvc
+            .perform(
+                post("/invoices")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invoice)))
+            .andExpect(status().isBadRequest())
+            .andExpect(
+                result ->
+                    assertEquals(
+                        EXCEPTION_MESSAGE_COMPANY_NOT_EXISTS,
+                        Objects.requireNonNull(result.getResponse().getErrorMessage())))
+            .andDo(result -> document("{class-name}/{method-name}/{step}", responseBody())));
   }
 }
