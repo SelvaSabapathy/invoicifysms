@@ -36,7 +36,7 @@ Each invoice contains brief details about the products and services purchased. T
 [[overview-http-verbs]]
 == HTTP verbs
 
-Invoicify tries to adhere as closely as possible to standard HTTP and REST conventions in its
+Invoicify attempts to adhere as closely as possible to standard HTTP and REST conventions in its
 use of HTTP verbs.
 
 |===

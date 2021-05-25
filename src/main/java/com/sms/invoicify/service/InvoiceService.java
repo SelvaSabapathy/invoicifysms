@@ -32,7 +32,7 @@ public class InvoiceService {
     }
     if (companyService.fetchCompanyByName(invoiceEntity.getCompanyName()) == null) {
       throw new InvoicifyCompanyNotExistsException(
-          "Company Does not exists. Invoice cannot be created");
+          "Company does not exist. Invoice cannot be created");
     }
 
     BigDecimal invoiceTotalCost =

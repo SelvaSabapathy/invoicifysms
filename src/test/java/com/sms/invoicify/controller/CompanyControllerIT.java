@@ -73,7 +73,7 @@ public class CompanyControllerIT {
   public void postCompanyDetailsWithExistingCompanyName() throws Exception {
     Company company =
         Company.builder()
-            .companyName("Hampton DeVille Corp.")
+            .companyName("COMPANY_NAME")
             .address(
                 Address.builder()
                     .street("100 N State Street")
@@ -104,7 +104,7 @@ public class CompanyControllerIT {
   public void postCompanyDetails() throws Exception {
     Company company =
         Company.builder()
-            .companyName("Hampton DeVille Corp.")
+            .companyName("COMPANY_NAME")
             .address(
                 Address.builder()
                     .street("100 N State Street")
@@ -122,7 +122,7 @@ public class CompanyControllerIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(company)))
         .andExpect(status().isCreated())
-        .andExpect(content().string("Hampton DeVille Corp. created Successfully"))
+        .andExpect(content().string("COMPANY_NAME created Successfully"))
         .andDo(
             document(
                 "{class-name}/{method-name}/{step}",
@@ -158,7 +158,7 @@ public class CompanyControllerIT {
         .perform(get("/company"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("length()").value(1))
-        .andExpect(jsonPath("[0].companyName").value("Hampton DeVille Corp."))
+        .andExpect(jsonPath("[0].companyName").value("COMPANY_NAME"))
         .andExpect(jsonPath("[0].address.street").value("100 N State Street"))
         .andExpect(jsonPath("[0].address.city").value("Chicago"))
         .andExpect(jsonPath("[0].address.state").value("IL"))
@@ -185,7 +185,7 @@ public class CompanyControllerIT {
   void getCompanySummaryView() throws Exception {
     Company company1 =
         Company.builder()
-            .companyName("Hampton DeVille Corp.")
+            .companyName("COMPANY_NAME")
             .address(
                 Address.builder()
                     .street("100 N State Street")
@@ -217,7 +217,7 @@ public class CompanyControllerIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(company1)))
         .andExpect(status().isCreated())
-        .andExpect(content().string("Hampton DeVille Corp. created Successfully"));
+        .andExpect(content().string("COMPANY_NAME created Successfully"));
     mockMvc
         .perform(
             post("/company")
@@ -229,7 +229,7 @@ public class CompanyControllerIT {
         .perform(get("/company/summary"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("length()").value(2))
-        .andExpect(jsonPath("[0].companyName").value("Hampton DeVille Corp."))
+        .andExpect(jsonPath("[0].companyName").value("COMPANY_NAME"))
         .andExpect(jsonPath("[0].city").value("Chicago"))
         .andExpect(jsonPath("[0].state").value("IL"))
         .andExpect(jsonPath("[1].companyName").value("Kitchener Corp."))
@@ -252,7 +252,7 @@ public class CompanyControllerIT {
   void updateCompany_whenCompanyExists() throws Exception {
     Company updatedCompany =
         Company.builder()
-            .companyName("Hampton DeVille Corp.")
+            .companyName("COMPANY_NAME")
             .address(
                 Address.builder()
                     .street("200 W Lake Street")
@@ -273,7 +273,7 @@ public class CompanyControllerIT {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updatedCompany)))
         .andExpect(status().isNoContent())
-        .andExpect(content().string("Hampton DeVille Corp. has been updated successfully."))
+        .andExpect(content().string("COMPANY_NAME has been updated successfully."))
         .andDo(
             document(
                 "{class-name}/{method-name}/{step}",
@@ -310,7 +310,7 @@ public class CompanyControllerIT {
         .perform(get("/company"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("length()").value(1))
-        .andExpect(jsonPath("[0].companyName").value("Hampton DeVille Corp."))
+        .andExpect(jsonPath("[0].companyName").value("COMPANY_NAME"))
         .andExpect(jsonPath("[0].address.street").value("200 W Lake Street"))
         .andExpect(jsonPath("[0].address.city").value("Chicago"))
         .andExpect(jsonPath("[0].address.state").value("IL"))

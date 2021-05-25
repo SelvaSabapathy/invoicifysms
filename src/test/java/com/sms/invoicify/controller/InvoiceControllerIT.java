@@ -1100,4 +1100,23 @@ public class InvoiceControllerIT {
 
     return List.of(item1, item2, item3);
   }
+
+  @Test
+  void create_ThrowsException_whenCompanyNotExists() throws Exception {
+    InvoiceDto invoice = InvoiceDto.builder()
+            .number(101L)
+            .companyName("NON_EXISTING_COMPANY")
+            .paymentStatus(PaymentStatus.UNPAID)
+            .totalCost(BigDecimal.valueOf(99.99))
+            .build();
+
+  mockMvc.perform(post("/invoices").contentType(MediaType.APPLICATION_JSON)
+          .content(objectMapper.writeValueAsString(invoice)))
+          .andExpect(status().isBadRequest())
+//  .andDo(document("{class-name}/{method-name}/{step}",
+//          relaxedResponseFields(
+//                  fieldWithPath("message").type("String")
+//                          .description("Company referenced by Invoice does not Exist")
+  ;
+    }
 }

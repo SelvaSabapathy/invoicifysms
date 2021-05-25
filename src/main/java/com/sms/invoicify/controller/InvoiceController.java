@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.text.ParseException;
@@ -35,7 +37,7 @@ public class InvoiceController {
   @Autowired private InvoiceService invoiceService;
 
   @PostMapping("/invoices")
-  public ResponseEntity<InvoiceDto> create(@Valid @RequestBody InvoiceDto invoiceDto) {
+  public ResponseEntity<InvoiceDto> create(@Valid @RequestBody InvoiceDto invoiceDto) throws InvoicifyInvoiceExistsException, InvoicifyCompanyNotExistsException {
     List<Item> items = invoiceDto.getItems();
     List<ItemEntity> itemEntities =
         items == null
@@ -64,7 +66,7 @@ public class InvoiceController {
     try {
       createdInvoiceEntity = invoiceService.create(invoiceEntity);
     } catch (InvoicifyInvoiceExistsException | InvoicifyCompanyNotExistsException e) {
-      return new ResponseEntity<InvoiceDto>(new InvoiceDto(), HttpStatus.BAD_REQUEST);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     List<ItemEntity> retItemEnt = createdInvoiceEntity.getItems();
