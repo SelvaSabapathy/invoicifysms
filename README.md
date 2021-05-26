@@ -1,6 +1,8 @@
 # invoicifysms
 Invoicify is tool for contractors to record and bill companies for services.
 
+https://invoicify-sms.herokuapp.com/
+
 Each invoice contains brief details about the products and services purchased. These products and services are commonly referred to simply as items on the invoice. Overall the software works like so:
 
 A contractor creates an invoice when a company purchases a good or service.
